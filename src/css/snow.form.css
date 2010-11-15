@@ -1,0 +1,15 @@
+.sFormField{
+  margin: 5px 0 10px 0;
+}
+
+.sFormFieldLabel{
+  float: left;
+  width: 150px;
+  text-align: right;
+  display: block;
+}
+
+.sFormFieldValue{
+  margin: 0 0 0 160px;
+  display: block;
+}

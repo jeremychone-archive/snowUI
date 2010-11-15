@@ -1,0 +1,46 @@
+.sSlider{
+	position: relative;
+	/* the width should be content-item.width + contentFrame.margin.[left + right]  */
+	width: 264px;
+}
+
+.sSlider-nav{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 32px;
+	text-align: center;
+	cursor: pointer;
+}
+
+/* The .disabled should be added on HTML composition,
+   however, it will be set as well by the sSlider js */
+.sSlider-nav.disabled{
+	color: #aaaaaa;
+	cursor: default;
+}
+
+.sSlider-nav.prev{
+	left: 0;
+}
+
+.sSlider-nav.next{
+	right: 0;
+}
+
+.sSlider-contentFrame{
+   margin: 0 32px 0 32px;
+   overflow: auto;
+}
+
+.sSlider-content{
+   /* put this big enough, it will be reset by the sSlider to match the items width */
+   width: 3000px; 
+}
+
+.sSlider-content-item{
+	display: block;
+	float: left;
+	/* works better when it is a fix size */
+	width: 200px; 
+}

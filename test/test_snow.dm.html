@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>snowUITest - sDM</title>
+
+		<!-- Generic Test Includes -->
+		<link rel="stylesheet" href="css/sTestHelper.css"/>
+		<script type="text/javascript" src="../js-dependencies/jquery.js" ></script>
+		<script type="text/javascript" src="js/sTestHelper.js" ></script>
+		<script type="text/javascript">
+		$(function(){
+			showTestSources();
+		});
+		</script>
+		<!-- /Generic Test Includes -->
+
+		<script type="text/javascript" src="../src/js/snow.core.js" ></script>
+		<script type="text/javascript" src="../src/js/snow.dm.js" ></script>
+		
+		<style type="text/css">
+			#userList{
+				width: 400px;
+			}
+			#userList li{
+				list-style: none;
+				margin-bottom: 3px;
+				border: solid 1px #aaaaaa;
+				padding: 3px 5px;
+				
+			}
+			
+			#userList li .name{
+				display: inline-block;
+				margin-right: 10px;
+			}
+			
+			#userList li .city{
+				color: #777777;
+			}
+			
+			#userList li .del{
+				font-family: courier;
+				font-size: 14px;
+				float: right;
+				cursor: pointer;
+				color: #555555;
+			}
+		
+		</style>
+		
+
+		
+
+    </head>
+    <body>
+    	<div class="sTestSection">
+	        <h2>Simple User Dao CRUD</h2>
+
+			<div class="sTestSrc sTestShowSrc">
+				
+				<h3>Create new User</h3>
+				<div>User Name: <input id="userNameIpt" type="text" /> City: <input id="userCityIpt" type="text" /> <button id="userCreateBut">Create</button></div>
+				
+	
+				<h3>User List</h3>
+				<ul id="userList">
+				</ul>
+				
+				<!-- Simple User CRUD UI Logic -->
+				<script type="text/javascript">
+				
+				$(function(){
+					var $userList = $("#userList");
+					
+					// Initialize the UI component
+					updateUserListDiv();
+					
+					// Update the userListDiv on change
+					snow.dm.addChangeListener("user",function(daoChangeEvent){
+						updateUserListDiv();
+					});
+					
+					// --- Delete User ---
+					$userList.delegate(".del","click",function(){
+						var user = $(this).sDataObject("user");
+						snow.dm.remove("user",user.id);
+						
+					});
+					
+					// --- Create User ---
+					$("#userCreateBut").click(function(){
+						snow.dm.save("user",null,{name: $("#userNameIpt").val(),
+											 city: $("#userCityIpt").val()});
+						
+						//clean the input and focus
+						$("#userNameIpt").val("").focus();
+						$("#userCityIpt").val("");
+						
+					});
+					
+					//TODO: support for Edit user
+				});
+				
+				function updateUserListDiv(){
+					var user, 
+					    i,
+						userList = snow.dm.find("user"),
+						$userList = $("#userList");
+					
+					//clean the list
+					$userList.empty();
+					
+					for (i = 0; i < userList.length; i++) {
+						user = userList[i];
+						$li = $("<li></li>");
+						$li.attr("data-obj_type", "user");
+						$li.attr("data-obj.id", user.id);
+						
+						//Note: The 'name' and 'city' class are just for css layout
+						//      The 'del' class is use for delegate
+						$li.append("<span class='name'>" + user.name + "</span>" +
+						           "<span class='city'>(" + user.city + ")</span>" + 
+								   "<span class='del'>x</span>" );
+						$userList.append($li);
+					}
+					
+					
+				}
+				</script>
+				<!--  /Simple User CRUD UI Logic -->
+				
+				<!-- User Dao -->
+				<script type="text/javascript">			
+					snow.dm.registerDao("user",(function(){
+						// for this example, just an in-memory store
+						var userStore = [{id:"001",name:"Mike",city:"San Francisco"}];
+						
+						var userDao = {
+							
+							get: function(objectType,id){
+								var user = getUserDataById(id);
+								if (user){
+									//make sure to clone the user object before sending it back to avoid accidental modification
+									//TODO: if user structure is more complex, needs a deep copy.
+									return $.extend({},user);
+								}else{
+									return null;
+								}
+							},
+														
+							//for now, does not support the opts (for filtering, ordering,...)
+							//Note 1: We return a copy of the object to make the store a little bit more secure
+							//        dm.save(..) will need to be called. 
+							//Note 2: However, we are not doing a deep copy, so, it is not 100% bullet proof, 
+							//        but good enough for this example.
+							find: function(objectType,opts){
+								var a = [];
+								for (var i = 0; i < userStore.length; i++){
+									var u = userStore[i];
+									a.push($.extend({},u)); 
+								}
+								return a;
+							},
+							
+
+							
+							save: function(objectType,id,data){
+								//if it is an update (assume that if there is an id, it exists)
+								if (id){
+									if (data.id && data.id != id) {
+										snow.logger.error("Cannot save, the id and data.id does not match");
+									}else {
+										var idx = getIndexForUserId(id);
+										//this will support partial update
+										userStore[idx] = $.extend(userStore[idx], data);
+									}	
+								}
+								//if it is a create
+								else{
+									data.id = snow.util.uuid(17);
+									var user = $.extend({},data);
+									userStore.push(user);		
+								}
+								
+								return userDao.get(objectType,data.id);
+								
+								
+							},
+							
+							remove: function(objectType,id){
+								var idx = getIndexForUserId(id);
+								if (idx != null) {
+									snow.util.array.remove(userStore, idx);
+								}
+							}
+						};
+						
+						function getUserDataById(userId){
+							var idx = getIndexForUserId(userId);
+							if (idx != null){
+								return userStore[i];
+							}else{
+								return null;
+							}
+						}
+						
+						function getIndexForUserId(userId){
+							for (i = 0; i < userStore.length; i++){
+								user = userStore[i];
+								if (user.id == userId){
+									return i;
+								}
+							}
+							return null;
+						}
+						
+						return userDao;
+					})());
+				</script>
+				<!-- /User Dao -->
+				
+			</div> <!-- .sTestShowSrc -->			
+		</div> <!-- .sTestSection -->
+    </body>
+</html>

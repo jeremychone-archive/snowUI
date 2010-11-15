@@ -1,0 +1,11 @@
+.sRteCtn{
+	border: solid 1px; 
+	border-color: #d0d0d0 #ececec #ececec #d0d0d0;
+	margin-bottom:10px;
+	background-color: #ffffff;
+	
+}
+iframe.sRteIframe  {
+	margin: 0;
+	padding: 0;
+}

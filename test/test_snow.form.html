@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>snowUITest - sForm</title>
+
+		<!-- Generic Test Includes -->
+		<link rel="stylesheet" href="css/sTestHelper.css"/>
+		<script type="text/javascript" src="../js-dependencies/jquery.js" ></script>
+		<script type="text/javascript" src="js/sTestHelper.js" ></script>
+		<script type="text/javascript">
+		$(function(){
+			showTestSources();
+		});
+		</script>
+		<!-- /Generic Test Includes -->
+
+
+		<link rel="stylesheet" href="../src/css/snow.form.css"/>
+    </head>
+    <body>
+        <h2>Regular Form</h2>
+		<div id="regularFormTest" class="sTestSrc sTestShowSrc">
+	        <div class="sFormField">
+	            <div class="sFormFieldLabel">First Name:</div>
+	            <input class="sFormFieldValue" type='text' />
+	        </div>
+			
+	        <div class="sFormField">
+	            <div class="sFormFieldLabel">Last Name:</div>
+	            <input class="sFormFieldValue" type='text' />
+	        </div>
+			
+	        <div class="sFormField">
+	            <div class="sFormFieldLabel">Bio</div>
+	            <textarea class="sFormFieldValue" cols="50" rows="5"></textarea>
+	        </div>
+			
+	        <div class="sFormField">
+	            <input class="sFormFieldValue" type='submit' />
+	        </div>
+			
+		</div>
+    </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>snowUITest - sUA</title>
+
+		<!-- Generic Test Includes -->
+		<link rel="stylesheet" href="css/sTestHelper.css"/>
+		<script type="text/javascript" src="../js-dependencies/jquery.js" ></script>
+		<script type="text/javascript" src="js/sTestHelper.js" ></script>
+		<script type="text/javascript">
+		$(function(){
+			showTestSources();
+		});
+		</script>
+		<!-- /Generic Test Includes -->
+
+
+		<script type="text/javascript" src="../src/js/snow.core.js" ></script>
+    </head>
+    <body>
+        <h2>Has Functionality</h2>
+		
+		<p><strong>Has Touch:</strong> <span id="hasTouch"></span> </p>
+		
+		<p><strong>Has Transition</strong> <span id="hasTransition"></span></p>
+		
+		<script type="text/javascript">
+			$(function(){
+				$("#hasTouch").html("" + snow.ua.hasTouch());
+				
+				$("#hasTransition").html("" + snow.ua.hasTransition());
+			});
+		</script>
+    </body>
+</html>

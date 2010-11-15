@@ -1,0 +1,69 @@
+.sAccordion {
+    margin: 0;
+    padding: 0;
+}
+
+.sAccordion.flex{
+	position: absolute;
+	top: 0;
+	bottom:0;
+	left: 0;
+	right: 0;
+	overflow: hidden;
+	
+}
+
+.sAccordionPanel {
+    display:block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.sAccordionPanelContent, .sAccordion.flex.enableAnimation .sAccordionPanelContent {
+	/* CSS3 Transition Effect */
+    transition: height 0.3s ease-in-out;
+    -moz-transition: height 0.3s ease-in-out;
+    -webkit-transition: height 0.3s ease-in-out;
+    -o-transition: height 0.3s ease-in-out;		
+
+}
+
+
+
+/* for flex, we start to disable the anim, and then, enable it after initial layout */
+.sAccordion.flex .sAccordionPanelContent {
+    transition: none;
+    -moz-transition: none;
+    -webkit-transition: none;
+    -o-transition: none;		
+}
+
+.sAccordionPanelHeader {
+    display:block;
+    margin: 0;
+    padding:10px;
+    height:20px;
+	cursor: pointer;
+}
+
+.sAccordionPanelContent {
+    margin:0;
+    overflow: hidden;
+    padding:0px;
+	height: 0;
+	display: none;
+}
+
+.sAccordionPanel.sel .sAccordionPanelContent {
+    height: 300px;
+	overflow: auto;
+	display: block;
+}
+
+.sAccordion.flex  .sAccordionPanel.sel .sAccordionPanelContent{
+    height: 100%;
+}
+
+
+
