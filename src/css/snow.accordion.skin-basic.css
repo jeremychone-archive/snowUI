@@ -1,8 +1,8 @@
-.sAccordionPanel {
+.sAccordion-panel {
     background-color:#f0f0f0;
 }
 
-.sAccordionPanelHeader {
+.sAccordion-panel-header {
     border-top:#f0f0f0 1px solid;
     font-family: Arial, Helvetica, sans-serif;
     text-decoration:none;
@@ -11,11 +11,11 @@
     background: #cccccc;
 }
 
-.sAccordion .sAccordionPanel.sel .sAccordionPanelContent {
+.sAccordion .sAccordion-panel.sel .sAccordion-panel-content {
     height: 300px; /* this property is also in the sAccordion.css */
 }
 
-.sAccordionPanel.sel>.sAccordionPanelHeader {
+.sAccordion-panel.sel > .sAccordion-panel-header {
     /* Decorative CSS */
     color:#fff;
     background: #000000;

@@ -65,17 +65,17 @@
 		  
 		  // ------ Events ------ //
 		  //attaching the event
-		  $sAccordion.delegate(".sAccordionPanel","click",function(){
+		  $sAccordion.delegate(".sAccordion-panel","click",function(){
 		  	var eventData = {};
 			
-		  	var $newPanel = $(this).closest(".sAccordionPanel");
+		  	var $newPanel = $(this).closest(".sAccordion-panel");
 			eventData.newPanel = $newPanel.get(0);
-			eventData.newIndex = $newPanel.prevAll(".sAccordionPanel").length;
+			eventData.newIndex = $newPanel.prevAll(".sAccordion-panel").length;
 			
 			
-			var $oldPanel = $sAccordion.find(".sAccordionPanel.sel");
+			var $oldPanel = $sAccordion.find(".sAccordion-panel.sel");
 			eventData.oldPanel = $oldPanel.get(0);
-			eventData.oldIndex = $oldPanel.prevAll(".sAccordionPanel").length ;
+			eventData.oldIndex = $oldPanel.prevAll(".sAccordion-panel").length ;
 			
 
 			//with CSS transition, if transition, then, swap/change only at the end of the event	
@@ -93,10 +93,10 @@
 				};
 				
 				//make sure the old panel stay visible during the transition
-				var $oldPanelContent = $oldPanel.find(".sAccordionPanelContent");
+				var $oldPanelContent = $oldPanel.find(".sAccordion-panel-content");
 				$oldPanelContent.css(transitionCssBefore);
 				//put the new panel visible as well, otherwise animation won't occure
-				var $newPanelContent = $newPanel.find(".sAccordionPanelContent");
+				var $newPanelContent = $newPanel.find(".sAccordion-panel-content");
 				$newPanelContent.css(transitionCssBefore);
 				
 				//trigger the animation
@@ -136,17 +136,17 @@
 
   function flexResize($sAccordion,$selPanel){
   	if (!$selPanel){
-		$selPanel = $sAccordion.find(".sAccordionPanel.sel");
+		$selPanel = $sAccordion.find(".sAccordion-panel.sel");
 	}
 	//close all the .sAccordionPanelContent	
-	$sAccordion.find(".sAccordionPanelContent").each(function(){
+	$sAccordion.find(".sAccordion-panel-content").each(function(){
 		var $panel = $(this);
 		$panel.css("height","0px");
 	});	
 	
 	//compute the total headersHeight
   	var headersHeight = 0; 
-	$sAccordion.find(".sAccordionPanelHeader").each(function(){
+	$sAccordion.find(".sAccordion-panel-header").each(function(){
 		headersHeight = headersHeight + $(this).outerHeight();
 	});
 
@@ -154,7 +154,7 @@
 	//compute the panelContenthHeight.
 	var panelContentH = $sAccordion.innerHeight()  - headersHeight;
 
-	$selPanel.find(".sAccordionPanelContent").css("height",panelContentH + "px"); 
+	$selPanel.find(".sAccordion-panel-content").css("height",panelContentH + "px"); 
   }
   
   // sDialog default options

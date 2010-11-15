@@ -1,3 +1,5 @@
+/* TO NOT USE - JUST A PLACEHOLDER FOR NOW */
+
 /*
  * jQuery snowRte Text Field.
  * 

@@ -13,14 +13,14 @@
 	
 }
 
-.sAccordionPanel {
+.sAccordion-panel {
     display:block;
     overflow: hidden;
     margin: 0;
     padding: 0;
 }
 
-.sAccordionPanelContent, .sAccordion.flex.enableAnimation .sAccordionPanelContent {
+.sAccordion-panel-content, .sAccordion.flex.enableAnimation .sAccordion-panel-content {
 	/* CSS3 Transition Effect */
     transition: height 0.3s ease-in-out;
     -moz-transition: height 0.3s ease-in-out;
@@ -32,14 +32,14 @@
 
 
 /* for flex, we start to disable the anim, and then, enable it after initial layout */
-.sAccordion.flex .sAccordionPanelContent {
+.sAccordion.flex .sAccordion-panel-content {
     transition: none;
     -moz-transition: none;
     -webkit-transition: none;
     -o-transition: none;		
 }
 
-.sAccordionPanelHeader {
+.sAccordion-panel-header {
     display:block;
     margin: 0;
     padding:10px;
@@ -47,7 +47,7 @@
 	cursor: pointer;
 }
 
-.sAccordionPanelContent {
+.sAccordion-panel-content {
     margin:0;
     overflow: hidden;
     padding:0px;
@@ -55,13 +55,13 @@
 	display: none;
 }
 
-.sAccordionPanel.sel .sAccordionPanelContent {
+.sAccordion-panel.sel .sAccordion-panel-content {
     height: 300px;
 	overflow: auto;
 	display: block;
 }
 
-.sAccordion.flex  .sAccordionPanel.sel .sAccordionPanelContent{
+.sAccordion.flex  .sAccordion-panel.sel .sAccordion-panel-content{
     height: 100%;
 }
 

@@ -1,15 +1,15 @@
-.sFormField{
+.sForm-field{
   margin: 5px 0 10px 0;
 }
 
-.sFormFieldLabel{
+.sForm-field-label{
   float: left;
   width: 150px;
   text-align: right;
   display: block;
 }
 
-.sFormFieldValue{
+.sForm-field-value{
   margin: 0 0 0 160px;
   display: block;
 }
