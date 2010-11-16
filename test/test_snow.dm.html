@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>snowUITest - sDM</title>
+        <title>snowUITest - snow.dm</title>
 
 		<!-- Generic Test Includes -->
 		<link rel="stylesheet" href="css/sTestHelper.css"/>
@@ -81,14 +81,15 @@
 						updateUserListDiv();
 					});
 					
-					// --- Delete User ---
+					// --- Delete User --- //
 					$userList.delegate(".del","click",function(){
 						var user = $(this).sDataObject("user");
 						snow.dm.remove("user",user.id);
 						
 					});
+					// --- /Delete User --- //
 					
-					// --- Create User ---
+					// --- Create User --- //
 					$("#userCreateBut").click(function(){
 						snow.dm.save("user",null,{name: $("#userNameIpt").val(),
 											 city: $("#userCityIpt").val()});
@@ -98,6 +99,7 @@
 						$("#userCityIpt").val("");
 						
 					});
+					// --- /Create User --- //
 					
 					//TODO: support for Edit user
 				});

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>snowUITest - snow.ui</title>
+
+		<!-- Generic Test Includes -->
+		<link rel="stylesheet" href="css/sTestHelper.css"/>
+		<script type="text/javascript" src="../js-dependencies/jquery.js" ></script>
+		<script type="text/javascript" src="js/sTestHelper.js" ></script>
+		<script type="text/javascript">
+		$(function(){
+			showTestSources();
+		});
+		</script>
+		<!-- /Generic Test Includes -->
+
+
+		<script type="text/javascript" src="../src/js/snow.core.js" ></script>
+		
+    </head>
+    <body>
+    	<div class="sTestSection">
+	        <h2>snow.ui Hello World</h2>
+
+			<div class="sTestSrc sTestShowSrc">
+				
+				<h3>Hello World</h3>
+				
+				<button onclick="snow.ui.display('helloWorld',{data:'Mike'})">Display Hello World</button>
+				
+				
+				<div id="HelloWorld-Container" style="margin: 30px;border: solid 1px #dddddd;height: 30px">
+					
+				</div>
+				
+				
+				
+				<!-- Simple ContactList Component -->
+				<script type="text/javascript">
+					var helloWorlCount = 0;
+					
+					snow.ui.registerComponent("helloWorld",{
+						
+						//This is the default 
+						ctx: {
+							  // Tell where to add the output of build(ctx) 
+							  parent: "#HelloWorld-Container",
+							  // Tell to empty the parent before adding the output of build(ctx)
+							  emptyParent: true
+						     },
+						
+						// Build teh 
+						build: function(ctx){
+							var $e = $("<strong>Hello " + ctx.data + "</strong>");
+							
+							// just to keep track of the number of display
+							$e.append(" " + helloWorlCount++);
+							return $e;
+						},
+						
+						// The postDisplay will be called after the display, 
+						// and the ctx has been agumented with ctx.$element will be the object returned by the "build'
+						postDisplay: function(ctx){
+							ctx.$element.click(function(){
+								alert("You clicked on " + $(this).html());
+							});
+						}
+					});
+				
+				</script>
+				<!--  /Simple ContactList Component -->
+				
+				
+				
+			</div> <!-- .sTestShowSrc -->			
+		</div> <!-- .sTestSection -->
+    </body>
+</html>
