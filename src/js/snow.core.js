@@ -94,7 +94,7 @@ snow.ui = (function(){
 	
 		//get component and build params
 		var component = this.getComponent(name);
-		
+        		
 		ctx = $.extend({component:component},this.defaultCtx,component.ctx,ctx);
 		
 		//Ask the component to build the new $element
