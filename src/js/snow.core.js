@@ -201,7 +201,7 @@ snow.ui = (function(){
 		},
 		
 		setConfig: function(config){
-			$.extends(_config,config); 
+			$.extend(_config,config); 
 		}
 	};	
 	
