@@ -84,7 +84,7 @@ snow.ui = (function(){
 	 *    ctx.animation: {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
 	 *    ctx.replace: {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
 	 *    ctx.data: {Any} any data object. 
-	 *    ctx.emptyBeforeAdd: {Boolean} (true
+	 *    ctx.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
 	 *    
 	 * For build(ctx) the ctx will be augmented by: 
 	 *    ctx.component: the component
