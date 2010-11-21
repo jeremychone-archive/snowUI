@@ -99,6 +99,7 @@ snow.ui = (function(){
         		
 		ctx = $.extend({component:component},this.defaultCtx,component.ctx,ctx);
 		
+		var $element = null;
 		//Ask the component to build the new $element
 		var element = component.build(ctx);
 		
@@ -118,20 +119,19 @@ snow.ui = (function(){
 			
 			//render the element
 			renderComponent(this, ctx);
-			
-			// Call the eventual postDisplay 
-			// (we differ it to allow it to be displayed first)
-			if (component.postDisplay) {
-				setTimeout(function(){
-					component.postDisplay(ctx);
-				}, 0);
-			}
-			
-			//s = new Date().getTime();
-			//debug("display: " + name + " : " + (new Date().getTime() - s));
-			
-			return $element;
+		}	
+		
+		// Call the eventual postDisplay 
+		// (we differ it to allow it to be displayed first)
+		if (component.postDisplay) {
+			setTimeout(function(){
+				component.postDisplay(ctx);
+			}, 0);
 		}
+		
+		
+		return $element;
+		
 		
 	};
 
