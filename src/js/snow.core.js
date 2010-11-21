@@ -111,9 +111,12 @@ snow.ui = (function(){
 			
 			//attach the component to the element (and set the data-component attribute)
 			$element.data("component", component);
+			//When $element contains multiple HTMLElement, this allow to get the complete list from each element
+			$element.data("$element",$element);
+			
 			$element.attr("data-component", component.name);
 			
-			//augment the ctx with the new element
+			//augment the ctx with the new $element
 			ctx.$element = $element;
 			
 			
@@ -122,7 +125,7 @@ snow.ui = (function(){
 		}	
 		
 		// Call the eventual postDisplay 
-		// (we differ it to allow it to be displayed first)
+		// (differing for performance)
 		if (component.postDisplay) {
 			setTimeout(function(){
 				component.postDisplay(ctx);
@@ -183,6 +186,63 @@ snow.ui = (function(){
 
 // ------ snow.ui  ------ //
 // ---------------------- //
+
+(function($) {
+
+  /**
+   * Call the component's method. Has to be called from the component's element. See sComponent$element
+   * @param {methodName} 
+   */
+  $.fn.sCall = function(methodName) {
+	var args = arguments;
+	
+	// iterate and process each matched element
+	var $componentElement = $(this);
+	var component = $componentElement.data("component");
+	// ------ Assertions ------ //
+	if (!component){
+		snow.logger.error("No component found for this element. Make sure to call the sCall on a component $element. Use $().sComponent$element(..)")
+		return;
+	}
+	if (!component.methods || !component.methods[methodName]){
+		snow.logger.error("The component [" + component.name + "] has no method called [" + methodName + "]");
+		return;
+	}
+	// ------ /Assertions ------ //
+	
+	//call the method with the 
+	var m = component.methods[methodName];
+	m.apply($componentElement,Array.prototype.slice.call( args, 1 ));
+	
+	}; 
+
+})(jQuery);
+
+(function($) {
+
+  /**
+   * Return the jQuery component $element of the component container. 
+   * 
+   * Note: This is the $element returned by component.build())
+   * 
+   * @param {componentName} The component name. If absent, then it will take the first element that has a component attached.
+   * 
+   */
+  $.fn.sComponent$element = function(componentName) {
+	  
+      // iterate and process each matched element
+	  	var $componentElement; 
+		if (componentName) {
+			$componentElement = $(this).closest("[data-component='" + componentName + "']");
+		}else{
+			$componentElement = $(this).closest("[data-component]");
+		}
+		
+		return $componentElement.data("$element");
+ 
+   }; 
+
+})(jQuery);
 
 
 // -------------------------- //
