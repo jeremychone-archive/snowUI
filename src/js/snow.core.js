@@ -78,7 +78,9 @@ snow.ui = (function(){
 
 	/**
 	 * ctx format: 
-	 *    ctx.parent: {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic) 
+	 *    ctx.parent: {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic)
+	 *                Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
+	 *                        So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
 	 *    ctx.animation: {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
 	 *    ctx.replace: {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
 	 *    ctx.data: {Any} any data object. 
