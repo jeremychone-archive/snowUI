@@ -2,36 +2,6 @@
 <script type="text/javascript">
 	var helloWorlCount = 0;
 	
-	snow.ui.registerTransition("wipe",function(ctx){
-		var $new = ctx.$element;
-		
-		var $parent = $(ctx.parent);
-		var $old = $parent.children();
-		
-		//if we have already some elements, then, do the animation
-		if ($old.length > 0) {
-			$old.animate({
-				left: "300px",
-				opacity: "0"
-			}, 500, function(){
-				$old.remove();
-				
-			});
-		}
-		//$old.remove();
-		
-		$new.css({
-			left: "-200px"
-		});
-		$parent.append($new);
-		$new.animate({
-			left: "0px"
-		})
-		
-		
-				
-	});
-	
 	// Important: make sure the component name match the file name
 	snow.ui.registerComponent("helloComponent",{
 		

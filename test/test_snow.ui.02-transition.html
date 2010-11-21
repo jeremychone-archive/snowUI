@@ -25,8 +25,6 @@
 
 			<div class="sTestSrc sTestShowSrc">
 				
-				<h3>Hello World with transition</h3>
-				
 				<button onclick="snow.ui.display('helloWorld',{data:'Mike'})">Display Hello World</button>
 				
 				
@@ -34,13 +32,11 @@
 					
 				</div>
 				
-				
-				
-				<!-- Simple HelloWorld Component -->
+				<!-- Transition -->
+				<!-- This is a reusable transition for any components that use the transition "wipe" -->
 				<script type="text/javascript">
-					var helloWorlCount = 0;
-					
 					snow.ui.registerTransition("wipe",function(ctx){
+						//This is new 
 						var $new = ctx.$element;
 						
 						var $parent = $(ctx.parent);
@@ -53,22 +49,28 @@
 								opacity: "0"
 							}, 500, function(){
 								$old.remove();
-								
 							});
 						}
-						//$old.remove();
 						
 						$new.css({
 							left: "-200px"
 						});
+						
 						$parent.append($new);
+						
 						$new.animate({
 							left: "0px"
-						})
+						});
 						
 						
 								
 					});
+				</script>
+				<!-- /Transition -->				
+				
+				<!-- Simple HelloWorld Component -->
+				<script type="text/javascript">
+					var helloWorlCount = 0;
 					
 					snow.ui.registerComponent("helloWorld",{
 						
@@ -76,17 +78,22 @@
 						ctx: {
 							  // Tell where to add the output of build(ctx) 
 							  parent: "#HelloWorld-Container",
-							  // Tell to empty the parent before adding the output of build(ctx)
+							  // Tell the snow.ui to call the "wipe" transition
 							  transition: "wipe"
-						     },
+						},
 						
-						// Build teh 
+						// Build the  
 						build: function(ctx){
 							var $e = $("<div style='position:absolute'>Hello " + ctx.data + "</div>");
 							
 							// just to keep track of the number of display
 							$e.append(" " + helloWorlCount++);
+							
+							// Return the jQuery or HTML element to have snow.ui managing the display logic
 							return $e;
+							
+							// If return null, then, this component.build function is responsible of the display logic 
+							// (i.e. need to add itself to the appropriate HTMLElement)
 						},
 						
 						// The postDisplay will be called after the display, 
@@ -101,7 +108,7 @@
 				</script>
 				<!--  /Simple HelloWorld Component -->
 				
-				
+
 				
 			</div> <!-- .sTestShowSrc -->			
 		</div> <!-- .sTestSection -->

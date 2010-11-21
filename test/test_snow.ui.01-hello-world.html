@@ -56,7 +56,12 @@
 							
 							// just to keep track of the number of display
 							$e.append(" " + helloWorlCount++);
+							
+							//return the element to have snow.ui managing the rendering logic
 							return $e;
+							
+							// If return null, then, this component.build function is responsible of the display logic 
+							// (i.e. need to add itself to the appropriate HTMLElement)
 						},
 						
 						// The postDisplay will be called after the display, 

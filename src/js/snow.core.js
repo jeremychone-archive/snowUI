@@ -78,7 +78,7 @@ snow.ui = (function(){
 
 	/**
 	 * ctx format: 
-	 *    ctx.parent: {jQuery} jquery selector, html element, jquery object (default "body") 
+	 *    ctx.parent: {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic) 
 	 *    ctx.animation: {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
 	 *    ctx.replace: {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
 	 *    ctx.data: {Any} any data object. 
@@ -98,35 +98,42 @@ snow.ui = (function(){
 		ctx = $.extend({component:component},this.defaultCtx,component.ctx,ctx);
 		
 		//Ask the component to build the new $element
-		var $element = component.build(ctx);
+		var element = component.build(ctx);
 		
-		//attach the component to the element (and set the data-component attribute)
-		$element.data("component",component);
-		$element.attr("data-component",component.name);
-		
-		ctx.$element = $element;
-		
-		
-		//render the element
-		renderComponent(this,ctx);
-		
-		// Call the eventual postDisplay 
-		// (we differ it to allow it to be displayed first)
-		if (component.postDisplay){
-			setTimeout(function(){
-				component.postDisplay(ctx);
-			},0);
-		}
-		
-		//s = new Date().getTime();
-		//debug("display: " + name + " : " + (new Date().getTime() - s));
+		//if there is an element, then, manage the rendering logic. 
+		if (element) {
+			//make sure we get the jQuery object
+			var $element = $(element);
 			
-		return $element;
+			
+			//attach the component to the element (and set the data-component attribute)
+			$element.data("component", component);
+			$element.attr("data-component", component.name);
+			
+			//augment the ctx with the new element
+			ctx.$element = $element;
+			
+			
+			//render the element
+			renderComponent(this, ctx);
+			
+			// Call the eventual postDisplay 
+			// (we differ it to allow it to be displayed first)
+			if (component.postDisplay) {
+				setTimeout(function(){
+					component.postDisplay(ctx);
+				}, 0);
+			}
+			
+			//s = new Date().getTime();
+			//debug("display: " + name + " : " + (new Date().getTime() - s));
+			
+			return $element;
+		}
 		
 	};
 
 
-	//this should be private
 	function renderComponent (sui,ctx){
 	
 		if (ctx.transition){
@@ -134,7 +141,6 @@ snow.ui = (function(){
 			
 			//TODO: support transition
 			if (transition) {
-				
 				transition(ctx);
 			}
 		}
@@ -165,7 +171,6 @@ snow.ui = (function(){
 	}
 	
 	sui.defaultCtx = {
-		parent: "body",
 		emptyParent: false
 	}
 	// ------ /Public configs ------ //	
