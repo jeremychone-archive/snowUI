@@ -50,7 +50,7 @@
 							  emptyParent: true
 						     },
 						
-						// Build teh 
+						// Build the component $element
 						build: function(ctx){
 							var $e = $("<strong>Hello " + ctx.data + "</strong>");
 							
@@ -60,8 +60,9 @@
 							//return the element to have snow.ui managing the rendering logic
 							return $e;
 							
-							// If return null, then, this component.build function is responsible of the display logic 
+							// Not recommended, but if return null, then, this component.build function is responsible of the display logic 
 							// (i.e. need to add itself to the appropriate HTMLElement)
+							// 
 						},
 						
 						// The postDisplay will be called after the display, 

@@ -33,7 +33,7 @@ snow.dm = (function(){
 		if (dao){
 			return dao.get(objectType,id);		
 		}else{
-			snow.logger.error("cannot find the DAO for objectType" + objectType);
+			snow.log.error("cannot find the DAO for objectType" + objectType);
 		}	
 	};	
 	
@@ -53,7 +53,7 @@ snow.dm = (function(){
 			//TODO need to support variable params
 			return dao.find(objectType,opts);	
 		}else{
-			snow.logger.error("cannot find the DAO for objectType" + objectType);
+			snow.log.error("cannot find the DAO for objectType" + objectType);
 		}	
 	};	
 	
@@ -65,7 +65,7 @@ snow.dm = (function(){
 			callChangeListeners(objectType,"save",null,newData,data);
 			return newData;
 		}else{
-			snow.logger.error("cannot find the DAO or save method for objectType" + objectType);
+			snow.log.error("cannot find the DAO or save method for objectType" + objectType);
 		}	
 	};
 	
@@ -79,7 +79,7 @@ snow.dm = (function(){
 			
 			return r;
 		}else{
-			snow.logger.error("cannot find the DAO for objectType" + objectType);
+			snow.log.error("cannot find the DAO for objectType" + objectType);
 		}	
 	};
 	

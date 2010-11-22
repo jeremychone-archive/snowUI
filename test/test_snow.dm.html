@@ -171,7 +171,7 @@
 								//if it is an update (assume that if there is an id, it exists)
 								if (id){
 									if (data.id && data.id != id) {
-										snow.logger.error("Cannot save, the id and data.id does not match");
+										snow.log.error("Cannot save, the id and data.id does not match");
 									}else {
 										var idx = getIndexForUserId(id);
 										//this will support partial update

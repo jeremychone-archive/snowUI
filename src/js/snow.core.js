@@ -147,7 +147,7 @@ snow.ui = (function(){
 			if (transition) {
 				transition(ctx);
 			}else{
-				snow.logger.error("Transition [" + ctx.transition + "] not found. Transitions need to be registered via snow.ui.registerTranstion(..) before call.");
+				snow.log.error("Transition [" + ctx.transition + "] not found. Transitions need to be registered via snow.ui.registerTranstion(..) before call.");
 			}
 		}
 		//if no transition remove/show
@@ -202,11 +202,11 @@ snow.ui = (function(){
 	var component = $componentElement.data("component");
 	// ------ Assertions ------ //
 	if (!component){
-		snow.logger.error("No component found for this element. Make sure to call the sCall on a component $element. Use $().sComponent$element(..)")
+		snow.log.error("No component found for this element. Make sure to call the sCall on a component $element. Use $().sComponent$element(..)")
 		return;
 	}
 	if (!component.methods || !component.methods[methodName]){
-		snow.logger.error("The component [" + component.name + "] has no method called [" + methodName + "]");
+		snow.log.error("The component [" + component.name + "] has no method called [" + methodName + "]");
 		return;
 	}
 	// ------ /Assertions ------ //
@@ -247,13 +247,13 @@ snow.ui = (function(){
 
 
 // -------------------------- //
-// ------ snow.logger  ------ //
+// ------ snow.log  ------ //
 //for now, just support console.log
 //TODO: needs to support logger printer, formatter, and listener
 (function(){
 	var _config = {debugMode : false};
 	
-	snow.logger = {
+	snow.log = {
 		info: function(text){
 			consoleLog(text);
 		},
@@ -281,7 +281,7 @@ snow.ui = (function(){
 })();
 
 
-// ------ snow.logger  ------ //
+// ------ snow.log  ------ //
 // -------------------------- //
 
 // ------------------------ //
