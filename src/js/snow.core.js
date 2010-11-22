@@ -144,9 +144,10 @@ snow.ui = (function(){
 		if (ctx.transition){
 			var transition = sui.getTransition(ctx.transition);
 			
-			//TODO: support transition
 			if (transition) {
 				transition(ctx);
+			}else{
+				snow.logger.error("Transition [" + ctx.transition + "] not found. Transitions need to be registered via snow.ui.registerTranstion(..) before call.");
 			}
 		}
 		//if no transition remove/show
