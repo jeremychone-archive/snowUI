@@ -91,7 +91,7 @@
 					
 					// --- Create User --- //
 					$("#userCreateBut").click(function(){
-						snow.dm.save("user",null,{name: $("#userNameIpt").val(),
+						snow.dm.save("user",{name: $("#userNameIpt").val(),
 											 city: $("#userCityIpt").val()});
 						
 						//clean the input and focus
@@ -140,6 +140,12 @@
 						
 						var userDao = {
 							
+							//this is just to allow the framework to find the id for a specific data object. 
+							getId: function(objectType,data){
+								return data.id;
+							}, 
+							
+							//simple object getter by id
 							get: function(objectType,id){
 								var user = getUserDataById(id);
 								if (user){
@@ -167,16 +173,12 @@
 							
 
 							
-							save: function(objectType,id,data){
+							save: function(objectType,data){
 								//if it is an update (assume that if there is an id, it exists)
-								if (id){
-									if (data.id && data.id != id) {
-										snow.log.error("Cannot save, the id and data.id does not match");
-									}else {
-										var idx = getIndexForUserId(id);
-										//this will support partial update
-										userStore[idx] = $.extend(userStore[idx], data);
-									}	
+								if (data.id){
+									var idx = getIndexForUserId(id);
+									//this will support partial update
+									userStore[idx] = $.extend(userStore[idx], data);
 								}
 								//if it is a create
 								else{

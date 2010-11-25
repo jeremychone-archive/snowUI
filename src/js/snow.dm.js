@@ -28,12 +28,30 @@ snow.dm = (function(){
 	};
 	
 	// ------- DAO Delegator ------ //
+	/**
+	 * Get the id for a data object. This is usefull for the framework to know how to retrieve an id from an object. 
+	 * @param {Object} data
+	 */
+	DM.prototype.getId = function (objectType,data){
+		var dao = this.getDao(objectType);
+		if (dao){
+			return dao.getId(objectType,data);		
+		}else{
+			snow.log.error("cannot find the DAO for objectType: " + objectType);
+		}		
+	}; 
+	
+	/**
+	 * Simple getter of a single object by id.
+	 * @param {Object} objectType
+	 * @param {Object} id
+	 */
 	DM.prototype.get = function(objectType,id){
 		var dao = this.getDao(objectType);
 		if (dao){
 			return dao.get(objectType,id);		
 		}else{
-			snow.log.error("cannot find the DAO for objectType" + objectType);
+			snow.log.error("cannot find the DAO for objectType: " + objectType);
 		}	
 	};	
 	
@@ -57,10 +75,10 @@ snow.dm = (function(){
 		}	
 	};	
 	
-	DM.prototype.save = function(objectType,id,data){
+	DM.prototype.save = function(objectType,data){
 		var dao = this.getDao(objectType);
 		if (dao && dao.save){
-			var newData = dao.save(objectType,id,data);
+			var newData = dao.save(objectType,data);
 			//TODO: need add support for the oldData
 			callChangeListeners(objectType,"save",null,newData,data);
 			return newData;
