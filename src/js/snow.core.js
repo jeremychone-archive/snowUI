@@ -78,12 +78,12 @@ snow.ui = (function(){
 
 	/**
 	 * ctx format: 
-	 *    ctx.parent: {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic)
-	 *                Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
-	 *                        So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
-	 *    ctx.animation: {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
-	 *    ctx.replace: {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
-	 *    ctx.data: {Any} any data object. 
+	 *    ctx.parent:      {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic)
+	 *                              Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
+	 *                                      So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
+	 *    ctx.animation:   {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
+	 *    ctx.replace:     {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
+	 *    ctx.data:        {Object} any data object. 
 	 *    ctx.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
 	 *    
 	 * For build(ctx) the ctx will be augmented by: 
@@ -94,10 +94,9 @@ snow.ui = (function(){
 	SUI.prototype.display = function(name,ctx){
 		
 	
-		//get component and build params
+		//get component and ctx
 		var component = this.getComponent(name);
-        		
-		ctx = $.extend({component:component},this.defaultCtx,component.ctx,ctx);
+		ctx = buildCtx(component,ctx);
 		
 		var $element = null;
 		//Ask the component to build the new $element
@@ -108,35 +107,39 @@ snow.ui = (function(){
 			//make sure we get the jQuery object
 			var $element = $(element);
 			
-			
-			//attach the component to the element (and set the data-component attribute)
-			$element.data("component", component);
-			//When $element contains multiple HTMLElement, this allow to get the complete list from each element
-			$element.data("$element",$element);
-			
-			$element.attr("data-component", component.name);
-			
-			//augment the ctx with the new $element
-			ctx.$element = $element;
-			
+			attach$elementWithComponent(component,$element,ctx);
 			
 			//render the element
 			renderComponent(this, ctx);
 		}	
 		
-		// Call the eventual postDisplay 
-		// (differing for performance)
-		if (component.postDisplay) {
-			setTimeout(function(){
-				component.postDisplay(ctx);
-			}, 0);
-		}
-		
+		invokePostDisplay(component,ctx);
 		
 		return $element;
 		
 		
 	};
+	
+	/**
+	 * Attach a component and call the corresponding postDisplay(ctx) for an already created and displayed $element.
+	 *  
+	 * Note that the postDisplay(ctx) will be called.  This is useful when the $element has been already be generated and displayed by the server, 
+	 * but needs to have its lifecycle managed by the snow.ui component workflow. 
+	 * 
+	 * @param {String} componentName: The component name
+	 * @param {jQuery}      $element: The jQuery object pointing to the HTMLElement to be attached to this component.
+	 * @param {Object}           ctx: The ctx object that will be passed to the postDisplay
+	 * 
+	 */
+	SUI.prototype.attach = function(componentName,$element,ctx){
+		//get component and ctx
+		var component = this.getComponent(componentName);
+		ctx = buildCtx(component,ctx);
+		//attached the $element and component/ctx
+		attach$elementWithComponent(component,$element,ctx);
+		//invoke the post display
+		invokePostDisplay(component,ctx);
+	}
 
 
 	function renderComponent (sui,ctx){
@@ -168,6 +171,34 @@ snow.ui = (function(){
 	};
 	
 
+	// ------ Private Helpers ------ //
+	function attach$elementWithComponent(component,$element,ctx){
+		//attach the component to the element (and set the data-component attribute)
+		$element.data("component", component);
+		//When $element contains multiple HTMLElement, this allow to get the complete list from each element
+		$element.data("$element",$element);
+		
+		$element.attr("data-component", component.name);
+		
+		//augment the ctx with the new $element
+		ctx.$element = $element;		
+	}
+	
+	// build a ctx for a component
+	function buildCtx(component,ctx){
+		return $.extend({component:component},this.defaultCtx,component.ctx,ctx);
+	}
+	
+	function invokePostDisplay(component,ctx){
+		// Call the eventual postDisplay 
+		// (differing for performance)
+		if (component.postDisplay) {
+			setTimeout(function(){
+				component.postDisplay(ctx);
+			}, 0);
+		}
+	}	
+	// ------ /Private Helpers ------ //
 	
 	var sui = new SUI();
 
