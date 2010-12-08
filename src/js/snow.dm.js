@@ -9,6 +9,10 @@ snow.dm = (function(){
 	//changeEventListenersby objectType
 	var daoChangeEventListeners = {};
 	
+	function getDao(objectType){
+		return daoDic[objectType];
+	};	
+	
 	//public
 	DM.prototype.registerDao = function(objectType,dao){
 		daoDic[objectType] = dao;
@@ -23,17 +27,13 @@ snow.dm = (function(){
 		listeners.push(listener);
 	};
 	
-	DM.prototype.getDao = function(objectType){
-		return daoDic[objectType];
-	};
-	
 	// ------- DAO Delegator ------ //
 	/**
 	 * Get the id for a data object. This is usefull for the framework to know how to retrieve an id from an object. 
 	 * @param {Object} data
 	 */
 	DM.prototype.getId = function (objectType,data){
-		var dao = this.getDao(objectType);
+		var dao = getDao(objectType);
 		if (dao){
 			return dao.getId(objectType,data);		
 		}else{
@@ -47,7 +47,7 @@ snow.dm = (function(){
 	 * @param {Object} id
 	 */
 	DM.prototype.get = function(objectType,id){
-		var dao = this.getDao(objectType);
+		var dao = getDao(objectType);
 		if (dao){
 			return dao.get(objectType,id);		
 		}else{
@@ -66,7 +66,7 @@ snow.dm = (function(){
 	 *           opts.orderType {String} "asc" or "desc"
 	 */
 	DM.prototype.find = function(objectType,opts){
-		var dao = this.getDao(objectType);
+		var dao = getDao(objectType);
 		if (dao){
 			//TODO need to support variable params
 			return dao.find(objectType,opts);	
@@ -76,7 +76,7 @@ snow.dm = (function(){
 	};	
 	
 	DM.prototype.save = function(objectType,data){
-		var dao = this.getDao(objectType);
+		var dao = getDao(objectType);
 		if (dao && dao.save){
 			var newData = dao.save(objectType,data);
 			//TODO: need add support for the oldData
@@ -89,7 +89,7 @@ snow.dm = (function(){
 	
 	
 	DM.prototype.remove = function(objectType,id){
-		var dao = this.getDao(objectType);
+		var dao = getDao(objectType);
 		if (dao){
 			var r = dao.remove(objectType,id);
 			
