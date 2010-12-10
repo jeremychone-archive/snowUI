@@ -244,7 +244,7 @@ snow.ui = (function(){
 	
 	//call the method with the 
 	var m = component.methods[methodName];
-	m.apply($componentElement,Array.prototype.slice.call( args, 1 ));
+	return m.apply($componentElement,Array.prototype.slice.call( args, 1 ));
 	
 	}; 
 
@@ -379,6 +379,11 @@ snow.util.array = {
 	  a.length = from < 0 ? a.length + from : from;
 	  return a.push.apply(a, rest);
 	}
+}
+
+snow.util.randomInt = function (from,to){
+	var offset = to - from;
+	return from + Math.floor(Math.random() * (offset + 1));
 }
 
 // from the "JavaScript Pattern" book
