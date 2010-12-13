@@ -25,7 +25,7 @@
 
 			<div class="sTestSrc sTestShowSrc">
 				
-				<button onclick="snow.ui.display('helloWorld',{data:'Mike'})">Display Hello World</button>
+				<button onclick="snow.ui.display('helloWorld',{name:'Mike'})">Display Hello World</button>
 				
 				
 				<div id="HelloWorld-Container" style="margin: 30px;border: solid 1px #dddddd;height: 30px;overflow:hidden;position:relative;">
@@ -35,11 +35,11 @@
 				<!-- Transition -->
 				<!-- This is a reusable transition for any components that use the transition "wipe" -->
 				<script type="text/javascript">
-					snow.ui.registerTransition("wipe",function(ctx){
+					snow.ui.registerTransition("wipe",function(component,data,config){
 						//This is new 
-						var $new = ctx.$element;
+						var $new = component.$element;
 						
-						var $parent = $(ctx.parent);
+						var $parent = $(config.parent);
 						var $old = $parent.children();
 						
 						//if we have already some elements, then, do the animation
@@ -72,38 +72,38 @@
 				<script type="text/javascript">
 					var helloWorlCount = 0;
 					
-					snow.ui.registerComponent("helloWorld",{
+					snow.ui.registerComponent("helloWorld",
 						
 						//This is the default 
-						ctx: {
-							  // Tell where to add the output of build(ctx) 
+						{
+							  // Tell where to add the output of build element
 							  parent: "#HelloWorld-Container",
 							  // Tell the snow.ui to call the "wipe" transition
 							  transition: "wipe"
 						},
-						
 						// Build the component $element
-						build: function(ctx){
-							var $e = $("<div style='position:absolute'>Hello " + ctx.data + "</div>");
-							
-							// just to keep track of the number of display
-							$e.append(" " + helloWorlCount++);
-							
-							// Return the jQuery or HTML element to have snow.ui managing the display logic
-							return $e;
-							
-							// Not recommended, but if return null, then, this component.build function is responsible of the display logic 
-							// (i.e. need to add itself to the appropriate HTMLElement)
-						},
+						{
+							build: function(data){
+								var $e = $("<div style='position:absolute'>Hello " + data.name + "</div>");
+								
+								// just to keep track of the number of display
+								$e.append(" " + ++helloWorlCount);
+								
+								// Return the jQuery or HTML element to have snow.ui managing the display logic
+								return $e;
+								
+								// Not recommended, but if return null, then, this component.build function is responsible of the display logic 
+								// (i.e. need to add itself to the appropriate HTMLElement)
+							},
 						
-						// The postDisplay will be called after the display, 
-						// and the ctx has been agumented with ctx.$element will be the object returned by the "build'
-						postDisplay: function(ctx){
-							ctx.$element.click(function(){
-								alert("You clicked on " + $(this).html());
-							});
+							// The postDisplay will be called after the display
+							postDisplay: function(){
+								this.$element.click(function(){
+									alert("You clicked on " + $(this).html());
+								});
+							}
 						}
-					});
+					);
 				
 				</script>
 				<!--  /Simple HelloWorld Component -->

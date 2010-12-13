@@ -3,31 +3,27 @@
 	var helloWorlCount = 0;
 	
 	// Important: make sure the component name match the file name
-	snow.ui.registerComponent("helloComponent",{
-		
-		//This is the default 
-		ctx: {
-			  // Tell where to add the output of build(ctx) 
-			  parent: "#HelloWorld-Container",
-			  // Tell to empty the parent before adding the output of build(ctx)
-			  transition: "wipe"
-		     },
-		
-		// Build the component $element
-		build: function(ctx){
-			helloWorlCount++;
-			var $e = $("#tmplHelloContent").tmpl({name:"John",count:helloWorlCount});
-			return $e;
+	snow.ui.registerComponent("helloComponent",
+		{
+			// Tell where to add the output of build element
+			parent: "#HelloWorld-Container",
+			// Tell to empty the parent before adding the output of built element
+			transition: "wipe"
 		},
-		
-		// The postDisplay will be called after the display, 
-		// and the ctx has been agumented with ctx.$element will be the object returned by the "build'
-		postDisplay: function(ctx){
-			ctx.$element.click(function(){
+		 //Component factory build the component $element
+		{
+			build: function(data){
+				helloWorlCount++;
+				var $e = $("#tmplHelloContent").tmpl({name:"John",count:helloWorlCount});
+				return $e;
+			},
+			// The postDisplay will be called after the display
+			postDisplay: function(data){
+				this.$element.click(function(){
 				alert("You clicked on " + $(this).html());
-			});
-		}
-	});
+				});
+			}
+		});
 
 </script>
 <!--  /Simple helloComponent -->

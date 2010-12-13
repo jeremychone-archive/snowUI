@@ -36,10 +36,10 @@
 				
 				
 				<script type="text/javascript">
-					snow.ui.registerTransition("wipe",function(ctx){
-						var $new = ctx.$element;
+					snow.ui.registerTransition("wipe",function(component,data,config){
+						var $new = component.$element;
 						
-						var $parent = $(ctx.parent);
+						var $parent = $(config.parent);
 						var $old = $parent.children();
 						
 						//if we have already some elements, then, do the animation

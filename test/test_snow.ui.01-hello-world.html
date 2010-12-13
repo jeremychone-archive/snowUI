@@ -27,7 +27,7 @@
 				
 				<h3>Hello World</h3>
 				
-				<button onclick="snow.ui.display('helloWorld',{data:'Mike'})">Display Hello World</button>
+				<button onclick="snow.ui.display('helloWorld',{name:'Mike'})">Display Hello World</button>
 				
 				
 				<div id="HelloWorld-Container" style="margin: 30px;border: solid 1px #dddddd;height: 30px">
@@ -40,39 +40,38 @@
 				<script type="text/javascript">
 					var helloWorlCount = 0;
 					
-					snow.ui.registerComponent("helloWorld",{
+					snow.ui.registerComponent("helloWorld",
 						
-						//This is the default 
-						ctx: {
-							  // Tell where to add the output of build(ctx) 
+						 {
+							  // Tell where to add the output of build element
 							  parent: "#HelloWorld-Container",
-							  // Tell to empty the parent before adding the output of build(ctx)
+							  // Tell to empty the parent before adding the output of built element
 							  emptyParent: true
-						     },
+						 },
 						
-						// Build the component $element
-						build: function(ctx){
-							var $e = $("<strong>Hello " + ctx.data + "</strong>");
+						{// Build the component $element
+							build: function(data){
+								var $e = $("<strong>Hello " + data.name + "</strong>");
+								
+								// just to keep track of the number of display
+								$e.append(" " + ++helloWorlCount);
+								
+								//return the element to have snow.ui managing the rendering logic
+								return $e;
+								
+								// Not recommended, but if return null, then, this build function is responsible of the display logic 
+								// (i.e. need to add itself to the appropriate HTMLElement)
+								// 
+							},
 							
-							// just to keep track of the number of display
-							$e.append(" " + helloWorlCount++);
-							
-							//return the element to have snow.ui managing the rendering logic
-							return $e;
-							
-							// Not recommended, but if return null, then, this component.build function is responsible of the display logic 
-							// (i.e. need to add itself to the appropriate HTMLElement)
-							// 
-						},
-						
-						// The postDisplay will be called after the display, 
-						// and the ctx has been agumented with ctx.$element will be the object returned by the "build'
-						postDisplay: function(ctx){
-							ctx.$element.click(function(){
-								alert("You clicked on " + $(this).html());
-							});
+							// The postDisplay will be called after the display
+							postDisplay: function(){
+								this.$element.click(function(){
+									alert("You clicked on " + $(this).html());
+								});
+							}
 						}
-					});
+					);
 				
 				</script>
 				<!--  /Simple HelloWorld Component -->
