@@ -140,7 +140,7 @@ snow.ui = (function(){
 			var transition = sui.getTransition(config.transition);
 			
 			if (transition) {
-				transition(config);
+				transition(component,data,config);
 			}else{
 				snow.log.error("Transition [" + config.transition + "] not found. Transitions need to be registered via snow.ui.registerTranstion(..) before call.");
 			}
