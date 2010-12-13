@@ -1,67 +1,62 @@
 <!-- dialogPrompt -->
 <script type="text/javascript">
-	snow.ui.registerComponent("dialogPrompt", {
-		
-		// ------ Snow Component Interface ------ //
-	    // Build the component $element
-	    build: function(data, config){
-	        var $e = $("#tmplDialogPrompt").tmpl(data);
-	        return $e;
-	    },
-	    
-	    // The postDisplay will be called after the display, 
-	    postDisplay: function(data, config){
-			var component = this;
-	        this.$element.find("button.ok").click(function(){
-	            component.setAnswer(true);
-	        });
-	        
-	        this.$element.find("button.cancel").click(function(){
-	            component.setAnswer(false);
-	        });
-	        
-	    },
-		// ------ /Snow Component Interface ------ //
-		
-		// ------ Custom dialogPrompt Public Methods ------ //
-		// this is called by the caller to register a callBack on the "answerEvent"
-		onAnswer: function(answerCallBack){
-			this._answerCallBack = answerCallBack;
-		},
-		
-		// this will be called by this component (from the postDisplay logic) when the user answer the prompt dialog
-		setAnswer: function(answer){
-			this.answer = answer;
-			if (this._answerCallBack){
-				this._answerCallBack(answer);
-			}
-			this.close();
-		},
-		
-		// this will be call by this component when the user close the dialog by answering or pressing esc
-		close: function(){
-			this.$element.remove();
-		}		
-		// ------ /Custom dialogPrompt Public Methods ------ //		
-	}, {
-	    parent: "body"
-	});
-
-
+    snow.ui.registerComponent("dialogPrompt", {
+        parent: "body"
+    }, {
+    
+        // ------ Snow Component Interface ------ //
+        // Build the component $element
+        build: function(data, config){
+            var $e = $("#tmplDialogPrompt").tmpl(data);
+            return $e;
+        },
+        
+        // The postDisplay will be called after the display, 
+        postDisplay: function(data, config){
+            var component = this;
+            this.$element.find("button.ok").click(function(){
+                component.setAnswer(true);
+            });
+            
+            this.$element.find("button.cancel").click(function(){
+                component.setAnswer(false);
+            });
+            
+        },
+        // ------ /Snow Component Interface ------ //
+        
+        // ------ Custom dialogPrompt Public Methods ------ //
+        // this is called by the caller to register a callBack on the "answerEvent"
+        onAnswer: function(answerCallBack){
+            this._answerCallBack = answerCallBack;
+        },
+        
+        // this will be called by this component (from the postDisplay logic) when the user answer the prompt dialog
+        setAnswer: function(answer){
+            this.answer = answer;
+            if (this._answerCallBack) {
+                this._answerCallBack(answer);
+            }
+            this.close();
+        },
+        
+        // this will be call by this component when the user close the dialog by answering or pressing esc
+        close: function(){
+            this.$element.remove();
+        }
+        // ------ /Custom dialogPrompt Public Methods ------ //		
+    });
+    
+    
 </script>
 <!--  /dialogPrompt -->
-
 <script id="tmplDialogPrompt" type="text/html">
-   <div class="dialogPrompt">
-     <h2>${title}</h2>
-	 <p>${prompt}</p>
-	 <div class="dialogPrompt-buttonbar">
-	 	<button class="cancel">Cancel</button><button class="ok">OK</button>
-	 </div>
-   </div>
+    <div class="dialogPrompt">
+        <h2>${title}</h2>
+        <p>${prompt}</p>
+        <div class="dialogPrompt-buttonbar">
+            <button class="cancel">Cancel</button>
+            <button class="ok">OK</button>
+        </div>
+    </div>
 </script>
-
-
-
-
-		

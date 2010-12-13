@@ -65,7 +65,7 @@ snow.ui = (function(){
 	 *    config.replace:     {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
 	 *    config.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
 	 */
-	SUI.prototype.registerComponent = function(name,componentFactory,config){
+	SUI.prototype.registerComponent = function(name,config,componentFactory){
 		var def = {};
 		def.name = name;
 		def.componentFactory = componentFactory;
