@@ -9,7 +9,7 @@ snow.ui = (function(){
 	
 	function SUI(){};
 	
-	var _components = {};
+	var _componentDefStore = {};
 	
 	var _transitions = {};
 	
@@ -27,7 +27,7 @@ snow.ui = (function(){
 	 */
 	SUI.prototype.load = function(name){
 		
-		if (!_components[name]){
+		if (!_componentDefStore[name]){
 			var html = $.ajax({
 				  url: "components/" + name + ".html",
 				  async: false
@@ -43,24 +43,34 @@ snow.ui = (function(){
 	 * Return the component definition for a given name. (load it if not found)
 	 * @param {Object} name
 	 */
-	SUI.prototype.getComponent = function(name){
+	SUI.prototype.getComponentDef = function(name){
 		//make sure it is loaded
 		this.load(name);
-		return _components[name];
+		return _componentDefStore[name];
 	};
 	
 	/**
 	 * MUST be called to register the component
-	 * @param {String} name the name of the compoent
-	 * @param {Object} definition the component definition, as: 
-	 *    build {Function} (required) A function with the (ctx) argument which return the jQuery element of the HTMLElement to be displayed.
-	 *    postDisplay {Function} (optional) This method will get called with the (ctx) augmented argument, after the HTMLElement is added to the DOM 
-	 *                                      This is a good place to do non-visible logic, such as event bindings.
-	 *    methods {Object of Functions} (optional) This allow to have custom methods on a component. The "this" context will be the HTMLElement of the component instance.  
+	 * @param {String} name: the name of the compoent
+	 * @param {Object or Function} componentFactory: (Required) Factory function or "object template" that will be called or cloned for each component instance (each time snow.ui.display gets called). 
+	 * 							   A "Component" object can have the following methods  
+	 *                                 {Function} componentFactory.build(data,config):       (required) function that will be called with (data,config) to build the $element.
+	 *                                 {Function} componentFactory.postDisplay(data,config): (optional) This method will get called with (data,config) after the build method (postDisplay is deferred for performance optimization) 
+	 *                                                                                       Since this call will be deferred, it is a good place to do non-visible logic, such as event bindings.
+     * @param {config} config: a config object  
+	 *    config.parent:      {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic)
+	 *                              Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
+	 *                                      So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
+	 *    config.animation:   {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
+	 *    config.replace:     {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
+	 *    config.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
 	 */
-	SUI.prototype.registerComponent = function(name,def){
+	SUI.prototype.registerComponent = function(name,componentFactory,config){
+		var def = {};
 		def.name = name;
-		_components[name] = def;
+		def.componentFactory = componentFactory;
+		def.config = config;
+		_componentDefStore[name] = def;
 	};
 	// ------ /Component Management ------ //
 	
@@ -77,94 +87,76 @@ snow.ui = (function(){
 	// ------ Display Management ------ //
 
 	/**
-	 * ctx format: 
-	 *    ctx.parent:      {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic)
-	 *                              Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
-	 *                                      So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
-	 *    ctx.animation:   {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
-	 *    ctx.replace:     {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
-	 *    ctx.data:        {Object} any data object. 
-	 *    ctx.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
-	 *    
-	 * For build(ctx) the ctx will be augmented by: 
-	 *    ctx.component: the component
-	 * For postDisplay(ctx) the ctx will be augmented by:
-	 *    ctx.$element: the jQuery object holding the new element returned by the component build() method
-	 **/
-	SUI.prototype.display = function(name,ctx){
-		
-	
-		//get component and ctx
-		var component = this.getComponent(name);
-		ctx = buildCtx(component,ctx);
-		
-		var $element = null;
-		//Ask the component to build the new $element
-		var element = component.build(ctx);
-		
-		//if there is an element, then, manage the rendering logic. 
-		if (element) {
-			//make sure we get the jQuery object
-			var $element = $(element);
-			
-			attach$elementWithComponent(component,$element,ctx);
-			
-			//render the element
-			renderComponent(this, ctx);
-		}	
-		
-		invokePostDisplay(component,ctx);
-		
-		return $element;
-		
-		
+	 * @param {Object} name (required) the component name
+	 * @param {Object} data (optional, required if config) the data to be passed to the build and postDisplay.
+	 * @param {Object} config (optional) config override the component config
+	 */
+	SUI.prototype.display = function(componentName,data,config){
+		return process(sui,componentName,data,config);
 	};
 	
 	/**
-	 * Attach a component and call the corresponding postDisplay(ctx) for an already created and displayed $element.
-	 *  
-	 * Note that the postDisplay(ctx) will be called.  This is useful when the $element has been already be generated and displayed by the server, 
-	 * but needs to have its lifecycle managed by the snow.ui component workflow. 
-	 * 
-	 * @param {String} componentName: The component name
-	 * @param {jQuery}      $element: The jQuery object pointing to the HTMLElement to be attached to this component.
-	 * @param {Object}           ctx: The ctx object that will be passed to the postDisplay
+	 * Same as snow.ui.display... but bypass the build
 	 * 
 	 */
-	SUI.prototype.attach = function(componentName,$element,ctx){
-		//get component and ctx
-		var component = this.getComponent(componentName);
-		ctx = buildCtx(component,ctx);
-		//attached the $element and component/ctx
-		attach$elementWithComponent(component,$element,ctx);
-		//invoke the post display
-		invokePostDisplay(component,ctx);
+	SUI.prototype.attach = function(componentName,$element,data,config){
+		return process(sui,componentName,data,config,$element);
 	}
 
 
-	function renderComponent (sui,ctx){
+	//if $element exist, then, bypass the build
+	function process(sui,name,data,config,$element){
+		var componentDef = sui.getComponentDef(name);
+		
+		config = buildConfig(componentDef,config);
+		
+		var component = buildComponent(componentDef.componentFactory,data,config);
+		
+		// if there is no element, we invoke the build
+		if (!$element) {
+			//Ask the component to build the new $element
+			$element = invokeBuild(component, data, config);
+		}
+		
+		//if there is an element, then, manage the rendering logic. 
+		if ($element) {
+			//make sure we get the jQuery object
+			$element = $($element);
+			
+			bind$element($element,component,data,config);
+			
+			//render the element
+			renderComponent (sui,component,data,config)
+		}	
+		
+		invokePostDisplay(component,data,config);
+		
+		return component;		
+	}
+
+	function renderComponent (sui,component,data,config){
 	
-		if (ctx.transition){
-			var transition = sui.getTransition(ctx.transition);
+		if (config.transition){
+			var transition = sui.getTransition(config.transition);
 			
 			if (transition) {
-				transition(ctx);
+				transition(config);
 			}else{
-				snow.log.error("Transition [" + ctx.transition + "] not found. Transitions need to be registered via snow.ui.registerTranstion(..) before call.");
+				snow.log.error("Transition [" + config.transition + "] not found. Transitions need to be registered via snow.ui.registerTranstion(..) before call.");
 			}
 		}
 		//if no transition remove/show
 		else{
-			if (ctx.replace){
-				$(ctx.replace).remove();
+			if (config.replace){
+				$(config.replace).remove();
 			}
 			
 			//note: if there is no parent, then, the sUI.diplay caller is reponsible to add it
-			if (ctx.parent) {
-				if (ctx.emptyParent){
-					$(ctx.parent).empty();
+			if (config.parent) {
+				if (config.emptyParent){
+					$(config.parent).empty();
 				}
-				$(ctx.parent).append(ctx.$element);
+				$(config.parent).append(component.$element);
 			}
 		}
 		
@@ -172,29 +164,62 @@ snow.ui = (function(){
 	
 
 	// ------ Private Helpers ------ //
-	function attach$elementWithComponent(component,$element,ctx){
-		//attach the component to the element (and set the data-component attribute)
-		$element.data("component", component);
-		//When $element contains multiple HTMLElement, this allow to get the complete list from each element
-		$element.data("$element",$element);
-		
-		$element.attr("data-component", component.name);
-		
-		//augment the ctx with the new $element
-		ctx.$element = $element;		
+	// build a ctx for a componentDef and instanciate the "component" 
+	function buildConfig(componentDef,config){
+		var instanceConfig = $.extend({},this.defaultComponentConfig,componentDef.config,config);
+		instanceConfig.componentName = componentDef.name; 
+		return instanceConfig;
 	}
 	
-	// build a ctx for a component
-	function buildCtx(component,ctx){
-		return $.extend({component:component},this.defaultCtx,component.ctx,ctx);
+	function buildComponent(factory,data,config){
+		var component; 
+		var componentFactory = factory;
+		if (componentFactory ){
+			// if it is a function, call it, it should return a new component object
+			if ($.isFunction(componentFactory)) {
+				component = componentFactory();
+			}
+			// if it is a plainObject, then, we clone it (NOTE: We do a one level clone)
+			else if ($.isPlainObject(componentFactory)){
+				component = $.extend({},componentFactory);
+			}else{
+				snow.log.error("Invalid ComponentFactory for component [" + config.componentName + "]. Only type Function or Object is supported as componentFactory. Empty component will be created.");				
+			}
+		}else{
+			snow.log.error("No ComponentFactory for component [" + config.componentName + "]");
+		}
+		
+		if (component){
+			component.name = config.componentName;
+		}
+		return component;		
 	}
 	
-	function invokePostDisplay(component,ctx){
+	function invokeBuild(component, data, config){
+		//assert that we have a build method
+		if (!component.build || !$.isFunction(component.build)){
+			snow.log.error("Invalid 'build' function for component [" + component.name + "].");
+			return;
+		}
+		return component.build(data,config);
+	}
+	
+	// 
+	function bind$element($element,component,data,config){
+		component.$element = $element;
+		$element.data(component);
+
+		$element.attr("data-component-name", config.componentName);
+	}	
+	
+	
+
+	function invokePostDisplay(component,data,config){
 		// Call the eventual postDisplay 
 		// (differing for performance)
 		if (component.postDisplay) {
 			setTimeout(function(){
-				component.postDisplay(ctx);
+				component.postDisplay(data,config);
 			}, 0);
 		}
 	}	
@@ -207,7 +232,7 @@ snow.ui = (function(){
 		componentsHTMLHolder: "body"
 	}
 	
-	sui.defaultCtx = {
+	sui.defaultComponentConfig = {
 		emptyParent: false
 	}
 	// ------ /Public configs ------ //	
@@ -219,58 +244,30 @@ snow.ui = (function(){
 // ------ snow.ui  ------ //
 // ---------------------- //
 
-(function($) {
-
-  /**
-   * Call the component's method. Has to be called from the component's element. See sComponent$element
-   * @param {methodName} 
-   */
-  $.fn.sCall = function(methodName) {
-	var args = arguments;
-	
-	// iterate and process each matched element
-	var $componentElement = $(this);
-	var component = $componentElement.data("component");
-	// ------ Assertions ------ //
-	if (!component){
-		snow.log.error("No component found for this element. Make sure to call the sCall on a component $element. Use $().sComponent$element(..)")
-		return;
-	}
-	if (!component.methods || !component.methods[methodName]){
-		snow.log.error("The component [" + component.name + "] has no method called [" + methodName + "]");
-		return;
-	}
-	// ------ /Assertions ------ //
-	
-	//call the method with the 
-	var m = component.methods[methodName];
-	return m.apply($componentElement,Array.prototype.slice.call( args, 1 ));
-	
-	}; 
-
-})(jQuery);
 
 (function($) {
 
   /**
-   * Return the jQuery component $element of the component container. 
+   * Return the component object for which this HTMLElement belong too. 
    * 
-   * Note: This is the $element returned by component.build())
+   * If a componentName is given then it will try to find the given component. 
+   * 
+   * If no componentName is given, then it will return the first component found.
    * 
    * @param {componentName} The component name. If absent, then it will take the first element that has a component attached.
    * 
    */
-  $.fn.sComponent$element = function(componentName) {
+  $.fn.sComponent = function(componentName) {
 	  
       // iterate and process each matched element
 	  	var $componentElement; 
 		if (componentName) {
-			$componentElement = $(this).closest("[data-component='" + componentName + "']");
+			$componentElement = $(this).closest("[data-component-name='" + componentName + "']");
 		}else{
-			$componentElement = $(this).closest("[data-component]");
+			$componentElement = $(this).closest("[data-component-name]");
 		}
 		
-		return $componentElement.data("$element");
+		return $componentElement.data("component");
  
    }; 
 
