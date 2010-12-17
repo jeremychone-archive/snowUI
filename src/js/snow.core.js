@@ -123,13 +123,16 @@ snow.ui = (function(){
 			//make sure we get the jQuery object
 			$element = $($element);
 			
-			bind$element($element,component,data,config);
+			bind$element($element, component, data, config);
 			
 			//render the element
-			renderComponent (sui,component,data,config)
-		}	
+			renderComponent(sui, component, data, config);
+			
+			
+			
+		} 
 		
-		invokePostDisplay(component,data,config);
+		invokePostDisplay(component, data, config);
 		
 		return component;		
 	}
@@ -220,7 +223,7 @@ snow.ui = (function(){
 		if (component.postDisplay) {
 			setTimeout(function(){
 				component.postDisplay(data,config);
-			}, 0);
+			}, config.postDisplayDelay);
 		}
 	}	
 	// ------ /Private Helpers ------ //
@@ -233,7 +236,8 @@ snow.ui = (function(){
 	}
 	
 	sui.defaultComponentConfig = {
-		emptyParent: false
+		emptyParent: false,
+		postDisplayDelay: 0
 	}
 	// ------ /Public configs ------ //	
 	
