@@ -207,7 +207,7 @@ snow.ui = (function(){
 	// 
 	function bind$element($element,component,data,config){
 		component.$element = $element;
-		$element.data(component);
+		$element.data("component",component);
 
 		$element.attr("data-component-name", config.componentName);
 	}	
