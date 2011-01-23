@@ -34,7 +34,12 @@ snow.ui = (function(){
 				 }).responseText;
 				 
 			$(snow.ui.config.componentsHTMLHolder).append(html);
+			
+			if (!_componentDefStore[name]){
+				snow.log.error("Fail to load component [" + name + "]");
+			}
 		}
+		
 		
 	};
 	
@@ -51,7 +56,7 @@ snow.ui = (function(){
 	
 	/**
 	 * MUST be called to register the component
-	 * @param {String} name: the name of the compoent
+	 * @param {String} name: the name of the component
 	 * @param {Object or Function} componentFactory: (Required) Factory function or "object template" that will be called or cloned for each component instance (each time snow.ui.display gets called). 
 	 * 							   A "Component" object can have the following methods  
 	 *                                 {Function} componentFactory.build(data,config):       (required) function that will be called with (data,config) to build the $element.
@@ -72,6 +77,17 @@ snow.ui = (function(){
 		def.config = config;
 		_componentDefStore[name] = def;
 	};
+	
+	/**
+	 * This just instantiate a new component for a given name. This is useful for manipulating the component off lifecycle
+	 * for performance. For example, sometime building a component and displaying in the background (with z-index) allow the browser
+	 * to do its caching magic, and can speed up the first appearance of the component when it is due. 
+	 * @param {Object} name
+	 */
+	SUI.prototype.instantiateComponent = function(name){
+		var componentDef = this.getComponentDef(name);
+		return instantiateComponent(componentDef);
+	}
 	// ------ /Component Management ------ //
 	
 	// ------ Transition Management ------ //
@@ -87,6 +103,7 @@ snow.ui = (function(){
 	// ------ Display Management ------ //
 
 	/**
+	 * This will create, build, and display a new component. It will load the component on demand if needed.
 	 * @param {Object} name (required) the component name
 	 * @param {Object} data (optional, required if config) the data to be passed to the build and postDisplay.
 	 * @param {Object} config (optional) config override the component config
@@ -96,13 +113,14 @@ snow.ui = (function(){
 	};
 	
 	/**
-	 * Same as snow.ui.display... but bypass the build
+	 * Same as snow.ui.display... but bypass the build() step. 
+	 * So, this will create a new component and attach it to the $element and call postDisplay on it.
 	 * 
 	 */
 	SUI.prototype.attach = function(componentName,$element,data,config){
 		return process(sui,componentName,data,config,$element);
 	}
-
+	// ------ /Display Management ------ //
 
 	//if $element exist, then, bypass the build
 	function process(sui,name,data,config,$element){
@@ -110,7 +128,7 @@ snow.ui = (function(){
 		
 		config = buildConfig(componentDef,config);
 		
-		var component = buildComponent(componentDef.componentFactory,data,config);
+		var component = instantiateComponent(componentDef);
 		
 		// if there is no element, we invoke the build
 		if (!$element) {
@@ -167,16 +185,16 @@ snow.ui = (function(){
 	
 
 	// ------ Private Helpers ------ //
-	// build a ctx for a componentDef and instanciate the "component" 
+	// build a config for a componentDef
 	function buildConfig(componentDef,config){
 		var instanceConfig = $.extend({},this.defaultComponentConfig,componentDef.config,config);
 		instanceConfig.componentName = componentDef.name; 
 		return instanceConfig;
 	}
 	
-	function buildComponent(factory,data,config){
+	function instantiateComponent(componentDef){
 		var component; 
-		var componentFactory = factory;
+		var componentFactory = componentDef.componentFactory;
 		if (componentFactory ){
 			// if it is a function, call it, it should return a new component object
 			if ($.isFunction(componentFactory)) {
@@ -186,14 +204,14 @@ snow.ui = (function(){
 			else if ($.isPlainObject(componentFactory)){
 				component = $.extend({},componentFactory);
 			}else{
-				snow.log.error("Invalid ComponentFactory for component [" + config.componentName + "]. Only type Function or Object is supported as componentFactory. Empty component will be created.");				
+				snow.log.error("Invalid ComponentFactory for component [" + componentDef.componentName + "]. Only types Function or Object are supported as componentFactory. Empty component will be created.");				
 			}
 		}else{
-			snow.log.error("No ComponentFactory for component [" + config.componentName + "]");
+			snow.log.error("No ComponentFactory for component [" + componentDef.componentName + "]");
 		}
 		
 		if (component){
-			component.name = config.componentName;
+			component.name = componentDef.componentName;
 		}
 		return component;		
 	}
