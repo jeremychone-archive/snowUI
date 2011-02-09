@@ -324,7 +324,7 @@ snow.ui = (function(){
 	};	
 	
 	function consoleLog(text){
-		if (console && console.log){
+		if (window.console && window.console.log){
 			console.log(text);
 		}
 	};
