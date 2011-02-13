@@ -422,33 +422,51 @@ snow.util.inherit = function (C,P){
 // ------ snow.ua (User Agent) ------ //
 
 snow.ua = (function(){
-	
+	var WEBKIT_PREFIX = "-webkit-",
+	    MOZ_PREFIX = "-moz-";
+		
 	function SUA(){};
 	
 	//privates
 	var _hasTouch = null,
 		_hasTransition = null,
-		_hasWebkitTransition = null,
-		_hasMozTransition = null;
+		_transitionPrefix = null,
+		_eventsMap = {}; // {eventName:true/false,....}
+	
+	
+	SUA.prototype.hasEvent = function(eventName){
+		var r = _eventsMap[eventName];
+		if (typeof r === "undefined"){
+			r = isEventSupported(eventName);
+			_eventsMap[eventName] = r; 
+		}
+		return r;
+	}
+	
 	
 	SUA.prototype.hasTouch = function(){
-		if (_hasTouch === null){
-			_hasTouch = isEventSupported("touchstart"); 
-		};
-		return _hasTouch;
-	};
+		return this.hasEvent("touchstart");
+	}
+	
+	SUA.prototype.transitionPrefix = function(){
+		if (this.hasTransition()){
+			return _transitionPrefix;
+		}else{
+			return null;
+		}
+	}
 	
 	SUA.prototype.hasTransition = function(){
 		if (_hasTransition === null) {
 			var div = document.createElement('div');
 			div.innerHTML = '<div style="-webkit-transition:color 1s linear;-moz-transition:color 1s linear;"></div>';
-			_hasWebkitTransition = (div.firstChild.style.webkitTransition !== undefined);
-			_hasMozTransition = (div.firstChild.style.MozTransition !== undefined);
+			_transitionPrefix = (div.firstChild.style.webkitTransition !== undefined)?WEBKIT_PREFIX:_transitionPrefix;
+			_transitionPrefix = (div.firstChild.style.MozTransition !== undefined)?MOZ_PREFIX:_transitionPrefix;
 			delete div;
-			_hasTransition = (_hasMozTransition || _hasWebkitTransition);
+			_hasTransition = (_transitionPrefix != null);
 		}
 		return _hasTransition;
-	};
+	}
 	
 	// ------ Privates ------ //
 	var isEventSupported = (function(){
@@ -473,7 +491,7 @@ snow.ua = (function(){
 			return isSupported;
 		}
 		return isEventSupported;
-	})();	
+	})()	
 	// ------ /Privates ------ //
 	
 	return new SUA();

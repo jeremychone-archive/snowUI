@@ -21,15 +21,23 @@
     <body>
         <h2>Has Functionality</h2>
 		
-		<p><strong>Has Touch:</strong> <span id="hasTouch"></span> </p>
+		<p><strong>snow.ua.hasTouch()</strong> <span id="hasTouch"></span> </p>
 		
-		<p><strong>Has Transition</strong> <span id="hasTransition"></span></p>
+		<p><strong>snow.ua.hasEvent("mouseover")</strong> <span id="hasMouseover"></span></p>
+		
+		<p><strong>snow.ua.hasTransition()</strong> <span id="hasTransition"></span></p>
+		
+		<p><strong>snow.ua.transitionPrefix()</strong> <span id="transitionPrefix"></span></p>
 		
 		<script type="text/javascript">
 			$(function(){
 				$("#hasTouch").html("" + snow.ua.hasTouch());
 				
+				$("#hasMouseover").html("" + snow.ua.hasEvent("mouseover"));
+				
 				$("#hasTransition").html("" + snow.ua.hasTransition());
+				
+				$("#transitionPrefix").html("" + snow.ua.transitionPrefix());
 			});
 		</script>
     </body>
