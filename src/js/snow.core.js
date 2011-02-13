@@ -69,6 +69,7 @@ snow.ui = (function(){
 	 *    config.animation:   {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
 	 *    config.replace:     {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
 	 *    config.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
+	 *    config.unique:      {Boolean} if true, the component will be display only if there is not already one component with the same name in the page.
 	 */
 	SUI.prototype.registerComponent = function(name,config,componentFactory){
 		var def = {};
@@ -129,6 +130,11 @@ snow.ui = (function(){
 		config = buildConfig(componentDef,config);
 		
 		var component = instantiateComponent(componentDef);
+		
+		//if the config.unique is set, and there is a component with the same name, abort
+		if (config.unique && $("[data-scomponent='" + name + "']").length > 0){
+			return null;
+		}
 		
 		// if there is no element, we invoke the build
 		if (!$element) {
@@ -230,7 +236,7 @@ snow.ui = (function(){
 		component.$element = $element;
 		$element.data("component",component);
 
-		$element.attr("data-component-name", config.componentName);
+		$element.attr("data-scomponent", config.componentName);
 	}	
 	
 	
@@ -284,9 +290,9 @@ snow.ui = (function(){
       // iterate and process each matched element
 	  	var $componentElement; 
 		if (componentName) {
-			$componentElement = $(this).closest("[data-component-name='" + componentName + "']");
+			$componentElement = $(this).closest("[data-scomponent='" + componentName + "']");
 		}else{
-			$componentElement = $(this).closest("[data-component-name]");
+			$componentElement = $(this).closest("[data-scomponent]");
 		}
 		
 		return $componentElement.data("component");
