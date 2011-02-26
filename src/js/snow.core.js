@@ -513,13 +513,24 @@ snow.ua = (function(){
 
 //from: https://developer.mozilla.org/en/Code_snippets/Canvas
 (function(){
+	
+	/**
+	 * Factory/Constutor that build 
+	 * @param {Object} arg can be a Canvas 2D Context element or a Canvas element.
+	 */
     function Gtx(arg){
 		var ctx = arg;
+		// if it s a jquery object, get the first element (assume it is a canvas
+		if (arg.jquery){
+			arg = arg.get(0);
+		}
+		
+		// if it is a cavans object.
     	if ($.isFunction(arg.getContext)){
 			ctx = arg.getContext('2d');
 		}
         
-		// This allow to use the new or just the method
+		// This allow to use the new or just the method as a factory
 		if (!(this instanceof Gtx)) {
             return new Gtx(ctx);
         }
@@ -532,6 +543,37 @@ snow.ua = (function(){
             Gtx.setup.call(this, this.ctx);
         }
     }
+	
+	// ------ Extension Methods ------ //
+	// (available only if Canvas was passed as argument)
+	
+	Gtx.prototype.sClear = function(){
+		if (this.canvas()){
+			//this should create a clear
+			this.canvas().width = this.canvas().width;
+		}	
+		// if no canvas (was created with a context), just ignore.
+		
+		return this;
+	}
+	
+	Gtx.prototype.sFitParent = function(){
+		var canvas = this.canvas();
+		if (canvas){
+			var canvas = this.canvas();
+			var $parent = $(canvas).parent();
+			//we might want to use innerWidth/Height here.
+			canvas.width = $parent.width();
+			canvas.height = $parent.height();
+		}
+		
+		return this;
+	} 
+	
+	
+		
+	// ------ /Extension Methods ------ // 
+	
     Gtx.setup = function(){
         var methods = ['arc', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'drawImage', 'fill', 'fillRect', 'fillText', 'lineTo', 'moveTo', 'quadraticCurveTo', 'rect', 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate'];
         
@@ -574,6 +616,8 @@ snow.ua = (function(){
             }(p));
         }
     };
+	
+	
 	
 	snow.gtx = Gtx;
 })();
