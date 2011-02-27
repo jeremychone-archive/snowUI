@@ -543,10 +543,8 @@ snow.ua = (function(){
         }
     }
 	
-	// ------ Extension Methods ------ //
-	// (available only if Canvas was passed as argument)
-	
-	Gtx.prototype.sClear = function(){
+	// ------ GTX Extension Methods ------ //
+	Gtx.prototype.clear = function(){
 		if (this.canvas()){
 			//this should create a clear
 			this.canvas().width = this.canvas().width;
@@ -556,7 +554,7 @@ snow.ua = (function(){
 		return this;
 	}
 	
-	Gtx.prototype.sFitParent = function(){
+	Gtx.prototype.fitParent = function(){
 		var canvas = this.canvas();
 		if (canvas){
 			var canvas = this.canvas();
@@ -568,19 +566,80 @@ snow.ua = (function(){
 		
 		return this;
 	} 
+	// ------ /Extension Methods ------ //
 	
+	// ------ Context override methods ------ //
+	// create the chainable object for gradient
+	Gtx.prototype.createLinearGradient = function(){
+		var ctxGradient = this.ctx.createLinearGradient.apply(this.ctx,arguments);
+		var gtxGradient = new Gradient(ctxGradient);
+		return gtxGradient;
+	}
 	
+	// create the chainable object for gradient
+	Gtx.prototype.createRadialGradient = function(){
+		var ctxGradient = this.ctx.createRadialGradient.apply(this.ctx,arguments);
+		var gtxGradient = new Gradient(ctxGradient);
+		return gtxGradient;		
+	}
+	
+	Gtx.prototype.fillStyle = function(arg){
+		return style(this,"fillStyle",arg);
+	}
+	
+	Gtx.prototype.strokeStyle = function(arg){
+		return style(this,"strokeStyle",arg);
+	}
+	
+	function style(g,type,arg){
+		// if getter
+		if (!arg){
+			return g.ctx[type];
+		}
 		
-	// ------ /Extension Methods ------ // 
+		// if it is a gradient object, extract the value
+		if (arg.ctxGradient){
+			arg = arg.ctxGradient;
+		}
+		
+		g.ctx[type] = arg;
+		return g;
+	}
+	
+	// ------ /Context override methods ------ // 
+	
+	// ------ Gradient ------ //
+	function Gradient(ctxGradient){
+		this.ctxGradient = ctxGradient;
+	}
+	
+	Gradient.prototype.addColorStop = function(){
+		this.ctxGradient.addColorStop.apply(this.ctxGradient,arguments);
+		return this;	
+	}
+	
+	Gradient.prototype.addColorStops = function(){
+		for (var i = 0 ; (i + 1) < arguments.length; i+=2){
+			this.ctxGradient.addColorStop(arguments[i],arguments[i+1]);	
+		}
+		
+		return this;	
+	}
+	// ------ /Gradient ------ //
+	
 	
     function setupPrototype(){
         var methods = ['arc', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'drawImage', 'fill', 'fillRect', 'fillText', 'lineTo', 'moveTo', 'quadraticCurveTo', 'rect', 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate'];
         
         var getterMethods = ['createPattern', 'drawFocusRing', 'isPointInPath', 'measureText', // drawFocusRing not currently supported
         // The following might instead be wrapped to be able to chain their child objects
-        'createImageData', 'createLinearGradient', 'createRadialGradient', 'getImageData', 'putImageData'];
+        'createImageData', 'getImageData', 'putImageData' // will wrap later
+		// both of those are wrapped now >> 'createLinearGradient', 'createRadialGradient', 
+        ];
         
-        var props = ['canvas', 'fillStyle', 'font', 'globalAlpha', 'globalCompositeOperation', 'lineCap', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowOffsetX', 'shadowOffsetY', 'shadowBlur', 'shadowColor', 'strokeStyle', 'textAlign', 'textBaseline'];
+        var props = ['canvas', 
+		  // we are wrapping this one >> 'strokeStyle', 'fillStyle',
+         'font', 'globalAlpha', 'globalCompositeOperation', 'lineCap', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowOffsetX', 'shadowOffsetY', 'shadowBlur', 'shadowColor',  'textAlign', 'textBaseline'];
         
         var gmethl, propl;
         for (var i = 0, methl = methods.length; i < methl; i++) {
