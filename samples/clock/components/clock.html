@@ -36,9 +36,11 @@ snow.ui.registerComponent(
 			g.moveTo(12,16).lineTo(16,12).stroke();
 			g.lineWidth(1).moveTo(15,16).lineTo(16,15).stroke();
 			
+
+			this.redrawClock();
 			
-			//draw the clock
-	    	this.redrawClock();
+			
+			
 			// ------ Resize Clock ------ //
 			$handle.bind("mousedown",function(e){
 				var $handle = $(this);
@@ -72,12 +74,16 @@ snow.ui.registerComponent(
 			
 			
 			
-			
 	    },
 		
-		redrawClock: function(){
+		redrawClock: function(now){
 			// create a chainable context
 			var g = snow.gtx(this.$element.find("canvas.clock-canvas"));
+			
+			now = now || new Date();
+			var minutes = now.getMinutes();
+			var hours = now.getHours();
+			var seconds = now.getSeconds();
 			
 			// make the canvas fit the parent (this is an extra snow.Gtx method)
 			g.fitParent();
@@ -104,23 +110,27 @@ snow.ui.registerComponent(
 			g.fillStyle(innerFillStyle);
 			g.arc(d, d, dInner, 0, Math.PI*2, true).fill();
 			
-			// reset composition mode
-			
-			// draw the minute bar
-			var endX, endY, angle = 45 * Math.PI / 180, radius = d * .6;
-			endX = d + radius * Math.sin(angle);
-			endY = d - radius * Math.cos(angle);
-			g.beginPath().strokeStyle("#5588bb").lineWidth(3).lineCap("round");
-			
-			g.moveTo(d,d).lineTo(endX,endY).stroke();
-			
 			// draw the hour bar
-			radius = d * .4;
-			angle = 90 * Math.PI / 180;
+			radius = d * .3;
+			angle = (30 * hours) * Math.PI / 180;
 			endX = d + radius * Math.sin(angle);
 			endY = d - radius * Math.cos(angle);
 			g.beginPath().strokeStyle("#336699").lineWidth(4).lineCap("round");
 			g.moveTo(d,d).lineTo(endX, endY).stroke();
+
+			// draw the minute bar
+			var endX, endY, angle = (6 * minutes) * Math.PI / 180, radius = d * .5;
+			endX = d + radius * Math.sin(angle);
+			endY = d - radius * Math.cos(angle);
+			g.beginPath().strokeStyle("#5588bb").lineWidth(3).lineCap("round");
+			g.moveTo(d,d).lineTo(endX,endY).stroke();
+			
+			// draw the minute bar
+			var endX, endY, angle = (6 * seconds) * Math.PI / 180, radius = d * .6;
+			endX = d + radius * Math.sin(angle);
+			endY = d - radius * Math.cos(angle);
+			g.beginPath().strokeStyle("#777").lineWidth(1).lineCap("round");
+			g.moveTo(d,d).lineTo(endX,endY).stroke();
 
 		}
 	});
