@@ -8,6 +8,12 @@
 	-o-user-select: none;
     user-select: none;
 }	
+
+#page > a.source{
+	display: block;
+	text-align: center;
+	margin: 0 auto 0 auto;
+}
 	
 #addClock{
 	display: block;
