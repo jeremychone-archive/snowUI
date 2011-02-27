@@ -1,0 +1,50 @@
+*{
+	margin: 0;
+	padding: 0;
+    /* be default, elements are not selectable */
+	-webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+	-o-user-select: none;
+    user-select: none;
+}	
+	
+#addClock{
+	display: block;
+	margin: 10px auto 10px auto;
+	width: 100px;
+	
+}
+
+#clocks{
+	position: relative;
+	margin: 20px auto 20px auto;
+	width: 800px;
+	height: 600px;
+	border: solid 1px #000000;
+	overflow: auto;
+}
+
+/* ------ clock ------ */
+.clock{
+	position: relative;
+	width: 100px;
+	height: 100px;
+	float: left;
+	margin: 20px;
+}
+
+.clock > canvas {
+	position: absolute;	
+}
+
+label.clock-time{
+	
+}
+.clock-handle{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	cursor: pointer;
+}
+/* ------ /clock ------ */

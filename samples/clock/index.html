@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 		
+		<link rel="stylesheet" href="css/clock-main.css" />
+        <title>HTML5 Sample: Clock.</title>
+		<script type="text/javascript" src="../../js-dependencies/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js-dependencies/jquery.tmpl.js"></script>
+		
+		<script type="text/javascript" src="../../src/js/snow.core.js"></script>
+		<script type="text/javascript" src="../../src/js/snow.event.js"></script>
+		
+	</head>
+	<body>
+		<div id="page">
+			<button id="addClock">Add Clock</button>
+			<div id="clocks">
+			</div>
+	    </div>
+	</div>
+		
+	
+	
+	<script type="text/javascript">
+		
+		$(function(){
+			$("#addClock").click(function(){
+				snow.ui.display("clock");
+			})
+		});
+		
+	</script>
+	
+	</body>
+</html>

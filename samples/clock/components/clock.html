@@ -1,0 +1,138 @@
+<script type="text/javascript">
+	
+snow.ui.registerComponent(
+      // Component name. Must match the file name
+      "clock", 
+     
+	  // Config for this component. In this case, we just define the default parent of this component
+	 {
+	    parent: "#clocks"
+	 }, 
+	 // Component factory (must implement build(data,config) and can implement postDisplay(data,config).
+	 // This JS object will be cloned for each instanced
+	 {
+	    // The build(data,config) is called by snowUI to build the HTML elements for this component instance.
+	    // Here we are using jquery-tpml. The only requirement is to return a HTML or jQuery element
+	    build: function(){
+	        var $e = $("#tmpl-clock").tmpl();
+	        // Return the new HTML to let snow manage its life cycle. 
+	        return $e;
+	    },
+	    
+		// The postDisplay(data,config) is called by snowUI after the element
+		// has been added to DOM. This is a good place to do event binding
+		// behavior logics (not related to UI)
+	    postDisplay: function(){
+			var $e = this.$element;
+			var thisComponent = this;
+			
+			//draw the handle canvas
+			var $handle = this.$element.find("canvas.clock-handle");
+			
+			var g = snow.gtx($handle);
+			g.beginPath().strokeStyle("#999").lineWidth(.5);
+			g.moveTo(4,16).lineTo(16,4).stroke();
+			g.moveTo(8,16).lineTo(16,8).stroke();
+			g.moveTo(12,16).lineTo(16,12).stroke();
+			g.lineWidth(1).moveTo(15,16).lineTo(16,15).stroke();
+			
+			
+			//draw the clock
+	    	this.redrawClock();
+			// ------ Resize Clock ------ //
+			$handle.bind("mousedown",function(e){
+				var $handle = $(this);
+				
+				var $document = $(document);
+				var id = "_" + snow.util.uuid(7);
+				
+				var orgX = e.pageX;
+				var orgY = e.pageY;
+				var orgW = $e.width();
+				var orgH = $e.height();
+				
+				
+				
+				
+				$document.bind("mousemove." + id,function(e){
+					var offset = Math.max((e.pageX - orgX),(e.pageY - orgY));
+					$e.width(orgW + offset);
+					$e.height(orgH + offset );	
+					thisComponent.redrawClock();
+				});
+				
+				$document.bind("mouseup." + id,function(e){
+					
+					//unbind everything
+					$(document).unbind("mousemove." + id);
+					$(document).unbind("mouseup." + id);
+				});
+			});
+			// ------ Resize Clock ------ //
+			
+			
+			
+			
+	    },
+		
+		redrawClock: function(){
+			// create a chainable context
+			var g = snow.gtx(this.$element.find("canvas.clock-canvas"));
+			
+			// make the canvas fit the parent (this is an extra snow.Gtx method)
+			g.fitParent();
+			
+			//diameter of the box
+			var d = g.canvas().width / 2;
+			var clockFrameWidth = d * .2;
+			
+			//// draw the outter circle
+			g.beginPath().strokeStyle("#aaa").lineWidth(1);
+
+			var clockFillStyle = g.createLinearGradient(0,0,0 ,d * 2);
+  		    clockFillStyle.addColorStops(0, '#999',0.45, '#ddd',0.5, '#dfdfdf');
+  			clockFillStyle.addColorStops(0.5, '#eee',1, '#444');
+			g.fillStyle(clockFillStyle);
+			g.arc(d, d, d , 0, Math.PI * 2, true).fill().stroke();
+			
+			// draw the inner circle
+			var dInner = d - clockFrameWidth;
+			g.beginPath();
+			// Create gradients
+			var innerFillStyle = g.createRadialGradient(d,d,dInner - dInner * .1,d, d,dInner);
+			innerFillStyle.addColorStop(0, '#ddd');
+			innerFillStyle.addColorStop(.9, '#666');
+			innerFillStyle.addColorStop(1, '#333');
+			g.fillStyle(innerFillStyle);
+			g.arc(d, d, dInner, 0, Math.PI*2, true).fill();
+			
+			// reset composition mode
+			
+			// draw the minute bar
+			var endX, endY, angle = 45 * Math.PI / 180, radius = d * .6;
+			endX = d + radius * Math.sin(angle);
+			endY = d - radius * Math.cos(angle);
+			g.beginPath().strokeStyle("#5588bb").lineWidth(3).lineCap("round");
+			
+			g.moveTo(d,d).lineTo(endX,endY).stroke();
+			
+			// draw the hour bar
+			radius = d * .4;
+			angle = 90 * Math.PI / 180;
+			endX = d + radius * Math.sin(angle);
+			endY = d - radius * Math.cos(angle);
+			g.beginPath().strokeStyle("#336699").lineWidth(4).lineCap("round");
+			g.moveTo(d,d).lineTo(endX, endY).stroke();
+
+		}
+	});
+
+</script>
+
+<script id="tmpl-clock" type="text/html">
+<div class="clock">
+	  <canvas class="clock-canvas"></canvas>
+	  <label class="clock-time"></label>
+	  <canvas width="16px" height="16px" class="clock-handle"></canvas>
+</div>
+</script>
