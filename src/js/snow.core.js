@@ -539,8 +539,7 @@ snow.ua = (function(){
 		
 		//build the prototype methods on first demand 
         if (!Gtx.prototype.arc) {
-			//Note: not sure the this, this.ctx are needed here. 
-            Gtx.setup.call(this, this.ctx);
+            setupPrototype();
         }
     }
 	
@@ -574,7 +573,7 @@ snow.ua = (function(){
 		
 	// ------ /Extension Methods ------ // 
 	
-    Gtx.setup = function(){
+    function setupPrototype(){
         var methods = ['arc', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'drawImage', 'fill', 'fillRect', 'fillText', 'lineTo', 'moveTo', 'quadraticCurveTo', 'rect', 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate'];
         
         var getterMethods = ['createPattern', 'drawFocusRing', 'isPointInPath', 'measureText', // drawFocusRing not currently supported
