@@ -39,7 +39,10 @@ snow.ui.registerComponent(
 
 			this.redrawClock();
 			
-			
+			// ------ Delete ------ //
+			$e.find(".clock-del").bind("click",function(){
+				$e.remove();
+			});
 			
 			// ------ Resize Clock ------ //
 			$handle.bind("mousedown",function(e){
@@ -71,6 +74,8 @@ snow.ui.registerComponent(
 				});
 			});
 			// ------ Resize Clock ------ //
+			
+			
 			
 			
 			
@@ -141,6 +146,7 @@ snow.ui.registerComponent(
 <div class="clock">
 	  <canvas class="clock-canvas"></canvas>
 	  <label class="clock-time"></label>
+	  <div class="clock-del">X</div>
 	  <canvas width="16px" height="16px" class="clock-handle"></canvas>
 </div>
 </script>

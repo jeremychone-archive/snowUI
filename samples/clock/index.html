@@ -25,19 +25,21 @@
 	<script type="text/javascript">
 		
 		$(function(){
-			var clocks = [];
 			$("#addClock").click(function(){
-				var clock = snow.ui.display("clock");
-				clocks.push(clock);
+				snow.ui.display("clock");
 				
 				setInterval(function(){
+					
 					var now = new Date();
-					for (var i = 0; i < clocks.length; i++){
-						clocks[i].redrawClock(now);		
-					}
+					$(".clock").each(function(){
+						var clock = $(this).sComponent();
+						clock.redrawClock(now);
+					});
 					
 				},1000);
 			})
+			
+			
 		});
 		
 	</script>
