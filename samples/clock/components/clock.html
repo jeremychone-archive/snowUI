@@ -100,9 +100,7 @@ snow.ui.registerComponent(
 			g.beginPath();
 			// Create gradients
 			var innerFillStyle = g.createRadialGradient(d,d,dInner - dInner * .1,d, d,dInner);
-			innerFillStyle.addColorStop(0, '#ddd');
-			innerFillStyle.addColorStop(.9, '#666');
-			innerFillStyle.addColorStop(1, '#333');
+			innerFillStyle.addColorStops(0, '#ddd',.9, '#666',1, '#333');
 			g.fillStyle(innerFillStyle);
 			g.arc(d, d, dInner, 0, Math.PI*2, true).fill();
 			
