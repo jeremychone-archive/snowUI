@@ -115,6 +115,12 @@ snow.ui.registerComponent(
 			g.fillStyle(innerFillStyle);
 			g.arc(d, d, dInner, 0, Math.PI*2, true).fill();
 			
+			// draw minute scale
+			drawScale(g,.5,30,60,d,clockFrameWidth,.7);
+			
+			//draw hour scale
+			drawScale(g,1,6,12,d,clockFrameWidth,.65);
+			
 			// draw the hour bar
 			radius = d * .3;
 			angle = (30 * hours) * Math.PI / 180;
@@ -136,6 +142,32 @@ snow.ui.registerComponent(
 			endY = d - radius * Math.cos(angle);
 			g.beginPath().strokeStyle("#777").lineWidth(1).lineCap("round");
 			g.moveTo(d,d).lineTo(endX,endY).stroke();
+
+
+			function getRadioPosition(radio, angel, addX, addY){
+				return {
+					x : Math.cos(angel) * radio + (typeof addX == "number"  ? addX : 0),
+					y : Math.sin(angel) * radio + (typeof addY == "number"  ? addY : 0)
+				}
+			}
+			
+			function drawScale(g,lineWidth,angel,num,d,clockFrameWidth,pro){
+				g.beginPath().strokeStyle("#777").lineWidth(lineWidth);
+				var minuteAngel  = Math.PI / angel;
+				for(var i=0; i<num; i++){
+					var p = getRadioPosition((d-clockFrameWidth), i * minuteAngel , d, d);
+					g.beginPath();
+					g.moveTo(d, d);
+					g.lineTo(p.x, p.y);
+					g.closePath();
+					g.stroke();
+				}
+				g.beginPath();
+				g.moveTo(d, d);
+				g.arc(d, d, d * pro, 0, Math.PI * 2, false);
+				g.closePath();
+				g.fill();
+			}
 
 		}
 	});
