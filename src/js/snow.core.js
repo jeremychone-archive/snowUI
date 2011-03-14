@@ -397,14 +397,51 @@ snow.util.array = {
 	 * 
 	 * @from: Array Remove - By John Resig (MIT Licensed)
 	 * 
-	 * @param {Object} a
-	 * @param {Object} from
-	 * @param {Object} to
+	 * @param {Object} a the Array 
+	 * @param {Object} from the first index to remove from
+	 * @param {Object} to (optional) the last index to remove
 	 */ 
 	remove: function(a,from, to) {
 	  var rest = a.slice((to || from) + 1 || a.length);
 	  a.length = from < 0 ? a.length + from : from;
 	  return a.push.apply(a, rest);
+	},
+	
+	/**
+	 * For a array of object, this will get the first index of the matching prop name/value 
+	 * return -1 if no match
+	 * @param {Object} a
+	 * @param {Object} propName
+	 * @param {Object} propValue
+	 */
+	getIndex: function(a,propName,propValue){
+		if (a && propName && typeof propValue != "undefined"){
+			var i,obj,l = a.length;
+			for (var i = 0; i < l; i++){
+				obj = a[i];
+				if (obj && obj[propName] === propValue){
+					return i;
+				}
+			}
+		}
+		return -1;
+	},
+	
+	/**
+	 * Sort an array of object by a propName
+	 * @param {Object} a
+	 * @param {Object} propName
+	 */
+	sortBy: function(a,propName){
+		return a.sort(sortByFunc);
+		function sortByFunc(a, b) {
+			if (typeof a === "undefined") return -1;
+			if (typeof b === "undefined") return 1;
+			
+		    var x = a[propName];
+		    var y = b[propName];
+		    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+		}
 	}
 }
 
