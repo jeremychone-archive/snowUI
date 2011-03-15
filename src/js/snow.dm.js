@@ -133,7 +133,79 @@ snow.dm = (function(){
 	return new DM();
 	
 })();
+
+// ------ Simple DAO ------ //
+snow.dao = {};
+
+(function(){
+	/**
+	 * SimpleDao is a Dao for a array based storage. Each data item is stored as an array item, 
+	 * and have a unique .id property (that will be added on save is not present).
+	 * 
+	 * Note that instance of a SimpleDao is only for single object type.
+	 * 
+	 * @param {Array}  store (optional) Array of json object representing each data item
+	 * @param {Object} opts  (optional) Dao options (not supported yet)
+	 */
+	function SimpleDao(store,opts){
+		this._store = store || [];
+	}
+	// ------ DAO Interface Implementation ------ //
+	SimpleDao.prototype.getId = function(data){
+		return data.id;
+	}
+	
+	SimpleDao.prototype.get = function(objectType,id){
+		var idx = snow.util.array.getIndex(this._store,"id",id);
+		return this._store[idx];
+	}
+	
+	//for nos, just support opts.orderBy
+	SimpleDao.prototype.find = function(objectType,opts){
+		//TODO: probably need to copy the array to avoid giving the original array
+		var resultSet = this._store;
 		
+		if (opts){
+			if (opts.sortBy){
+				resultSet = snow.util.array.sortBy(resultSet,opts.orderBy)	
+			}
+		}
+		return resultSet;
+	}
+	
+	SimpleDao.prototype.save = function(objectType,data){
+		// if it is an update
+		if (data.id){
+			var storeData = this.get(objectType,data.id);
+			if (storeData) {
+				$.extend(storeData, data);
+				return storeData;
+			}
+		}
+		
+		// if we are here, it means we need to add the data
+		
+		// if the id has already been created, no biggies, otherwise, create it.
+		if (typeof data.id === "undefined"){
+			data.id = snow.util.uuid(12);
+		}
+			
+		this._store.push(data);
+		
+		return data;
+	}
+	
+	SimpleDao.prototype.remove = function(objectType,id){
+		var idx = snow.util.array.getIndex(this._store,"id",id);
+		if (idx > -1) {
+			snow.util.array.remove(this._store, idx);
+		}
+	}	
+	// ------ /DAO Interface Implementation ------ //
+	
+	snow.dao.SimpleDao = SimpleDao;
+})();
+// ------ /Simple DAO ------ //		
 
 // ------ jQuery DAO Helper ------ //
 (function($) {
