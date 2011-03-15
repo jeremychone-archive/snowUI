@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 		
+		<link rel="stylesheet" href="../css/samples.css" />
+		<link rel="stylesheet" href="css/activeTable.css" />
+		
+        <title>HTML5 Sample: Active Table.</title>
+		<script type="text/javascript" src="../../js-dependencies/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js-dependencies/jquery.tmpl.js"></script>
+		
+		<script type="text/javascript" src="../../src/js/snow.core.js"></script>
+		<script type="text/javascript" src="../../src/js/snow.dm.js"></script>
+		<script type="text/javascript" src="../../src/js/snow.event.js"></script>
+		
+		<script type="text/javascript">
+			// This is the in memory record store
+			var recordStore = [{id:"1",
+		                type:"record",
+						component:"datePicker",
+						html4: null,
+						html5: "input type='date'",
+						jqueryUI: "DatePicker",
+						jqueryMobile: "(experimental)"
+						},
+						{id:"2",
+						type:"record",
+						component:"textInput",
+						html4: "input type='text'",
+						html5: "input type='text'",
+						jqueryUI: "HTML",
+						jqueryMobile: "HTML"}];
+			
+			snow.dm.registerDao("record",new snow.dao.SimpleDao(recordStore));
+		</script>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="active-table-01">
+			</div>
+			
+			<!--
+			<a class="source" target="source" href="https://github.com/jeremychone/snowUI/tree/master/samples/clock">Source</a>
+			-->
+	    </div>
+	</div>
+		
+	
+	
+	<script type="text/javascript">
+						
+		$(function(){
+			
+			snow.ui.display("activeTable",null,{parent:$("#active-table-01")});		
+		});
+		
+	</script>
+	
+	</body>
+</html>

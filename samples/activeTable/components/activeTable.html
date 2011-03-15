@@ -1,0 +1,142 @@
+<script type="text/javascript">
+	
+snow.ui.registerComponent(
+      // Component name. Must match the file name
+      "activeTable", 
+     
+	  // Config for this component. In this case, we do not have any config. (the parent needs to be specified by the caller. 
+	 null, 
+	 
+	 // Component factory (must implement build(data,config) and can implement postDisplay(data,config).
+	 // This JS object will be cloned for each instance
+	 {
+	 	// ------ snowUI component interface ------ //
+	    
+		// The build(data,config) is called by snowUI to build the HTML elements for this component instance.
+	    // Here we are using jquery-tpml. The only requirement is to return a HTML or jQuery element
+	    build: function(data,config){
+			
+			
+			// we store the parent and data for the refresh
+			this.parent = config.parent;
+			var $e = $("<div class='activeTableCtn'></div>");
+			
+			this.reloadData();
+			$e.append(this.build$ActiveTable());
+			
+			$e.append('<div class="addRow but">Add Row</div>');
+			$e.append('<div class="serialize but">Serialize</div>');
+	        // Return the new HTML to let snow manage its life cycle. 
+	        return $e;
+	    },	    
+		
+		// The postDisplay(data,config) is called by snowUI after the element
+		// has been added to DOM. This is a good place to do event binding
+		// behavior logics (not related to UI)
+	    postDisplay: function(){
+			var $e = this.$element;
+			var component = this;
+				
+			
+			// adding a new row
+			$e.children(".addRow:first").sTouch(function(){
+				snow.dm.save("record",{});
+				component.refresh();
+				component.showSerializedString();
+			});
+			
+			// delete a row
+			$e.delegate(".del","click",function(){
+				var $record = $(this).closest("[data-obj_type='record']");
+				var id = $record.attr("data-obj.id"); 
+				snow.dm.remove("record", id);
+				
+				component.refresh();
+				component.showSerializedString();
+			});
+			
+			// changing a row
+			$e.delegate(".recordprop","blur",function(){
+				var $prop = $(this);
+				var $record = $(this).closest("[data-obj_type='record']");
+				var id = $record.attr("data-obj.id");
+				
+				
+				var delta = {id:id};
+				delta[$prop.attr("itemprop")] = $prop.text();
+				snow.dm.save("record",delta);
+				
+				component.showSerializedString();
+			});
+			
+			// serialize
+			$e.children(".serialize").click(function(){
+				if ($e.children("textarea.dataString").length == 0) {
+					$e.append("<textarea class='dataString'></textarea>");
+				}
+				component.showSerializedString();
+			});
+						
+	    },
+		// ------ /snowUI component interface ------ //
+		
+		// ------ Custom Component's methods ------ //
+		reloadData: function(){
+			this.data = {cols: ["component","html4","html5","jqueryUI","jqueryMobile"],
+					      rows:snow.dm.find("record")};	
+		},
+		
+		showSerializedString: function(){
+			var $ta = this.$element.children("textarea.dataString"); 
+			if ($ta.length > 0){
+				var js = snow.dm.find("record");
+				var str = JSON.stringify(js,null,2);
+				$ta.val(str);	
+			}
+			
+		},
+		
+		// component's method that build the HTML table from the data stored
+		// in this component
+		build$ActiveTable: function(){
+			var $activeTable = $("#tmpl-activeTable").tmpl(this.data);
+			return $activeTable;
+		},
+		
+		refresh: function(){
+			this.reloadData();	
+			var $newActiveTable = this.build$ActiveTable();
+			this.$element.find(".activeTable").remove();
+			this.$element.prepend($newActiveTable);
+		}
+		// ------ /Custom Component's methods ------ //
+		
+	});
+</script>
+
+<script id="tmpl-activeTable" type="text/html">
+  <table class="activeTable" cellpadding="0" cellspacing="0">
+  	<tr>
+  	{{each cols}}
+	<th  style="width:${100 / cols.length - 1}%">${this}</th>
+	{{/each}}
+	<th class="del last"></th>
+	</tr>	
+  	
+	{{each rows}}
+		{{tmpl({record:this,cols:$data.cols,isLast:$index == rows.length -1}) "#tmpl-activeTable-row"}}
+	{{/each}}			
+	
+  </table>
+		  
+</script>
+
+
+<script id="tmpl-activeTable-row" type="text/html">
+	<tr class="{{if isLast}}last{{/if}}" data-obj_type="record" data-obj.id="${record.id}">
+		{{each cols}}
+		<td><div contenteditable="true" class="recordprop" itemprop="${cols[$index]}">${record[cols[$index]]}</div></td>
+		{{/each}}
+		<td class="del last">x</td>
+	</tr>
+</script>

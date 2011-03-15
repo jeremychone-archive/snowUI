@@ -1,0 +1,66 @@
+*{
+	margin: 0;
+	padding: 0;
+    /* be default, elements are not selectable */
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}	
+
+*[contenteditable=true] {
+   -webkit-user-modify: read-write;
+   word-wrap: break-word;
+   -webkit-nbsp-mode: space;
+   -webkit-line-break: after-white-space;
+}
+
+/* ------ ActiveTable component ------ */
+.activeTableCtn{
+	margin: 20px 0;
+}
+
+table.activeTable{
+	border: solid 1px #bbbbbb;
+	width: 100%;
+}
+table.activeTable th{
+	text-align: center;
+	background: #bbbbbb;
+	border-right: solid 1px #aaa;
+	padding: 5px 0;
+}
+
+table.activeTable th.last{
+	border-right: none;
+}
+
+table.activeTable tr td{
+	border-bottom: solid 1px #bbbbbb;
+	border-right: solid 1px #bbbbbb;
+	cursor: pointer;
+	padding: 3px 7px;
+}
+
+table.activeTable tr td.last{
+	border-right: none;
+}
+
+table.activeTable tr.last td{
+	border-bottom: none;
+}
+
+table.activeTable th.del, table.activeTable td.del{
+	width: 36px;
+	text-align: center;
+} 
+
+.activeTableCtn .but{
+	color: #5588bb;
+	margin: 7px;
+	text-align: center;
+	cursor: pointer;
+}
+
+textarea.dataString{
+	width: 100%;
+	height: 200px;
+}
+/* ------ /ActiveTable component ------ */
