@@ -166,7 +166,7 @@ snow.dao = {};
 		var resultSet = this._store;
 		
 		if (opts){
-			if (opts.sortBy){
+			if (opts.orderBy){
 				resultSet = snow.util.array.sortBy(resultSet,opts.orderBy)	
 			}
 		}

@@ -83,7 +83,7 @@ snow.ui.registerComponent(
 		// ------ Custom Component's methods ------ //
 		reloadData: function(){
 			this.data = {cols: ["component","html4","html5","jqueryUI","jqueryMobile"],
-					      rows:snow.dm.find("record")};	
+					      rows:snow.dm.find("record",{orderBy:"component"})};	
 		},
 		
 		showSerializedString: function(){
