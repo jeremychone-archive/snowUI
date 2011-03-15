@@ -2,3 +2,10 @@
 	width: 800px;
 	margin: 0 auto 0 auto;
 }
+
+#page > .source{
+	display: block;
+	width: 400px;
+	text-align: center;
+	margin: 0 auto 0 auto;
+}
