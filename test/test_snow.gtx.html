@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>snowUITest - snow.gtx</title>
+
+		<!-- Generic Test Includes -->
+		<link rel="stylesheet" href="css/sTestHelper.css"/>
+		<script type="text/javascript" src="../js-dependencies/jquery.js" ></script>
+		<script type="text/javascript" src="js/sTestHelper.js" ></script>
+		<script type="text/javascript">
+		$(function(){
+			showTestSources();
+		});
+		</script>
+		<!-- /Generic Test Includes -->
+
+		<script type="text/javascript" src="../src/js/snow.core.js" ></script>
+
+
+		<script type="text/javascript" src="js/gtxSample.soccerBall.js" ></script>			
+		<style type="text/css">
+
+		.canvasCtn{
+				width: 200px;
+				height: 200px;
+				border: dotted 1px #999;
+			}		
+		</style>
+		
+
+		
+
+    </head>
+    <body>
+    	<div class="sTestSection">
+	        <h2>Simple Scalabe GTX Drawing</h2>
+
+			<div class="sTestSrc sTestShowSrc">
+				<div class="canvasCtn"  style="float:left;width:100px;height: 100px;">
+					<canvas id="canvas01"></canvas>
+				</div>
+				<div class="canvasCtn"  style="float:left;margin-left: 20px;">
+					<canvas id="canvas02"></canvas>
+				</div>
+				<div style="clear:both" />
+				<script type="text/javascript">
+					$(function(){
+						// draw the first canvas
+						var $canvas = $("#canvas01");
+						var gtx = snow.gtx($canvas);
+						gtx.fitParent();
+						drawSomeFixedSizeShape(gtx);
+						
+						
+						// draw the second canvas, and set the referenceSize to 200,200
+						$canvas = $("#canvas02");
+						gtx = snow.gtx($canvas);
+						gtx.fitParent();
+						//
+						gtx.referenceScale(100,100);
+						drawSomeFixedSizeShape(gtx);
+						
+						
+					});
+					
+					/**
+					 * Note that this draw fixed size shapes, but since the referenceScale
+					 * might have been set, it will scale the drawing.
+					 * 
+					 * @param {Object} gtx
+					 */
+					function drawSomeFixedSizeShape(g){
+						g.moveTo(0,0).lineTo(50,50).stroke();
+						 var d = 50;
+						//// draw the outter circle
+						g.beginPath().strokeStyle("#aaa").lineWidth(g.scaleVal(1));
+			
+						var clockFillStyle = g.createLinearGradient(0,0,0 ,80);
+			  		    clockFillStyle.addColorStops(0, '#999',0.45, '#ddd',0.5, '#dfdfdf');
+			  			clockFillStyle.addColorStops(0.5, '#eee',1, '#444');
+						g.fillStyle(clockFillStyle);
+						g.arc(50, 50, 50 , 0, Math.PI * 2, true).fill().stroke();
+						
+						// draw the inner circle
+						var dInner = 50 - 10;
+						g.beginPath();
+						// Create gradients
+						var innerFillStyle = g.createRadialGradient(d,d,dInner - dInner * .1,50, 50,dInner);
+						innerFillStyle.addColorStops(0, '#ddd',.9, '#666',1, '#333');
+						g.fillStyle(innerFillStyle);
+						g.arc(50, 50, dInner, 0, Math.PI*2, true).fill();
+						
+						//draw the rectangle
+						g.fillStyle("#5588bb");
+						g.fillRect(30,30,40,30);
+						
+						//draw the curve
+						g.moveTo(30,60);
+						g.bezierCurveTo(40,60,40,40,50,40).stroke();
+						//g.lineTo(50,40);
+						g.bezierCurveTo(60,40,60,60,70,60).stroke();
+						//g.lineTo(70,60).stroke();
+					}
+				</script>				
+				
+				
+			</div> <!-- .sTestShowSrc -->	
+				
+		</div> <!-- .sTestSection -->
+		
+		<div class="sTestSection">
+			<h2>Soccer Ball</h2>
+			<div class="canvasCtn" style="float:left;">
+				<canvas id="soccerBall1"></canvas>
+			</div>
+			<div class="canvasCtn" style="float:left;width: 400px;height: 400px">
+				<canvas id="soccerBall2"></canvas>
+			</div>
+			<div style="clear:both"></div>
+			<script type="text/javascript">
+				$(function(){
+					var gtx = snow.gtx($("#soccerBall1")).fitParent();
+					gtxSample.soccerBall(gtx);
+					
+					var gtx = snow.gtx($("#soccerBall2")).fitParent();
+					gtxSample.soccerBall(gtx);
+				});
+			</script>
+		</div> <!-- .sTestSection -->
+    </body>
+</html>

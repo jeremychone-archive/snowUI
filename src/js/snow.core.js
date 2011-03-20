@@ -575,20 +575,19 @@ snow.ua = (function(){
         this.context = this.ctx = ctx;
 		
 		//build the prototype methods on first demand 
-        if (!Gtx.prototype.arc) {
+        if (!this.beginPath) {
             setupPrototype();
         }
     }
 	
 	// ------ GTX Extension Methods ------ //
-	Gtx.prototype.clear = function(){
-		if (this.canvas()){
-			//this should create a clear
-			this.canvas().width = this.canvas().width;
-		}	
-		// if no canvas (was created with a context), just ignore.
+	// Set the referenceScale (the width and height that correspond to the 1 ratio)
+	Gtx.prototype.referenceScale = function(refWidth,refHeight){
+		this._refWidth = refWidth;
+		this._refHeight = refHeight;
 		
-		return this;
+		// compute the ratio
+		computeRatio.call(this);
 	}
 	
 	Gtx.prototype.fitParent = function(){
@@ -601,21 +600,200 @@ snow.ua = (function(){
 			canvas.height = $parent.height();
 		}
 		
+		// compute the ratio
+		computeRatio.call(this);
+		
 		return this;
-	} 
+	}
+		
+	// private Method to compute the ratio
+	function computeRatio(){
+		var w = this.canvas().width; h = this.canvas().height;
+		
+		//TODO: probably need to test undefined and null, because 0 should be valid
+		if (w && h && this._refWidth && this._refHeight){
+			this._xRatio = w / this._refWidth;
+			this._yRatio = h / this._refHeight;
+			this._ratio = (w * h) / (2 * this._refWidth * this._refHeight); 
+			this.scallable = true;
+		}
+		
+	}
+	
+	/**
+	 * If this gtx object is scallable (was set a referenceScale), then apply the xRatio
+	 * to the x argument otherwise return unchanged value.
+	 * @param {Object} x
+	 */
+	Gtx.prototype.scaleX = function(x){
+		if (this.scallable){
+			return this._xRatio * x;
+		}
+		return x;
+	}
+	
+	/**
+	 * If this gtx object is scallable (was set a referenceScale), then apply the yRatio
+	 * to the y argument otherwise return unchanged value.
+	 * @param {Object} x
+	 */	
+	Gtx.prototype.scaleY = function(y){
+		if (this.scallable){
+			return this._yRatio * y;
+		}
+		return y;
+	}
+	
+	/**
+	 * Scale the value with the overall computed ratio.
+	 * @param {Object} val
+	 */
+	Gtx.prototype.scaleVal = function(val){
+		if (this.scallable){
+			return this._ratio * val;
+		}
+		return val;		
+	}
+	
+	
+	Gtx.prototype.clear = function(){
+		if (this.canvas()){
+			//this should create a clear
+			this.canvas().width = this.canvas().width;
+		}	
+		// if no canvas (was created with a context), just ignore.
+		
+		return this;
+	}
+	
+ 
 	// ------ /Extension Methods ------ //
 	
 	// ------ Context override methods ------ //
+	Gtx.prototype.arc = function(x,y,radius,startAngle,endAngle,antiClock){
+		if (this.scallable){
+			x = this.scaleX(x);
+			y = this.scaleY(y);
+			radius = this.scaleVal(radius);
+		}
+		this.context.arc(x,y,radius,startAngle,endAngle,antiClock);
+		
+		return this;
+	}
+	
+	Gtx.prototype.arcTo = function(x1,y1,x2,y2,radius){
+		if (this.scallable){
+			x1 = this.scaleX(x1);
+			y1 = this.scaleY(y1);
+			x2 = this.scaleX(x2);
+			y2 = this.scaleY(y2);
+			radius = this.scaleVal(radius);
+		}
+		this.context.arcTo(x1,y1,x2,y2,radius);
+		
+		return this;		
+	}
+	
+	//(in double cp1x, in double cp1y, in double cp2x, in double cp2y, in double x, in double y);
+	Gtx.prototype.bezierCurveTo = function(cp1x,cp1y,cp2x,cp2y,x,y){
+		if (this.scallable) {
+			cp1x = this.scaleX(cp1x);
+			cp1y = this.scaleY(cp1y);
+			cp2x = this.scaleX(cp2x);
+			cp2y = this.scaleY(cp2y);
+			x = this.scaleX(x);
+			y = this.scaleY(y);
+		}
+		this.context.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y);
+		return this;
+	}
+	
+	//(in double cpx, in double cpy, in double x, in double y);
+	Gtx.prototype.quadraticCurveTo = function(cpx,cpy,x,y){
+		if (this.scallable) {
+			cpx = this.scaleX(cpx);
+			cpy = this.scaleY(cpy);
+			x = this.scaleX(x);
+			y = this.scaleY(y);
+		}
+		this.context.quadraticCurveTo(cp1x,cp1y,cp2x,cp2y,x,y);
+		return this;
+	}
+	
+	Gtx.prototype.rect = function(x,y,w,h){
+		return execRect.call(this,"rect",x,y,w,h);	
+	}
+	Gtx.prototype.clearRect = function(x,y,w,h){
+		return execRect.call(this,"clearRect",x,y,w,h);	
+	}
+	Gtx.prototype.fillRect = function(x,y,w,h){
+		
+		return execRect.call(this,"fillRect",x,y,w,h);	
+	}
+	Gtx.prototype.strokeRect = function(x,y,w,h){
+		return execRect.call(this,"strokeRect",x,y,w,h);	
+	}
+	
+	//private execRect
+	function execRect(methodName,x,y,w,h){
+		
+		if (this.scallable) {
+			x = this.scaleX(x);
+			y = this.scaleY(y);
+			w = this.scaleX(w);
+			h = this.scaleY(h);
+		}
+		this.context[methodName](x,y,w,h);
+		return this;			
+	}	
+	
+	Gtx.prototype.moveTo = function(x,y){
+		if (this.scallable){
+			x = this.scaleX(x);
+			y = this.scaleY(y);
+		}
+		this.context.moveTo(x,y);
+		return this;
+	}
+	
+	Gtx.prototype.lineTo = function(x,y){
+		if (this.scallable){
+			x = this.scaleX(x);
+			y = this.scaleY(y);
+		}
+		this.context.lineTo(x,y);
+		return this;		
+	}
+	
+	
+
+	
 	// create the chainable object for gradient
-	Gtx.prototype.createLinearGradient = function(){
-		var ctxGradient = this.ctx.createLinearGradient.apply(this.ctx,arguments);
+	Gtx.prototype.createLinearGradient = function(x0,y0,x1,y1){
+		if (this.scallable){
+			x0 = this.scaleX(x0);
+			y0 = this.scaleY(y0);
+			x1 = this.scaleX(x1);
+			y1 = this.scaleY(y1);
+		}
+		var ctxGradient = this.ctx.createLinearGradient(x0,y0,x1,y1);
 		var gtxGradient = new Gradient(ctxGradient);
 		return gtxGradient;
 	}
 	
 	// create the chainable object for gradient
-	Gtx.prototype.createRadialGradient = function(){
-		var ctxGradient = this.ctx.createRadialGradient.apply(this.ctx,arguments);
+	//(in double x0, in double y0, in double r0, in double x1, in double y1, in double r1);
+	Gtx.prototype.createRadialGradient = function(x0,y0,r0,x1,y1,r1){
+		if (this.scallable){
+			x0 = this.scaleX(x0);
+			y0 = this.scaleY(y0);
+			r0 = this.scaleVal(r0);
+			x1 = this.scaleX(x1);
+			y1 = this.scaleY(y1);
+			r1 = this.scaleVal(r1);
+			
+		}		
+		var ctxGradient = this.ctx.createRadialGradient(x0,y0,r0,x1,y1,r1);
 		var gtxGradient = new Gradient(ctxGradient);
 		return gtxGradient;		
 	}
@@ -666,7 +844,9 @@ snow.ua = (function(){
 	
 	
     function setupPrototype(){
-        var methods = ['arc', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'drawImage', 'fill', 'fillRect', 'fillText', 'lineTo', 'moveTo', 'quadraticCurveTo', 'rect', 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate'];
+        var methods = [ 'beginPath', 'clip', 'closePath', 'drawImage', 'fill',  'fillText', 
+		// these  are managed now 'arc','arcTo', 'lineTo', 'moveTo', 'bezierCurveTo', 'quadraticCurveTo', 'rect',,  'clearRect','fillRect','strokeRect',
+		 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke',  'strokeText', 'transform', 'translate'];
         
         var getterMethods = ['createPattern', 'drawFocusRing', 'isPointInPath', 'measureText', // drawFocusRing not currently supported
         // The following might instead be wrapped to be able to chain their child objects
