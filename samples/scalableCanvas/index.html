@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 		
+		<link rel="stylesheet" href="css/main.css" />
+        <title>HTML5 Sample: Scallable Canvas.</title>
+		<script type="text/javascript" src="../../js-dependencies/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js-dependencies/jquery.tmpl.js"></script>
+		
+		<script type="text/javascript" src="../../src/js/snow.core.js"></script>
+		<script type="text/javascript" src="../../src/js/snow.event.js"></script>
+		
+		<script type="text/javascript" src="js/soccerBall.js"></script>
+		<script type="text/javascript" src="js/basketBall.js"></script>
+		<script type="text/javascript" src="js/baseBall.js"></script>
+		<script type="text/javascript" src="js/plane.js"></script>
+		
+	</head>
+	<body>
+		<div id="page">
+			<center>
+			<button class="addScalable" data-type="SoccerBall">Add Soccer Ball</button>
+			<button class="addScalable" data-type="BasketBall">Add Basket Ball</button>
+			<button class="addScalable" data-type="Shape">Add Shapes</button>
+			<button class="addScalable" data-type="BaseBall">Add Baseball</button>
+			<button class="addScalable" data-type="Plane">Add Plane</button>
+			</center>
+			<div id="container">
+			</div>
+			<a class="source" target="source" href="https://github.com/jeremychone/snowUI/tree/master/samples/scalableCanvas">Source</a>
+	    </div>
+	</div>
+		
+	
+	
+	<script type="text/javascript">
+		
+		$(function(){
+			$("#page > center >  button.addScalable").click(function(){
+				var canvasType = $(this).attr("data-type");
+				var drawFunc = window["draw" + canvasType];
+				snow.ui.display("sizable",drawFunc);
+			});
+			
+		});
+		
+		function drawShape(g){
+			g.referenceScale(100,100);
+			g.moveTo(0,0);
+			var d = 50;
+			//// draw the outter circle
+			g.beginPath().strokeStyle("#aaa").lineWidth(g.scaleVal(1));
+
+			var clockFillStyle = g.createLinearGradient(0,0,0 ,80);
+  		    clockFillStyle.addColorStops(0, '#999',0.45, '#ddd',0.5, '#dfdfdf');
+  			clockFillStyle.addColorStops(0.5, '#eee',1, '#444');
+			g.fillStyle(clockFillStyle);
+			g.arc(50, 50, 50 , 0, Math.PI * 2, true).fill().stroke();
+			
+			// draw the inner circle
+			var dInner = 50 - 10;
+			g.beginPath();
+			// Create gradients
+			var innerFillStyle = g.createRadialGradient(d,d,dInner - dInner * .1,50, 50,dInner);
+			innerFillStyle.addColorStops(0, '#ddd',.9, '#666',1, '#333');
+			g.fillStyle(innerFillStyle);
+			g.arc(50, 50, dInner, 0, Math.PI*2, true).fill();
+			
+			//draw the rectangle
+			g.fillStyle("#5588bb");
+			g.fillRect(30,30,40,30);
+			
+			//draw the curve
+			g.moveTo(30,60);
+			g.bezierCurveTo(40,60,40,40,50,40).stroke();
+			//g.lineTo(50,40);
+			g.bezierCurveTo(60,40,60,60,70,60).stroke();
+			//g.lineTo(70,60).stroke();
+		}
+		
+	</script>
+	
+	</body>
+</html>

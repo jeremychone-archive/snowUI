@@ -1,0 +1,99 @@
+<script type="text/javascript">
+	
+snow.ui.registerComponent(
+      // Component name. Must match the file name
+      "sizable", 
+     
+	  // Config for this component. In this case, we just define the default parent of this component
+	 {
+	    parent: "#container"
+	 }, 
+	 // Component factory (must implement build(data,config) and can implement postDisplay(data,config).
+	 // This JS object will be cloned for each instanced
+	 {
+	    // The build(data,config) is called by snowUI to build the HTML elements for this component instance.
+	    // Here we are using jquery-tpml. The only requirement is to return a HTML or jQuery element
+	    build: function(data){
+			this.drawFunction = data;
+	        var $e = $("#tmpl-sizable").tmpl();
+	        // Return the new HTML to let snow manage its life cycle. 
+	        return $e;
+	    },
+	    
+		// The postDisplay(data,config) is called by snowUI after the element
+		// has been added to DOM. This is a good place to do event binding
+		// behavior logics (not related to UI)
+	    postDisplay: function(){
+			var $e = this.$element;
+			var thisComponent = this;
+			this.$graphic = $e.find(".sizable-canvas:first");
+			
+			//draw the handle canvas
+			var $handle = this.$element.find("canvas.resize-handle");
+			var g = snow.gtx($handle);
+			g.beginPath().strokeStyle("#999").lineWidth(.5);
+			g.moveTo(4,16).lineTo(16,4).stroke();
+			g.moveTo(8,16).lineTo(16,8).stroke();
+			g.moveTo(12,16).lineTo(16,12).stroke();
+			g.lineWidth(1).moveTo(15,16).lineTo(16,15).stroke();
+			
+
+			this.redraw();
+			
+			// ------ Delete ------ //
+			$e.find(".sizable-del").bind("click",function(){
+				$e.remove();
+			});
+			
+			// ------ Resize Clock ------ //
+			$handle.bind("mousedown",function(e){
+				var $handle = $(this);
+				
+				var $document = $(document);
+				var id = "_" + snow.util.uuid(7);
+				
+				var orgX = e.pageX;
+				var orgY = e.pageY;
+				var orgW = $e.width();
+				var orgH = $e.height();
+				
+				
+				
+				
+				$document.bind("mousemove." + id,function(e){
+					var offset = Math.max((e.pageX - orgX),(e.pageY - orgY));
+					$e.width(orgW + offset);
+					$e.height(orgH + offset );	
+					thisComponent.redraw();
+				});
+				
+				$document.bind("mouseup." + id,function(e){
+					
+					//unbind everything
+					$(document).unbind("mousemove." + id);
+					$(document).unbind("mouseup." + id);
+				});
+			});
+			// ------ Resize Clock ------ //
+			
+			
+			
+			
+			
+	    },
+		
+		redraw: function(){
+			var gtx = snow.gtx(this.$graphic).fitParent();
+			this.drawFunction(gtx);
+		}
+	});
+
+</script>
+
+<script id="tmpl-sizable" type="text/html">
+<div class="sizable">
+	  <canvas class="sizable-canvas"></canvas>
+	  <div class="sizable-del">X</div>
+	  <canvas width="16px" height="16px" class="resize-handle"></canvas>	  
+</div>
+</script>

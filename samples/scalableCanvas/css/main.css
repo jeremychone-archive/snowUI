@@ -1,0 +1,62 @@
+*{
+	margin: 0;
+	padding: 0;
+    /* be default, elements are not selectable */
+	-webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+	-o-user-select: none;
+    user-select: none;
+}	
+
+#page > a.source{
+	display: block;
+	text-align: center;
+	margin: 0 auto 0 auto;
+}
+	
+#addSoccerBall{
+	display: block;
+	margin: 10px auto 10px auto;
+	width: 100px;
+	
+}
+
+#container{
+	position: relative;
+	margin: 20px auto 20px auto;
+	width: 800px;
+	height: 600px;
+	border: solid 1px #000000;
+	overflow: auto;
+}
+
+/* ------ sizable ------ */
+.sizable{
+	position: relative;
+	width: 100px;
+	height: 100px;
+	float: left;
+	margin: 20px;
+}
+
+.sizable > canvas {
+	position: absolute;	
+}
+
+
+.sizable-del{
+	position: absolute;
+	right: 0;
+	color: #999;
+	font-size: 12px;
+	font-family: Courier;
+	cursor: pointer;
+}
+.resize-handle{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	cursor: pointer;
+}
+/* ------ /sizable ------ */
