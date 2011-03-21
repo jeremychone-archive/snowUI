@@ -43,10 +43,13 @@
 				<div class="canvasCtn"  style="float:left;margin-left: 20px;">
 					<canvas id="canvas02"></canvas>
 				</div>
+				<div class="canvasCtn"  style="float:left;margin-left: 20px;width:400px;height: 400px">
+					<canvas id="canvas03"></canvas>
+				</div>
 				<div style="clear:both" />
 				<script type="text/javascript">
 					$(function(){
-						// draw the first canvas
+						// draw the first canvas without reference
 						var $canvas = $("#canvas01");
 						var gtx = snow.gtx($canvas);
 						gtx.fitParent();
@@ -55,12 +58,12 @@
 						
 						// draw the second canvas, and set the referenceSize to 200,200
 						$canvas = $("#canvas02");
-						gtx = snow.gtx($canvas);
-						gtx.fitParent();
-						//
-						gtx.referenceScale(100,100);
+						gtx = snow.gtx($canvas).fitParent().referenceScale(100,100);
 						drawSomeFixedSizeShape(gtx);
 						
+						$canvas = $("#canvas03");
+						gtx = snow.gtx($canvas).fitParent().referenceScale(100,100);
+						drawSomeFixedSizeShape(gtx);
 						
 					});
 					
@@ -98,9 +101,7 @@
 						//draw the curve
 						g.moveTo(30,60);
 						g.bezierCurveTo(40,60,40,40,50,40).stroke();
-						//g.lineTo(50,40);
 						g.bezierCurveTo(60,40,60,60,70,60).stroke();
-						//g.lineTo(70,60).stroke();
 					}
 				</script>				
 				
@@ -117,13 +118,20 @@
 			<div class="canvasCtn" style="float:left;width: 400px;height: 400px">
 				<canvas id="soccerBall2"></canvas>
 			</div>
+			
+			<div class="canvasCtn" style="float:left;width: 600px;height: 600px">
+				<canvas id="soccerBall3"></canvas>
+			</div>
 			<div style="clear:both"></div>
 			<script type="text/javascript">
 				$(function(){
 					var gtx = snow.gtx($("#soccerBall1")).fitParent();
 					gtxSample.soccerBall(gtx);
 					
-					var gtx = snow.gtx($("#soccerBall2")).fitParent();
+					gtx = snow.gtx($("#soccerBall2")).fitParent();
+					gtxSample.soccerBall(gtx);
+					
+					gtx = snow.gtx($("#soccerBall3")).fitParent();
 					gtxSample.soccerBall(gtx);
 				});
 			</script>

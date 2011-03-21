@@ -588,6 +588,8 @@ snow.ua = (function(){
 		
 		// compute the ratio
 		computeRatio.call(this);
+		
+		return this;
 	}
 	
 	Gtx.prototype.fitParent = function(){
@@ -607,6 +609,8 @@ snow.ua = (function(){
 	}
 		
 	// private Method to compute the ratio
+	// Note that this will also compute offset to position the element center if the x and y ration 
+	// are not identical
 	function computeRatio(){
 		var w = this.canvas().width; h = this.canvas().height;
 		
@@ -614,32 +618,42 @@ snow.ua = (function(){
 		if (w && h && this._refWidth && this._refHeight){
 			this._xRatio = w / this._refWidth;
 			this._yRatio = h / this._refHeight;
-			this._ratio = (w * h) / (2 * this._refWidth * this._refHeight); 
+			//TODO: this probably need to be fixed for not square artifacts
+			if (this._xRatio <= this._yRatio ){
+				this._ratio = this._xRatio;
+				this._xOffset = 0;
+				this._yOffset = (h - this._refHeight * this._ratio ) / 2;
+			}else{
+				this._ratio = this._yRatio;
+				this._xOffset = (w - this._refWidth * this._ratio ) / 2;
+				this._yOffset = 0;
+			}
+			 
 			this.scallable = true;
 		}
 		
 	}
 	
 	/**
-	 * If this gtx object is scallable (was set a referenceScale), then apply the xRatio
+	 * If this gtx object is scallable (was set a referenceScale), then apply the ratio
 	 * to the x argument otherwise return unchanged value.
 	 * @param {Object} x
 	 */
 	Gtx.prototype.scaleX = function(x){
 		if (this.scallable){
-			return this._xRatio * x;
+			return this._ratio * x + this._xOffset;
 		}
 		return x;
 	}
 	
 	/**
-	 * If this gtx object is scallable (was set a referenceScale), then apply the yRatio
+	 * If this gtx object is scallable (was set a referenceScale), then apply the ratio
 	 * to the y argument otherwise return unchanged value.
 	 * @param {Object} x
 	 */	
 	Gtx.prototype.scaleY = function(y){
 		if (this.scallable){
-			return this._yRatio * y;
+			return this._ratio * y + this._yOffset;
 		}
 		return y;
 	}
