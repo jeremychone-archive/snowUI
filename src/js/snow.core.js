@@ -27,20 +27,14 @@ snow.ui = (function(){
 	 */
 	SUI.prototype.load = function(name){
 		
-		if (!_componentDefStore[name]){
-			var html = $.ajax({
-				  url: "components/" + name + ".html",
-				  async: false
-				 }).responseText;
-				 
-			$(snow.ui.config.componentsHTMLHolder).append(html);
-			
-			if (!_componentDefStore[name]){
-				snow.log.error("Fail to load component [" + name + "]");
-			}
-		}
-		
-		
+        
+        if (!_componentDefStore[name]) {
+            this.componentLoader(name);
+        }
+        
+        if (!_componentDefStore[name]) {
+            snow.log.error("Fail to load component [" + name + "]");
+        }
 	};
 	
 	
@@ -219,7 +213,7 @@ snow.ui = (function(){
 		}
 		
 		if (component){
-			component.name = componentDef.componentName;
+			component.name = componentDef.name;
 		}
 		return component;		
 	}
@@ -264,6 +258,17 @@ snow.ui = (function(){
 	sui.defaultComponentConfig = {
 		emptyParent: false,
 		postDisplayDelay: 0
+	}
+	
+	// Default componentLoader (will be called if component is not already loaded)
+	sui.componentLoader = function(componentName){
+        var html = $.ajax({
+            url: "components/" + componentName + ".html",
+            async: false
+        }).responseText;
+        
+        $(snow.ui.config.componentsHTMLHolder).append(html);
+        
 	}
 	// ------ /Public configs ------ //	
 	
