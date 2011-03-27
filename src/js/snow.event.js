@@ -65,7 +65,7 @@ var hasTouch = snow.ua.hasTouch();
  * TODO: needs to send jQuery event rather than hardcoding calls to events
  * TODO: needs to find a solution for touch vs mouse move box-bounding difference
  */
-$.fn.sDraggable = function(delegate, opts){
+$.fn.sDrag = function(delegate, opts){
 	var options = opts || delegate;
 	var delegate = (opts)?delegate:null;
 	

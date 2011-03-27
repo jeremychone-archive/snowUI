@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0"/> 
-        <title>snowUITest - snow.event sDraggable</title>
+        <title>snowUITest - snow.event sDrag</title>
 
 		<!-- Generic Test Includes -->
 		<link rel="stylesheet" href="css/sTestHelper.css"/>
@@ -49,7 +49,7 @@
 		
     </head>
     <body>
-        <h2>Single sDraggable bind</h2>
+        <h2>Single sDrag bind</h2>
 		<div class="sTestSrc sTestShowSrc">
 		
 		<div id="containerBox">
@@ -64,7 +64,7 @@
 				var $box1 = $("#box1");
 				var $container = $("#container");
 				var dragPageX,dragPageY, boxPos;
-				$box1.sDraggable({
+				$box1.sDrag({
 					start: function(e){
 						$box1.prepend("<small>Start dragging</small>");
 						 boxPos = $box1.position();
