@@ -32,7 +32,7 @@
 					
 					var now = new Date();
 					$(".clock").each(function(){
-						var clock = $(this).sComponent();
+						var clock = $(this).sClosestComponent();
 						clock.redrawClock(now);
 					});
 					

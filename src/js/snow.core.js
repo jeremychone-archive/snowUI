@@ -5,67 +5,55 @@ var snow = snow || {};
 // ---------------------- //
 // ------ snow.ui  ------ //
 
-snow.ui = (function(){
-	
-	function SUI(){};
+/**
+ * @namespace snow.ui is used to managed the lifescycle of UI components (build, display, and transition)
+ * 
+ */
+snow.ui = {};
+(function(){
 	
 	var _componentDefStore = {};
 	
 	var _transitions = {};
 	
-	// ------ Component Management ------ //
-	/**
-	 * Load a component from a name. 
-	 * + It will load the component only if it not already loaded (snow.ui does not support component reload)
-	 * + As of now, the component is loaded by loading (via sync-AJAX class) and adding the "components/[name].html" content to the "body" (can be overriden with snow.ui.config.componentsHTMLHolder)
-	 * + So, developers need to make sure of the following: 
-	 *   - the "component/[name].html" exists (relative to the current page) and does not contain any visible elements
-	 *   - the "component/[name].html" will call the snowui.registerComponent([name],componentDef) 
-	 * 
-	 * TODO: Needs to make the the component 
-	 * @param {Object} name component name (no space or special character)
-	 */
-	SUI.prototype.load = function(name){
-		
-        
-        if (!_componentDefStore[name]) {
-            this.componentLoader(name);
-        }
-        
-        if (!_componentDefStore[name]) {
-            snow.log.error("Fail to load component [" + name + "]");
-        }
-	};
+	// ------ Public API: Component Management ------ //
+
 	
 	
 	/**
 	 * Return the component definition for a given name. (load it if not found)
 	 * @param {Object} name
 	 */
-	SUI.prototype.getComponentDef = function(name){
+	snow.ui.getComponentDef = function(name){
 		//make sure it is loaded
-		this.load(name);
+		loadComponent(name);
 		return _componentDefStore[name];
 	};
 	
 	/**
 	 * MUST be called to register the component
-	 * @param {String} name: the name of the component
-	 * @param {Object or Function} componentFactory: (Required) Factory function or "object template" that will be called or cloned for each component instance (each time snow.ui.display gets called). 
-	 * 							   A "Component" object can have the following methods  
-	 *                                 {Function} componentFactory.build(data,config):       (required) function that will be called with (data,config) to build the $element.
-	 *                                 {Function} componentFactory.postDisplay(data,config): (optional) This method will get called with (data,config) after the build method (postDisplay is deferred for performance optimization) 
-	 *                                                                                       Since this call will be deferred, it is a good place to do non-visible logic, such as event bindings.
-     * @param {config} config: a config object  
-	 *    config.parent:      {jQuery} jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic)
+	 * 
+	 * @param {String} name the name of the component
+     * 
+     * @param {config} config a config object  
+	 * 
+	 * @param {String|jQuery} config.parent jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic). <br />
 	 *                              Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
 	 *                                      So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
-	 *    config.animation:   {String} the animation ("fromLeft" , "fromRight", or null) (default undefined)
-	 *    config.replace:     {jQuery} jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
-	 *    config.emptyParent: {Boolean} if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
-	 *    config.unique:      {Boolean} if true, the component will be display only if there is not already one component with the same name in the page.
+	 * @param {String}        config.animation (experimental) the animation ("fromLeft" , "fromRight", or null) (default undefined)
+	 * @param {String|jQuery} config.replace jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
+	 * @param {Boolean}       config.emptyParent if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
+	 * @param {Boolean}       config.unique      if true, the component will be display only if there is not already one component with the same name in the page.
+	 * 
+	 * @param {Object|Function} componentFactory (Required) Factory function or "object template" that will be used to create the object instance. If componentFactory is a plain object, 
+	 *                                                      the "object template" will be cloned to create the component instance. If it is a function, it will be called and a component instance object will be exptected as return value.<br />  <br />
+	 *                                                       
+	 * 							   A "Component" object can have the following methods  <br /> <br />
+	 *                                 component.build(data,config):       (required) function that will be called with (data,config) to build the component.$element.<br />
+	 *                                 component.postDisplay(data,config): (optional) This method will get called with (data,config) after the build method (postDisplay is deferred for performance optimization) 
+	 *                                                                                       Since this call will be deferred, it is a good place to do non-visible logic, such as event bindings.<br />
 	 */
-	SUI.prototype.registerComponent = function(name,config,componentFactory){
+	snow.ui.registerComponent = function(name,config,componentFactory){
 		var def = {};
 		def.name = name;
 		def.componentFactory = componentFactory;
@@ -79,43 +67,105 @@ snow.ui = (function(){
 	 * to do its caching magic, and can speed up the first appearance of the component when it is due. 
 	 * @param {Object} name
 	 */
-	SUI.prototype.instantiateComponent = function(name){
+	snow.ui.instantiateComponent = function(name){
 		var componentDef = this.getComponentDef(name);
 		return instantiateComponent(componentDef);
 	}
-	// ------ /Component Management ------ //
+	// ------ /Public API: Component Management ------ //
 	
-	// ------ Transition Management ------ //
-	SUI.prototype.registerTransition = function(name,transition){
+	// ------ Public API: Transition Management ------ //
+	snow.ui.registerTransition = function(name,transition){
 		_transitions[name] = transition;
 	}
 
-	SUI.prototype.getTransition = function(name){
+	snow.ui.getTransition = function(name){
 		return _transitions[name];
 	}
-	// ------ /Transition Management ------ //
+	// ------ /Public API: Transition Management ------ //
 	
-	// ------ Display Management ------ //
+	// ------ Public API: Display Management ------ //
 
 	/**
 	 * This will create, build, and display a new component. It will load the component on demand if needed.
-	 * @param {Object} name (required) the component name
+	 * @param {String} name (required) the component name
 	 * @param {Object} data (optional, required if config) the data to be passed to the build and postDisplay.
-	 * @param {Object} config (optional) config override the component config
+	 * @param {Object} config (optional) config override the component's config (see {@link snow.ui.registerComponent} config params for description)
+	 * @return {Component} return the component instance.
 	 */
-	SUI.prototype.display = function(componentName,data,config){
-		return process(sui,componentName,data,config);
+	snow.ui.display = function(componentName,data,config){
+		return process(snow.ui,componentName,data,config);
 	};
 	
 	/**
-	 * Same as snow.ui.display... but bypass the build() step. 
+	 * Same as snow.ui.display but bypass the build() step (postDisplay() will still be called). 
 	 * So, this will create a new component and attach it to the $element and call postDisplay on it.
 	 * 
 	 */
-	SUI.prototype.attach = function(componentName,$element,data,config){
+	snow.ui.attach = function(componentName,$element,data,config){
 		return process(sui,componentName,data,config,$element);
 	}
-	// ------ /Display Management ------ //
+	// ------ /Public API: Display Management ------ //
+	
+	
+	// ------ Public Properties: Config ------ //
+	/**
+	 * Config for the snow.ui module. 
+	 * <ul>
+	 *   <li><span class="light fixedFont">{String|jQuery}</span> <strong>config.componentsHTMLHolder</strong> (default: "body")  jQuery selector or object pointing to the element that will be used to add the loaded component HTML.</li>
+	 * </ul>
+	 *  
+	 */
+	snow.ui.config = {
+		
+		componentsHTMLHolder: "body"
+	}
+	
+	snow.ui.defaultComponentConfig = {
+		emptyParent: false,
+		postDisplayDelay: 0
+	}
+	
+	// Default componentLoader (will be called if component is not already loaded)
+	snow.ui.componentLoader = function(componentName){
+        var html = $.ajax({
+            url: "components/" + componentName + ".html",
+            async: false
+        }).responseText;
+        
+        $(snow.ui.config.componentsHTMLHolder).append(html);
+        
+	}
+	// ------ /Public Properties: Config ------ //	
+	
+	/**
+	 * Load a component from a name. At this point, we assume the componentLoader will be synchronous.<br />
+	 *  
+	 *  <ul>
+	 *    <li>It will load the component only if it not already loaded</li>
+	 * 
+	 *    <li>As of now, the component is loaded by loading (via sync-AJAX class) and adding the "components/[name].html" content to the "body" (can be overriden with snow.ui.config.componentsHTMLHolder)</li>
+	 * 
+	 *    <li> So, developers need to make sure of the following:<br /> 
+	 *   - the "component/[name].html" exists (relative to the current page) and does not contain any visible elements <br />
+	 *   - the "component/[name].html" will call the snowui.registerComponent([name],componentDef) <br />
+	 *   </li>
+	 *  </ul>
+	 * <br />
+	 * TODO: Needs to make the the component 
+	 * @param {Object} name component name (no space or special character)
+	 * 
+	 */
+	function loadComponent(name){
+		
+        
+        if (!_componentDefStore[name]) {
+            snow.ui.componentLoader(name);
+        }
+        
+        if (!_componentDefStore[name]) {
+            snow.log.error("Fail to load component [" + name + "]");
+        }
+	};	
 
 	//if $element exist, then, bypass the build
 	function process(sui,name,data,config,$element){
@@ -248,51 +298,40 @@ snow.ui = (function(){
 	}	
 	// ------ /Private Helpers ------ //
 	
-	var sui = new SUI();
 
-	// ------ Public configs ------ //
-	sui.config = {
-		componentsHTMLHolder: "body"
-	}
 	
-	sui.defaultComponentConfig = {
-		emptyParent: false,
-		postDisplayDelay: 0
-	}
-	
-	// Default componentLoader (will be called if component is not already loaded)
-	sui.componentLoader = function(componentName){
-        var html = $.ajax({
-            url: "components/" + componentName + ".html",
-            async: false
-        }).responseText;
-        
-        $(snow.ui.config.componentsHTMLHolder).append(html);
-        
-	}
-	// ------ /Public configs ------ //	
-	
-	return sui;
 	
 })();
 
 // ------ snow.ui  ------ //
 // ---------------------- //
 
+/**
+ * @namespace
+ * 
+ * snowUI jQuery extensions.
+ */
+$.fn = $.fn;
 
 (function($) {
 
   /**
-   * Return the component object for which this HTMLElement belong too. 
+   *
+   * Traverse the tree backwards (this html element up to document) to find the closest html element
+   * containing the snow.ui component for this name. 
    * 
    * If a componentName is given then it will try to find the given component. 
    * 
    * If no componentName is given, then it will return the first component found.
    * 
-   * @param {componentName} The component name. If absent, then it will take the first element that has a component attached.
+   * For example: 
+   * @example
+   * var myComponent = $(thisDiv).sClosestComponent("myComponent");
+   * 
+   * @param {String} componentName The component name to be match when traversing the tree, if undefined, then, the closestComponent will be return.
    * 
    */
-  $.fn.sComponent = function(componentName) {
+  $.fn.sClosestComponent = function(componentName) {
 	  
       // iterate and process each matched element
 	  	var $componentElement; 
@@ -314,30 +353,81 @@ snow.ui = (function(){
 //for now, just support console.log
 //TODO: needs to support logger printer, formatter, and listener
 (function(){
-	var _config = {debugMode : false};
 	
+	const ERROR = "ERROR", DEBUG="DEBUG";
+	
+	
+	// TODO: needs to add the ability to add loggers
+	var loggers;
+	
+	/**
+	 * @namespace
+	 * 
+	 * Convenient 
+	 */
 	snow.log = {
+		
+		/**
+		 * @namespace
+		 * 
+		 */
+		config: {
+			/**
+			 * Tell to print the debug message or not (default: false).
+			 * @type Boolean
+			 */
+			debugMode : false,
+			
+			/**
+			 * Tell to print the log message to the console (default: true).
+			 */
+			consoleLog: true
+		},
+		/**
+		 * Log info.
+		 * 
+		 * @param {String} text
+		 */
 		info: function(text){
-			consoleLog(text);
+			printLog(text);
 		},
 		
+		/**
+		 * 
+		 * @param {String} text
+		 */
 		error: function(text){
-			consoleLog("ERROR - " + text);
+			printLog(text,ERROR);
 		}, 
 		
+		/**
+		 * Log the debug message. By default the snow.log.config.debugMode=false (so, it needs to be set to "true").
+		 * <br />
+		 * <br />
+		 * See {@link snow.log.config}
+		 * 
+		 * @param {String} text
+		 */
 		debug: function(text){
-			if (_config.debugMode){
-				consoleLog("DEBUG - " + text);	
+			if (snow.log.config.debugMode){
+				printLog(text,DEBUG);	
 			}
-		},
-		
-		setConfig: function(config){
-			$.extend(_config,config); 
 		}
-	};	
+	};
 	
-	function consoleLog(text){
+	function printLog(text,type){
+		//TODO: needs to go through the registered "loggers"
+		 
+		 if (snow.log.config.consoleLog) {
+		 	printToConsole(text, type);
+		 }
+	}	
+	
+	function printToConsole(text,type){
 		if (window.console && window.console.log){
+			if (type){
+				text = type + " - " + text;
+			} 
 			console.log(text);
 		}
 	};
@@ -350,21 +440,32 @@ snow.ui = (function(){
 // ------------------------ //
 // ------ snow.util  ------ //
 
+/**
+ * @namespace
+ * 
+ * Some utilities
+ */
 snow.util = {};
 
-/**
- * snow.util.uuid
- * Usage: 
- *    snow.util.uuid(); // returns "92329D39-6F5C-4520-ABFC-AAB64544E172"
- *    Math.uuid(15);    // 15 character ID (default base=62), returns "VcydxgltxrVZSTV"
- *    Math.uuid(8, 2);  // returns "01001010"
- *    
- * @from Math.uuid 2010 Robert Kieffer http://www.broofa.com
- */
+
 (function() {
   // Private array of chars to use
   var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''); 
 
+/**
+ * Create a random id.
+ * <br /><br />
+ * Code from: Math.uuid 2010 Robert Kieffer http://www.broofa.com 
+ * 
+ * 
+ * @example
+ *    snow.util.uuid(); // returns "92329D39-6F5C-4520-ABFC-AAB64544E172"
+ *    snow.util.uuid(15);    // 15 character ID (default base=62), returns "VcydxgltxrVZSTV"
+ *    snow.util.uuid(8, 2);  // returns "01001010"
+ *    
+ * @param {Number} len (optional) length in char of the returned random ID. If absent, the standard UUID format will be returned 
+ * @param {Number} radix (optional) radix of the random number. (Default: 62)
+ */
   snow.util.uuid =  function (len, radix) {
     var chars = CHARS, uuid = [];
     radix = radix || chars.length;
@@ -395,12 +496,17 @@ snow.util = {};
 })();
 
 
+/**
+ * @namespace
+ * 
+ * Array utilities
+ */
 snow.util.array = {
 	
 	/**
 	 * Remove item(s) from an array.
-	 * 
-	 * @from: Array Remove - By John Resig (MIT Licensed)
+	 * <br /> <br />
+	 * Code from: Array Remove - By John Resig (MIT Licensed)
 	 * 
 	 * @param {Object} a the Array 
 	 * @param {Object} from the first index to remove from
@@ -415,9 +521,9 @@ snow.util.array = {
 	/**
 	 * For a array of object, this will get the first index of the matching prop name/value 
 	 * return -1 if no match
-	 * @param {Object} a
-	 * @param {Object} propName
-	 * @param {Object} propValue
+	 * @param {Object} a the Array
+	 * @param {Object} propName the property name
+	 * @param {Object} propValue the property value to be matched
 	 */
 	getIndex: function(a,propName,propValue){
 		if (a && propName && typeof propValue != "undefined"){
@@ -434,8 +540,8 @@ snow.util.array = {
 	
 	/**
 	 * Sort an array of object by a propName
-	 * @param {Object} a
-	 * @param {Object} propName
+	 * @param {Object} a the Array
+	 * @param {Object} propName the property name to be sorted by
 	 */
 	sortBy: function(a,propName){
 		return a.sort(sortByFunc);
@@ -450,12 +556,19 @@ snow.util.array = {
 	}
 }
 
+/**
+ * Give a random number between two number
+ * 
+ * @param {Object} from
+ * @param {Object} to
+ */
 snow.util.randomInt = function (from,to){
 	var offset = to - from;
 	return from + Math.floor(Math.random() * (offset + 1));
 }
 
 // from the "JavaScript Pattern" book
+// NOTE: Not used at this time. Just keeping it here for reference
 snow.util.inherit = function (C,P){
 	var F = function() {};
 	F.prototype = P.prototype;
@@ -471,20 +584,29 @@ snow.util.inherit = function (C,P){
 // ---------------------------------- //
 // ------ snow.ua (User Agent) ------ //
 
-snow.ua = (function(){
+/**
+ * @namespace
+ * 
+ * User Agent utilities to know what capabilities the browser support.
+ */
+snow.ua = {};
+
+(function(){
 	var WEBKIT_PREFIX = "-webkit-",
 	    MOZ_PREFIX = "-moz-";
 		
-	function SUA(){};
-	
 	//privates
 	var _hasTouch = null,
 		_hasTransition = null,
 		_transitionPrefix = null,
 		_eventsMap = {}; // {eventName:true/false,....}
 	
-	
-	SUA.prototype.hasEvent = function(eventName){
+	/**
+	 * Return true if the eventname is supported by this user agent.
+	 * 
+	 * @param {Object} eventName
+	 */
+	snow.ua.hasEvent = function(eventName){
 		var r = _eventsMap[eventName];
 		if (typeof r === "undefined"){
 			r = isEventSupported(eventName);
@@ -493,12 +615,19 @@ snow.ua = (function(){
 		return r;
 	}
 	
-	
-	SUA.prototype.hasTouch = function(){
+	/**
+	 * Convenient methods to know if this user agent supports touch events. It tests "touchstart".
+	 */
+	snow.ua.hasTouch = function(){
 		return this.hasEvent("touchstart");
 	}
 	
-	SUA.prototype.transitionPrefix = function(){
+	/**
+	 * Get the transition prefix for this user agent (e.g., -webkit- or -moz-).
+	 * <br /> <br />
+	 * TODO: we might want to have a snow.ua.cssPrefix() since it will be the same prefix for other css properties as well
+	 */
+	snow.ua.transitionPrefix = function(){
 		if (this.hasTransition()){
 			return _transitionPrefix;
 		}else{
@@ -506,7 +635,10 @@ snow.ua = (function(){
 		}
 	}
 	
-	SUA.prototype.hasTransition = function(){
+	/**
+	 * Return true if the user agent supports CSS3 transition.
+	 */
+	snow.ua.hasTransition = function(){
 		if (_hasTransition === null) {
 			var div = document.createElement('div');
 			div.innerHTML = '<div style="-webkit-transition:color 1s linear;-moz-transition:color 1s linear;"></div>';
@@ -544,7 +676,6 @@ snow.ua = (function(){
 	})()	
 	// ------ /Privates ------ //
 	
-	return new SUA();
 })();
 
 // ------ /snow.ua (User Agent) ------ //
@@ -553,14 +684,28 @@ snow.ua = (function(){
 // ----------------------- //
 // ------ snow.gtx ------- //
 
+
 //from: https://developer.mozilla.org/en/Code_snippets/Canvas
 (function(){
 	
 	/**
-	 * Factory/Constutor that build 
+	 * @constructor 
+	 * 
+	 * @description Factory or Constructor return a "gtx" instance for this canvas which is a chainable canvas wrapper.
+	 * 
+	 * @example
+	 * // Using gtx as a factory
+	 * var gtx = snow.gtx($("#myCanvas"));
+	 * // then, you can chain any HTML5 canvas calls
+	 * gtx.beginPath().strokeStyle("#aaa").lineWidth(1).moveTo(0,0);
+	 * gtx.lineTo(100,100).stroke();
+	 * 
+	 * // You can also create a snow.gtx instance with "new"
+	 * var gtx2 = new snow.gtx($("#myCanvas2")); 
+	 * 
 	 * @param {Object} arg can be a Canvas 2D Context element or a Canvas element.
 	 */
-    function Gtx(arg){
+    snow.gtx = function Gtx(arg){
 		var ctx = arg;
 		// if it s a jquery object, get the first element (assume it is a canvas
 		if (arg.jquery){
@@ -585,9 +730,17 @@ snow.ua = (function(){
         }
     }
 	
+	
 	// ------ GTX Extension Methods ------ //
-	// Set the referenceScale (the width and height that correspond to the 1 ratio)
-	Gtx.prototype.referenceScale = function(refWidth,refHeight){
+	// 
+	/**
+	 * Set the referenceScale (the width and height that correspond to the 1 ratio). All subsequent canvas
+	 * commands will be scale approprietely. Set width/height as the original dimension of the canvas element.
+	 * @param {Object} refWidth
+	 * @param {Object} refHeight
+	 * @returns {snow.gtx}
+	 */
+	snow.gtx.prototype.referenceScale = function(refWidth,refHeight){
 		this._refWidth = refWidth;
 		this._refHeight = refHeight;
 		
@@ -597,7 +750,11 @@ snow.ua = (function(){
 		return this;
 	}
 	
-	Gtx.prototype.fitParent = function(){
+	/**
+	 * This will make this canvas fit its parent HTML element. If the referenceScale was set, it will recompute the ratio.
+	 * @returns {snow.gtx}
+	 */
+	snow.gtx.prototype.fitParent = function(){
 		var canvas = this.canvas();
 		if (canvas){
 			var canvas = this.canvas();
@@ -640,11 +797,13 @@ snow.ua = (function(){
 	}
 	
 	/**
-	 * If this gtx object is scallable (was set a referenceScale), then apply the ratio
-	 * to the x argument otherwise return unchanged value.
+	 * If this gtx object is scallable (referenceScale was set), then apply the ratio
+	 * to the x argument otherwise return unchanged value. Note that it might add a offset value
+	 * to center the drawing if necessary.
 	 * @param {Object} x
+	 * @returns {Number}
 	 */
-	Gtx.prototype.scaleX = function(x){
+	snow.gtx.prototype.scaleX = function(x){
 		if (this.scallable){
 			return this._ratio * x + this._xOffset;
 		}
@@ -652,11 +811,13 @@ snow.ua = (function(){
 	}
 	
 	/**
-	 * If this gtx object is scallable (was set a referenceScale), then apply the ratio
-	 * to the y argument otherwise return unchanged value.
+	 * If this gtx object is scallable (referenceScale was set), then apply the ratio
+	 * to the y argument otherwise return unchanged value. Note that it might add a offset value
+	 * to center the drawing if necessary.
 	 * @param {Object} x
+	 * @returns {Number}
 	 */	
-	Gtx.prototype.scaleY = function(y){
+	snow.gtx.prototype.scaleY = function(y){
 		if (this.scallable){
 			return this._ratio * y + this._yOffset;
 		}
@@ -664,18 +825,22 @@ snow.ua = (function(){
 	}
 	
 	/**
-	 * Scale the value with the overall computed ratio.
+	 * Scale the value with the overall computed ratio. (the minimum ratio between xRatio and yRatio)
 	 * @param {Object} val
+	 * @returns {Number}
 	 */
-	Gtx.prototype.scaleVal = function(val){
+	snow.gtx.prototype.scaleVal = function(val){
 		if (this.scallable){
 			return this._ratio * val;
 		}
 		return val;		
 	}
 	
-	
-	Gtx.prototype.clear = function(){
+	/**
+	 * Clear the canvas.
+	 * @returns {snow.gtx}
+	 */
+	snow.gtx.prototype.clear = function(){
 		if (this.canvas()){
 			//this should create a clear
 			this.canvas().width = this.canvas().width;
@@ -689,7 +854,7 @@ snow.ua = (function(){
 	// ------ /Extension Methods ------ //
 	
 	// ------ Context override methods ------ //
-	Gtx.prototype.arc = function(x,y,radius,startAngle,endAngle,antiClock){
+	snow.gtx.prototype.arc = function(x,y,radius,startAngle,endAngle,antiClock){
 		if (this.scallable){
 			x = this.scaleX(x);
 			y = this.scaleY(y);
@@ -700,7 +865,7 @@ snow.ua = (function(){
 		return this;
 	}
 	
-	Gtx.prototype.arcTo = function(x1,y1,x2,y2,radius){
+	snow.gtx.prototype.arcTo = function(x1,y1,x2,y2,radius){
 		if (this.scallable){
 			x1 = this.scaleX(x1);
 			y1 = this.scaleY(y1);
@@ -714,7 +879,7 @@ snow.ua = (function(){
 	}
 	
 	//(in double cp1x, in double cp1y, in double cp2x, in double cp2y, in double x, in double y);
-	Gtx.prototype.bezierCurveTo = function(cp1x,cp1y,cp2x,cp2y,x,y){
+	snow.gtx.prototype.bezierCurveTo = function(cp1x,cp1y,cp2x,cp2y,x,y){
 		if (this.scallable) {
 			cp1x = this.scaleX(cp1x);
 			cp1y = this.scaleY(cp1y);
@@ -728,7 +893,7 @@ snow.ua = (function(){
 	}
 	
 	//(in double cpx, in double cpy, in double x, in double y);
-	Gtx.prototype.quadraticCurveTo = function(cpx,cpy,x,y){
+	snow.gtx.prototype.quadraticCurveTo = function(cpx,cpy,x,y){
 		if (this.scallable) {
 			cpx = this.scaleX(cpx);
 			cpy = this.scaleY(cpy);
@@ -739,17 +904,17 @@ snow.ua = (function(){
 		return this;
 	}
 	
-	Gtx.prototype.rect = function(x,y,w,h){
+	snow.gtx.prototype.rect = function(x,y,w,h){
 		return execRect.call(this,"rect",x,y,w,h);	
 	}
-	Gtx.prototype.clearRect = function(x,y,w,h){
+	snow.gtx.prototype.clearRect = function(x,y,w,h){
 		return execRect.call(this,"clearRect",x,y,w,h);	
 	}
-	Gtx.prototype.fillRect = function(x,y,w,h){
+	snow.gtx.prototype.fillRect = function(x,y,w,h){
 		
 		return execRect.call(this,"fillRect",x,y,w,h);	
 	}
-	Gtx.prototype.strokeRect = function(x,y,w,h){
+	snow.gtx.prototype.strokeRect = function(x,y,w,h){
 		return execRect.call(this,"strokeRect",x,y,w,h);	
 	}
 	
@@ -766,7 +931,7 @@ snow.ua = (function(){
 		return this;			
 	}	
 	
-	Gtx.prototype.moveTo = function(x,y){
+	snow.gtx.prototype.moveTo = function(x,y){
 		if (this.scallable){
 			x = this.scaleX(x);
 			y = this.scaleY(y);
@@ -775,7 +940,7 @@ snow.ua = (function(){
 		return this;
 	}
 	
-	Gtx.prototype.lineTo = function(x,y){
+	snow.gtx.prototype.lineTo = function(x,y){
 		if (this.scallable){
 			x = this.scaleX(x);
 			y = this.scaleY(y);
@@ -788,7 +953,7 @@ snow.ua = (function(){
 
 	
 	// create the chainable object for gradient
-	Gtx.prototype.createLinearGradient = function(x0,y0,x1,y1){
+	snow.gtx.prototype.createLinearGradient = function(x0,y0,x1,y1){
 		if (this.scallable){
 			x0 = this.scaleX(x0);
 			y0 = this.scaleY(y0);
@@ -802,7 +967,7 @@ snow.ua = (function(){
 	
 	// create the chainable object for gradient
 	//(in double x0, in double y0, in double r0, in double x1, in double y1, in double r1);
-	Gtx.prototype.createRadialGradient = function(x0,y0,r0,x1,y1,r1){
+	snow.gtx.prototype.createRadialGradient = function(x0,y0,r0,x1,y1,r1){
 		if (this.scallable){
 			x0 = this.scaleX(x0);
 			y0 = this.scaleY(y0);
@@ -817,11 +982,11 @@ snow.ua = (function(){
 		return gtxGradient;		
 	}
 	
-	Gtx.prototype.fillStyle = function(arg){
+	snow.gtx.prototype.fillStyle = function(arg){
 		return style(this,"fillStyle",arg);
 	}
 	
-	Gtx.prototype.strokeStyle = function(arg){
+	snow.gtx.prototype.strokeStyle = function(arg){
 		return style(this,"strokeStyle",arg);
 	}
 	
@@ -880,7 +1045,7 @@ snow.ua = (function(){
         var gmethl, propl;
         for (var i = 0, methl = methods.length; i < methl; i++) {
             var m = methods[i];
-            Gtx.prototype[m] = (function(m){
+            snow.gtx.prototype[m] = (function(m){
                 return function(){
                     this.ctx[m].apply(this.ctx, arguments);
                     return this;
@@ -890,7 +1055,7 @@ snow.ua = (function(){
         
         for (i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
             var gm = getterMethods[i];
-            Gtx.prototype[gm] = (function(gm){
+            snow.gtx.prototype[gm] = (function(gm){
                 return function(){
                     return this.ctx[gm].apply(this.ctx, arguments);
                 };
@@ -899,7 +1064,7 @@ snow.ua = (function(){
         
         for (i = 0, propl = props.length; i < propl; i++) {
             var p = props[i];
-            Gtx.prototype[p] = (function(p){
+            snow.gtx.prototype[p] = (function(p){
                 return function(value){
                     if (typeof value === 'undefined') {
                         return this.ctx[p];
@@ -912,8 +1077,6 @@ snow.ua = (function(){
     };
 	
 	
-	
-	snow.gtx = Gtx;
 })();
 
 // ------ /snow.gtx ------- //
