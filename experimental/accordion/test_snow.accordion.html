@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>snowUITest - sAccordion</title>
+
+		<!-- Generic Test Includes -->
+		<link rel="stylesheet" href="../../test/css/sTestHelper.css"/>
+		<script type="text/javascript" src="../../js-dependencies/jquery.js" ></script>
+		<script type="text/javascript" src="../../test/js/sTestHelper.js" ></script>
+		<script type="text/javascript">
+		$(function(){
+			showTestSources();
+		});
+		</script>
+		<!-- /Generic Test Includes -->
+
+		<link rel="stylesheet" href="snow.accordion.css"/>
+		<link rel="stylesheet" href="snow.accordion.skin-basic.css"/>
+		
+		<script type="text/javascript" src="../../src/js/snow.core.js" ></script>
+		<script type="text/javascript" src="snow.accordion.js" ></script>
+    </head>
+    <body>
+    	<h1>snowUI sAccordion Test/Documentation <br />
+    	<small>(Experimental)</small></h1>
+		<!-- ------ sAccordion Basic ------ --> 
+		<div class="sTestSection">
+        <h2>sAccordion Basic</h2>
+		<div  class="sTestSrc sTestShowSrc" style="position: relative;width:300px;height: 500px;border: solid 1px blue">
+		    <!-- override the css property .sAccordion-panel.sel height property -->
+			<div id="sAccordionBasicTest" class="sAccordion">
+				<div class="sAccordion-panel">
+					<div class="sAccordion-panel-header">
+						 Panel Header
+					</div>
+					<div class="sAccordion-panel-content">
+						 Panel Content
+					</div>
+				</div>				
+				<div class="sAccordion-panel sel">
+					<div class="sAccordion-panel-header">
+						 Panel Header
+					</div>
+					<div class="sAccordion-panel-content">
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />						
+					</div>
+				</div>
+				
+				<div class="sAccordion-panel">
+					<div class="sAccordion-panel-header">
+						Second Panel Header
+					</div>
+					<div class="sAccordion-panel-content">
+						Second Panel Content
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+				$(function(){
+					$("#sAccordionBasicTest").sAccordion();
+					
+					//bind the chnage event handler after
+					$("#sAccordionBasicTest").bind("sAccordionChange",function(event,data){
+						log("sAccordionChange oldIndex: " + data.oldIndex + " oldPanel: " + data.oldPanel + " newIndex: " + data.newIndex + " newPanel: " + data.newPanel);
+					});					
+				});
+			</script>
+		</div>
+		</div>
+		<!-- ------ /sAccordion Basic ------ --> 		
+    	
+		<!-- ------ sAccordion Flex ------ --> 
+		<div class="sTestSection">
+        <h2>sAccordion Flex</h2>
+		<div  class="sTestSrc sTestShowSrc" style="position: relative;width:300px;height:500px;border: solid 1px blue">
+		
+		    <!-- you can add "flex" to have the accordion flex vertically as well as horizontally -->
+			<div id="sAccordionFlexTest" class="sAccordion flex">
+				<div class="sAccordion-panel">
+					<div class="sAccordion-panel-header">
+						 Panel Header
+					</div>
+					<div class="sAccordion-panel-content">
+						 Panel Content
+					</div>
+				</div>				
+				<div class="sAccordion-panel sel">
+					<div class="sAccordion-panel-header">
+						 Panel Header
+					</div>
+					<div class="sAccordion-panel-content">
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />
+						 Panel Content<br />						
+					</div>
+				</div>
+				
+				<div class="sAccordion-panel">
+					<div class="sAccordion-panel-header">
+						Second Panel Header
+					</div>
+					<div class="sAccordion-panel-content">
+						Second Panel Content
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+				$(function(){
+					
+					//initialize and bind the change event
+					$("#sAccordionFlexTest").sAccordion({
+						change:function(event,data){
+							log("sAccordionChange oldIndex: " + data.oldIndex + " oldPanel: " + data.oldPanel + " newIndex: " + data.newIndex + " newPanel: " + data.newPanel);
+						}
+					});
+					
+				});
+			</script>
+		</div>
+		<script type="text/javascript">
+		//Test the resize ,on resize, change the height
+		$(window).resize(function(){
+			$("#sAccordionFlexTest").parent().css("height","700px");
+		});
+		</script>
+		</div>
+		<!-- ------ /sAccordion Flex ------ --> 
+		
+
+    </body>
+</html>
