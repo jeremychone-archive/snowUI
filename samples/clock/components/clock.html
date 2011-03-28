@@ -30,12 +30,12 @@ snow.ui.registerComponent(
 			var $handle = this.$element.find("canvas.clock-handle");
 			
 			var g = snow.gtx($handle);
+			var g = snow.gtx($handle);
 			g.beginPath().strokeStyle("#999").lineWidth(.5);
-			g.moveTo(4,16).lineTo(16,4).stroke();
-			g.moveTo(8,16).lineTo(16,8).stroke();
-			g.moveTo(12,16).lineTo(16,12).stroke();
-			g.lineWidth(1).moveTo(15,16).lineTo(16,15).stroke();
-			
+			g.moveTo(20,32).lineTo(32,20).stroke();
+			g.moveTo(24,32).lineTo(32,24).stroke();
+			g.moveTo(28,32).lineTo(32,28).stroke();
+			g.lineWidth(1).moveTo(30,32).lineTo(32,30).stroke();
 
 			this.redrawClock();
 			
@@ -45,33 +45,20 @@ snow.ui.registerComponent(
 			});
 			
 			// ------ Resize Clock ------ //
-			$handle.bind("mousedown",function(e){
-				var $handle = $(this);
+			$handle.sDrag({
+				start: function(e){
+					thisComponent.orgX = e.pageX;
+					thisComponent.orgY = e.pageY;
+					thisComponent.orgW = $e.width();
+				    thisComponent.orgH = $e.height();
+				},
 				
-				var $document = $(document);
-				var id = "_" + snow.util.uuid(7);
-				
-				var orgX = e.pageX;
-				var orgY = e.pageY;
-				var orgW = $e.width();
-				var orgH = $e.height();
-				
-				
-				
-				
-				$document.bind("mousemove." + id,function(e){
-					var offset = Math.max((e.pageX - orgX),(e.pageY - orgY));
-					$e.width(orgW + offset);
-					$e.height(orgH + offset );	
+				drag: function(e){
+					var offset = Math.max((e.pageX - thisComponent.orgX),(e.pageY - thisComponent.orgY));
+					$e.width(thisComponent.orgW + offset);
+					$e.height(thisComponent.orgH + offset );	
 					thisComponent.redrawClock();
-				});
-				
-				$document.bind("mouseup." + id,function(e){
-					
-					//unbind everything
-					$(document).unbind("mousemove." + id);
-					$(document).unbind("mouseup." + id);
-				});
+				}
 			});
 			// ------ Resize Clock ------ //
 			
@@ -179,6 +166,6 @@ snow.ui.registerComponent(
 	  <canvas class="clock-canvas"></canvas>
 	  <label class="clock-time"></label>
 	  <div class="clock-del">X</div>
-	  <canvas width="16px" height="16px" class="clock-handle"></canvas>
+	  <canvas width="32px" height="32px" class="clock-handle"></canvas>
 </div>
 </script>
