@@ -102,7 +102,7 @@ snow.ui = {};
 	 * 
 	 */
 	snow.ui.attach = function(componentName,$element,data,config){
-		return process(sui,componentName,data,config,$element);
+		return process(snow.ui,componentName,data,config,$element);
 	}
 	// ------ /Public API: Display Management ------ //
 	
@@ -196,7 +196,7 @@ snow.ui = {};
 			bind$element($element, component, data, config);
 			
 			//render the element
-			renderComponent(sui, component, data, config);
+			renderComponent(snow.ui, component, data, config);
 			
 			
 			
