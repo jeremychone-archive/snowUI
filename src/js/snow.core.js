@@ -553,6 +553,29 @@ snow.util.array = {
 		    var y = b[propName];
 		    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 		}
+	},
+	
+	/**
+	 * From an array of javascript obect, create a map (js object) where the key is the propName value, and the value is the array item.
+	 * If the propName does not on an item exist, it will ingore the item.
+	 * @example
+	 * var myVehicules = [{id:"truck",speed:80},{id:"racecar",speed:200}];
+	 * var vehiculeById = snow.util.array.mapBy(myVehicules,"id");
+	 * // vehiculeById["truck"].speed == 80 
+	 * @param {Object} a
+	 * @param {Object} propName
+	 */
+	mapBy: function(a,propName){
+		var i,l = a.length;
+		var map = {},item, key;
+		for (i =0; i < l; i++){
+			item = a[i];
+			key = item[propName];
+			if (typeof key != "undefined" && key != null){
+				map[key] = item;
+			}
+		}
+		return map;
 	}
 }
 

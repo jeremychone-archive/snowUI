@@ -1,0 +1,17 @@
+*{
+	margin: 0;
+	padding: 0;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+body{
+	background-color: #777;	
+}
+
+#page{
+	position: absolute;
+	background-image: url(images/bkg.png);
+	top: 10px; right: 10px; bottom: 10px; left: 10px;
+	border: solid 4px black;
+}
+

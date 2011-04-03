@@ -1,0 +1,50 @@
+<script type="text/javascript">
+(function(){
+	
+	var dockItems = [
+		{id:"intro",title:"Intro"},
+		{id:"demos",title:"Demos"},
+		{id:"quick",title:"Quick Start"},
+		{id:"doc",title:"Doc"}
+	]
+	
+	var dockItemByName = snow.util.array.mapBy(dockItems,"id");
+	
+	tt = dockItemByName;
+	
+	snow.ui.registerComponent("dock",{
+		parent: "#page",
+	},{
+		build: function(){
+			var $e = $("#tmpl-dock").tmpl({items:dockItems});
+			return $e;
+		}, 
+		
+		postDisplay: function(){
+			var $e = this.$element;
+			snow.ui.display("window",{title:"Welcome"});
+			
+			$e.sTouch(".dock-item",function(){
+				var $item = $(this);
+				var id = $item.attr("data-itemid");
+				var item = dockItemByName[id];
+				snow.ui.display("window",{title:item.title});
+			});
+		}	
+	}
+	);	
+})();	
+
+</script>
+
+<script id="tmpl-dock" type="text/html">
+	<div id="dockFrm">
+		<div id="dock">
+			{{each items}}
+			<div class="dock-item" data-itemid="${id}">
+				<label>${title}</label>
+			</div>
+			{{/each}}
+		</div>
+	</div>
+</script>

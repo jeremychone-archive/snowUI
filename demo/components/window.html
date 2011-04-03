@@ -1,0 +1,64 @@
+<script type="text/javascript">
+(function(){
+	snow.ui.registerComponent("window",{
+		parent: "#page"
+	},{
+		build: function(data){
+			var $e = $("#tmpl-window").tmpl();
+			data = data || {};
+			
+			if (data.title){
+				$e.find(".window-bar:first .window-bar-title:first").html(data.title);
+			}
+			
+			return $e;
+		}, 
+		
+		postDisplay: function(data){
+			var c = this; // the component
+			var $e = this.$element;	// the component element		
+			// ------ Bind the events ------ //
+			// move the window
+			$e.sDrag(".window-bar",{
+				drag: function(event, extra){
+					var pos = $e.position();
+					$e.css({top: pos.top + extra.deltaPageY,
+					        left: pos.left + extra.deltaPageX});		
+				} 
+				
+			});
+			
+			$e.sDrag(".window-resize",{
+				drag: function(event,extra){
+					$e.width($e.width() + extra.deltaPageX);
+					$e.height($e.height() + extra.deltaPageY);
+					
+				}
+			})
+			
+			// resize the window
+			// ------ /Bind the events ------ //
+		}
+	});	
+})();
+</script>
+
+<script id="tmpl-window" type="text/html">
+	<div class="window">
+		<div class="window-bar">
+			<div class="window-bar-title"></div>
+		</div>
+		<div class="window-header">
+			
+		</div>
+		<div class="window-content">
+			
+		</div>
+		<div class="window-footer">
+			
+		</div>
+		<div class="window-resize">
+			
+		</div>
+	</div>
+</script>
