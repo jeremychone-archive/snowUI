@@ -592,15 +592,32 @@ snow.util.inherit = function (C,P){
 snow.ua = {};
 
 (function(){
-	var WEBKIT_PREFIX = "-webkit-",
+	const WEBKIT_PREFIX = "-webkit-",
 	    MOZ_PREFIX = "-moz-";
+	
+	
 		
 	//privates
-	var _hasTouch = null,
+	var _cssVarPrefix, 
+	    _cssPrefix,
+	    _hasTouch = null,
 		_hasTransition = null,
 		_transitionPrefix = null,
 		_eventsMap = {}; // {eventName:true/false,....}
 	
+	var div = document.createElement( "div" );
+    _cssPrefix =
+    div.style.WebkitBorderRadius === ''? '-webkit-' :
+    (div.style.MozBorderRadius === ''? '-moz-' : 
+    (div.style.borderRadius === ''? '' : false));
+	delete div;
+	
+	
+
+
+	snow.ua.cssPrefrix = function(){
+		return _cssPrefix;
+	}
 	/**
 	 * Return true if the eventname is supported by this user agent.
 	 * 

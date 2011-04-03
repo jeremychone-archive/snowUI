@@ -63,26 +63,17 @@
 				var count = 0;
 				var $box1 = $("#box1");
 				var $container = $("#container");
-				var dragPageX,dragPageY, boxPos;
+				var dragPageX,dragPageY;
 				$box1.sDrag({
-					start: function(e){
+					start: function(e,extra){
 						$box1.prepend("<small>Start dragging</small>");
-						 boxPos = $box1.position();
-						dragPageX = e.pageX;
-						dragPageY = e.pageY;
 					},
-					drag: function(e){
-						$box1.prepend("<small>Dragging " + e.pageX + " </small>");
+					drag: function(e,extra){
+						$box1.prepend("<small>Dragging " + extra.pageX + " </small>");
 						
-						var moveX = e.pageX - dragPageX;
-						var moveY = e.pageY - dragPageY;
+						var boxPos = $box1.position();
+						$box1.css({left:boxPos.left + extra.deltaPageX,top:boxPos.top + extra.deltaPageY });
 						
-						boxPos.left = boxPos.left + moveX;
-						boxPos.top = boxPos.top + moveY;
-						$box1.css({left:boxPos.left,top:boxPos.top });
-						
-						dragPageX = e.pageX;
-						dragPageY = e.pageY;
 					},
 					stop: function(e){
 						$box1.prepend("<small>Stop dragging</small>");

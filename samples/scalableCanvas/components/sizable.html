@@ -49,17 +49,11 @@ snow.ui.registerComponent(
 			
 			
 			$handle.sDrag({
-				start: function(e){
-					thisComponent.orgX = e.pageX;
-					thisComponent.orgY = e.pageY;
-					thisComponent.orgW = $e.width();
-				    thisComponent.orgH = $e.height();
-				},
 				
-				drag: function(e){
-					var offset = Math.max((e.pageX - thisComponent.orgX),(e.pageY - thisComponent.orgY));
-					$e.width(thisComponent.orgW + offset);
-					$e.height(thisComponent.orgH + offset );	
+				drag: function(e,extra){
+					var offset = Math.max(extra.deltaPageX,extra.deltaPageY);
+					$e.width($e.width() + offset);
+					$e.height($e.height() + offset );	
 					thisComponent.redraw();
 				}
 			});
