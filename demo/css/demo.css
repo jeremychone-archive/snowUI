@@ -15,3 +15,11 @@ body{
 	border: solid 4px black;
 }
 
+#infoMsg{
+	position: absolute;
+	top: 45%; left: 0px; right: 0px;
+	text-align: center;
+	font-size: 30px;
+	color: #999;
+	
+}
