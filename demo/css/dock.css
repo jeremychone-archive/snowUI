@@ -6,7 +6,7 @@
 }
 
 #dock{
-	display: inline-table;
+	display: table;
 	margin: 0 auto 0 auto;
 	height: 50px;
 	border: solid 1px green;

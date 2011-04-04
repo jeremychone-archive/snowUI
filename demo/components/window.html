@@ -1,5 +1,9 @@
 <script type="text/javascript">
 (function(){
+	var zindex = 100;
+	var top = left = 50;
+	var incr = 30;
+	
 	snow.ui.registerComponent("window",{
 		parent: "#page"
 	},{
@@ -11,6 +15,17 @@
 				$e.find(".window-bar:first .window-bar-title:first").html(data.title);
 			}
 			
+			$e.css("z-index",zindex++);
+			
+			if (top > 200) {
+				top = 50;
+				left = 50;
+			}
+				
+			top += incr; 
+			left += incr;
+			$e.css({top: top,left: left});
+			
 			return $e;
 		}, 
 		
@@ -20,6 +35,9 @@
 			// ------ Bind the events ------ //
 			// move the window
 			$e.sDrag(".window-bar",{
+				start: function(){
+					c.pushToTop();
+				},
 				drag: function(event, extra){
 					var pos = $e.position();
 					$e.css({top: pos.top + extra.deltaPageY,
@@ -29,6 +47,9 @@
 			});
 			
 			$e.sDrag(".window-resize",{
+				start: function(){
+					c.pushToTop();
+				},
 				drag: function(event,extra){
 					$e.width($e.width() + extra.deltaPageX);
 					$e.height($e.height() + extra.deltaPageY);
@@ -36,8 +57,23 @@
 				}
 			})
 			
+			$e.sTouch(function(){
+				c.pushToTop();
+			});
+			
+			$e.sTouch(".window-close",function(){
+				$e.remove();
+			});
+			
 			// resize the window
 			// ------ /Bind the events ------ //
+		}, 
+		
+		pushToTop: function(){
+			var $e = this.$element;
+			if (zindex > $e.css("z-index")){
+				$e.css("z-index",++zindex);
+			}
 		}
 	});	
 })();
@@ -47,7 +83,9 @@
 	<div class="window">
 		<div class="window-bar">
 			<div class="window-bar-title"></div>
+			<div class="window-close"></div>
 		</div>
+		
 		<div class="window-header">
 			
 		</div>

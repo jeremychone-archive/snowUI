@@ -1,6 +1,5 @@
 .window{
 	position: absolute;
-	top: 10%; left: 10%;
 	width: 60%;
 	height: 50%;
 	-webkit-border-radius: 5px;
@@ -12,13 +11,12 @@
 	position: absolute;
 	top: 0; right: 0; left: 0;
 	height: 20px;
-	border: solid 1px red; 
+	border: solid 1px #5588bb; 
 	cursor: pointer;
 }
 
 .window-bar-title{
 	width: 80%;
-	border: solid 1px #333;
 	margin: 0 auto 0 auto;
 	text-align: center;
 	text-shadow: 0px 1px 0px #ddd;
@@ -28,6 +26,14 @@
 	color: #333; 
 }
 
+.window-close{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 32px;
+	height: 32px;
+	border: solid 1px red;
+}
 .window-resize{
 	position: absolute;
 	bottom: 0; right: 0;

@@ -317,7 +317,7 @@ $.fn = $.fn;
 
   /**
    *
-   * Traverse the tree backwards (this html element up to document) to find the closest html element
+   * Return the component that this html element belong to. Thi traverse the tree backwards (this html element up to document) to find the closest html element
    * containing the snow.ui component for this name. 
    * 
    * If a componentName is given then it will try to find the given component. 
@@ -326,12 +326,12 @@ $.fn = $.fn;
    * 
    * For example: 
    * @example
-   * var myComponent = $(thisDiv).sClosestComponent("myComponent");
+   * var myComponent = $(thisDiv).sComponent("myComponent");
    * 
    * @param {String} componentName The component name to be match when traversing the tree, if undefined, then, the closestComponent will be return.
    * 
    */
-  $.fn.sClosestComponent = function(componentName) {
+  $.fn.sComponent = function(componentName) {
 	  
       // iterate and process each matched element
 	  	var $componentElement; 
@@ -560,17 +560,17 @@ snow.util.array = {
 	 * If the propName does not on an item exist, it will ingore the item.
 	 * @example
 	 * var myVehicules = [{id:"truck",speed:80},{id:"racecar",speed:200}];
-	 * var vehiculeById = snow.util.array.mapBy(myVehicules,"id");
+	 * var vehiculeById = snow.util.array.toMap(myVehicules,"id");
 	 * // vehiculeById["truck"].speed == 80 
-	 * @param {Object} a
-	 * @param {Object} propName
+	 * @param {Object} a The array
+	 * @param {Object} keyName the property name that will be use 
 	 */
-	mapBy: function(a,propName){
+	toMap: function(a,keyName){
 		var i,l = a.length;
 		var map = {},item, key;
 		for (i =0; i < l; i++){
 			item = a[i];
-			key = item[propName];
+			key = item[keyName];
 			if (typeof key != "undefined" && key != null){
 				map[key] = item;
 			}

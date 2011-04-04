@@ -8,9 +8,7 @@
 		{id:"doc",title:"Doc"}
 	]
 	
-	var dockItemByName = snow.util.array.mapBy(dockItems,"id");
-	
-	tt = dockItemByName;
+	var dockItemByName = snow.util.array.toMap(dockItems,"id");
 	
 	snow.ui.registerComponent("dock",{
 		parent: "#page",
