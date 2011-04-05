@@ -58,15 +58,22 @@
     
     
     /**
-     * A first implementation at adrag
+     * Drag event for mouse and touch based devices. 
      *
      * @param {Object} delegate (optional) if present, this will do a delegate (not implemented yet)
      * @param {Object} opts options and handlers
-     * opts.start(event) // will be called when the drag is initiated
-     * opts.drag(event) // will be called for every drag event (either mousemouve or touchmove)
-     * opts.end(event) // called on mouseUp or drag
+     * @param {Function} opts.start=function(event,extra) [optional] will be called when the drag is initiated
+     * @param {Function} opts.drag=function(event,extra) [optional] will be called for every drag event (either mousemouve or touchmove)
+     * @param {Function} opts.end=function(event,extra) [optional] called on mouseUp or touch end
+     * @param {Number} extra.pageX the current pageX 
+     * @param {Number} extra.pageY the current pageY 
+     * @param {Number} extra.startPageX the pageX from the drag start
+     * @param {Number} extra.startPageY the pageY from the drag start
+     * @param {Number} extra.deltaPageX the delta between the current pageX and the last one (from the previous drag event)
+     * @param {Number} extra.deltaPageY the delta between the current pageY and the last one (from the previous drag event)
+     * 
      *
-     * TODO: needs to send jQuery event rather than hardcoding calls to events
+     * TODO: needs to send jQuery event rather than hardcoding calls to events. <br />
      * TODO: needs to find a solution for touch vs mouse move box-bounding difference
      */
     $.fn.sDrag = function(delegate, opts){

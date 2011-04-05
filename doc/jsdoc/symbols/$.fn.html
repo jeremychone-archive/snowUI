@@ -293,6 +293,24 @@ dl.detailList dd{
 							</td>
 						</tr>
 					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sDrag">sDrag</a></b>(delegate, opts)
+								</div>
+								<div class="description">Drag event for mouse and touch based devices.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sTouch">sTouch</a></b>(arg0, arg1)
+								</div>
+								<div class="description">This event either bind a touchend if available, otherwise, bind a click.</div>
+							</td>
+						</tr>
+					
 					</tbody>
 				</table>
 				
@@ -386,6 +404,155 @@ For example:
 						
 						
 
+					<hr />
+				
+					<a name=".sDrag"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">$.fn.</span><b>sDrag</b>(delegate, opts)
+					
+					</div>
+					<div class="description">
+						Drag event for mouse and touch based devices.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/src_js_snow.event.js.html">snow.event.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>delegate</b>
+									
+								</dt>
+								<dd>(optional) if present, this will do a delegate (not implemented yet)</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>opts</b>
+									
+								</dt>
+								<dd>options and handlers</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>opts.start=function(event,extra)</b>
+									
+								</dt>
+								<dd>[optional] will be called when the drag is initiated</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>opts.drag=function(event,extra)</b>
+									
+								</dt>
+								<dd>[optional] will be called for every drag event (either mousemouve or touchmove)</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>opts.end=function(event,extra)</b>
+									
+								</dt>
+								<dd>[optional] called on mouseUp or touch end</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>extra.pageX</b>
+									
+								</dt>
+								<dd>the current pageX</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>extra.pageY</b>
+									
+								</dt>
+								<dd>the current pageY</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>extra.startPageX</b>
+									
+								</dt>
+								<dd>the pageX from the drag start</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>extra.startPageY</b>
+									
+								</dt>
+								<dd>the pageY from the drag start</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>extra.deltaPageX</b>
+									
+								</dt>
+								<dd>the delta between the current pageX and the last one (from the previous drag event)</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>extra.deltaPageY</b>
+									
+								</dt>
+								<dd>the delta between the current pageY and the last one (from the previous drag event)
+
+
+TODO: needs to send jQuery event rather than hardcoding calls to events. <br />
+TODO: needs to find a solution for touch vs mouse move box-bounding difference</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".sTouch"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">$.fn.</span><b>sTouch</b>(arg0, arg1)
+					
+					</div>
+					<div class="description">
+						This event either bind a touchend if available, otherwise, bind a click.
+In future iterations, we might want make the "touch" case a little bit more advanced (checking touchstart/touchend are from the same element and no drag was initiated)
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/src_js_snow.event.js.html">snow.event.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Function or String}</span> <b>arg0</b>
+									
+								</dt>
+								<dd>can be the function or a "delegate" selector string if we want this event to be delegated</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>arg1</b>
+									
+								</dt>
+								<dd>if arg0 is the del</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -400,7 +567,7 @@ For example:
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Apr 04 2011 18:01:44 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Apr 04 2011 18:13:30 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>
