@@ -33,15 +33,50 @@
 			var c = this; // the component
 			var $e = this.$element;	// the component element		
 			// ------ Bind the events ------ //
+			$e.find(".window-close").sTouch(function(event){
+				$e.remove();
+				event.preventDefault();
+				event.stopPropagation();
+				return false;
+			});
 			// move the window
 			$e.sDrag(".window-bar",{
 				start: function(){
+					// make sure we push to top when the drag start
 					c.pushToTop();
 				},
 				drag: function(event, extra){
-					var pos = $e.position();
-					$e.css({top: pos.top + extra.deltaPageY,
-					        left: pos.left + extra.deltaPageX});		
+					
+					
+					// This will be the easiest way to do it 
+					// But if done this way, it will not use hardware acceleration on iPad/iPhone
+					/*$e.css({top: pos.top + extra.deltaPageY,
+					        left: pos.left + extra.deltaPageX});*/
+							
+					//So, we use translate to benefit of iPhone/iPad hardware acceleration	
+					snow.fx.translate({
+						element: $e,
+						x: extra.pageX - extra.startPageX,
+						y: extra.pageY - extra.startPageY
+					});		
+				}, 
+				
+				// on drag end, we need to set the final position and remove the transform: translate
+				end: function(event,extra){
+					// unfortunately, on Firefox and Webkit, the $e.position() does not return the same value
+					/*var pos = $e.position();
+					$e.css({top: pos.top, left: pos.left});
+					$e.css("transform","");*/
+					
+					// so, we get the css position from the css property itself (can convert it to number)
+					var originalX = $e.css("left").match(/\d+/) * 1;
+					var originalY = $e.css("top").match(/\d+/) * 1;
+					
+					var newPos = {left: (extra.pageX - extra.startPageX) + originalX,
+					        top: (extra.pageY - extra.startPageY) + originalY};
+					$e.css("transform","");
+					$e.css(newPos);
+					
 				} 
 				
 			});
@@ -53,17 +88,15 @@
 				drag: function(event,extra){
 					$e.width($e.width() + extra.deltaPageX);
 					$e.height($e.height() + extra.deltaPageY);
-					
 				}
 			})
 			
 			$e.sTouch(function(){
+				//snow.log.info("$e.sTouch");
 				c.pushToTop();
 			});
 			
-			$e.sTouch(".window-close",function(){
-				$e.remove();
-			});
+			
 			
 			// resize the window
 			// ------ /Bind the events ------ //

@@ -616,8 +616,10 @@ snow.ua = {};
 
 (function(){
 	const WEBKIT_PREFIX = "-webkit-",
-	    MOZ_PREFIX = "-moz-";
+	      MOZ_PREFIX = "-moz-";
 	
+	const WEBKIT_VAR_PREFIX = "Webkit",
+	      MOZ_VAR_PREFIX = "Moz";
 	
 		
 	//privates
@@ -628,19 +630,52 @@ snow.ua = {};
 		_transitionPrefix = null,
 		_eventsMap = {}; // {eventName:true/false,....}
 	
+	//TODO: need to revise this, not really future proof
 	var div = document.createElement( "div" );
     _cssPrefix =
-    div.style.WebkitBorderRadius === ''? '-webkit-' :
-    (div.style.MozBorderRadius === ''? '-moz-' : 
-    (div.style.borderRadius === ''? '' : false));
+    div.style.WebkitBorderRadius === ''? WEBKIT_PREFIX :
+    (div.style.MozBorderRadius === ''? MOZ_PREFIX : 
+    (div.style.borderRadius === ''? '' : ""));
 	delete div;
 	
 	
-
-
-	snow.ua.cssPrefrix = function(){
+	var _isMoz = (_cssPrefix === MOZ_PREFIX);
+	var _isWebkit = (_cssPrefix === WEBKIT_PREFIX);
+	
+	_cssVarPrefix = (_isMoz)?MOZ_VAR_PREFIX:(_isWebkit)?WEBKIT_VAR_PREFIX:"";
+	snow.ua.cssPrefix = function(){
 		return _cssPrefix;
 	}
+	
+	snow.ua.cssVarPrefix = function(){
+		return _cssVarPrefix;
+	}
+	
+	// ------ jQuery css hooks ------ //
+	// for now, just support transofrm, will add more soon (need to test)
+	var css3PropNames = ["transform"];
+	var propName;
+	for (var i = 0, l = css3PropNames.length;i < l; i++){
+		propName = css3PropNames[i];
+		$.cssHooks[propName] = new CSSHook(propName);
+	}
+		
+	function CSSHook(propName){
+		this.propName = propName;
+		this.computedName = _cssVarPrefix + propName.substr(0, 1).toUpperCase() + propName.substr(1);
+	}
+	
+	CSSHook.prototype.get = function(elem, computed, extra){
+		return $.css( elem, this.computedName);
+	}
+	
+	CSSHook.prototype.set = function(elem, val){
+		elem.style[this.computedName] = val;
+	}
+	
+	// ------ /jQuery css hooks ------ //
+	
+	
 	/**
 	 * Return true if the eventname is supported by this user agent.
 	 * 

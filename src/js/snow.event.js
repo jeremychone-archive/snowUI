@@ -64,7 +64,7 @@
      * @param {Object} opts options and handlers
      * opts.start(event) // will be called when the drag is initiated
      * opts.drag(event) // will be called for every drag event (either mousemouve or touchmove)
-     * opts.stop(event) // called on mouseUp or drag
+     * opts.end(event) // called on mouseUp or drag
      *
      * TODO: needs to send jQuery event rather than hardcoding calls to events
      * TODO: needs to find a solution for touch vs mouse move box-bounding difference
@@ -83,7 +83,7 @@
             if (delegate == null) {
 				(options.start)?$this.bind(SDRAGSTART,options.start):null;
 				(options.drag)?$this.bind(SDRAGDRAG,options.drag):null;
-				(options.stop)?$this.bind(SDRAGEND,options.end):null;
+				(options.end)?$this.bind(SDRAGEND,options.end):null;
 				
                 $this.bind(dragEvents.start, function(e){
                    handleDragEvent.call(this,e,options);
@@ -92,7 +92,7 @@
 				
 				(options.start)?$this.delegate(delegate,SDRAGSTART,options.start):null;
 				(options.drag)?$this.delegate(delegate,SDRAGDRAG,options.drag):null;
-				(options.stop)?$this.delegate(delegate,SDRAGEND,options.end):null;				
+				(options.end)?$this.delegate(delegate,SDRAGEND,options.end):null;				
 				
 				$this.delegate(delegate,dragEvents.start,function(e){
 					handleDragEvent.call(this,e,options);
@@ -159,7 +159,9 @@
 			currentState.lastPageX = currentState.startPageX = extra.startPageX;
 			currentState.lastPageY = currentState.startPageY = extra.startPageY;
 		}else if (dragType === SDRAGEND){
-			
+			// because, on iOs, the touchEnd event does not have the .touches[0].pageX
+			extra.pageX = currentState.lastPageX;
+			extra.pageY = currentState.lastPageY;
 			$handle.data("_sDrag_currentState",null);
 		}
 		
