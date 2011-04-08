@@ -13,6 +13,12 @@ body{
 	background-image: url(images/bkg.png);
 	top: 10px; right: 10px; bottom: 10px; left: 10px;
 	border: solid 4px black;
+	overflow: hidden;
+}
+
+#pageLight{
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
 }
 
 #infoMsg{

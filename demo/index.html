@@ -18,7 +18,9 @@
 	</head>
 	<body>
 		<div id="page">
-			
+			<div id="pageLight">
+				<canvas id="pageLight-canvas"></canvas>
+			</div>
 			<div id="infoMsg">Still in Development, don't look, don't judge!</div>
 	    </div>
 	</div>
@@ -26,8 +28,31 @@
 	
 	
 	<script type="text/javascript">
-		
+		function drawLight(){
+			// ------ draw the light ------ //
+			var gtx = snow.gtx($("#pageLight-canvas")).clear();
+			gtx.referenceScale(100,100);
+			gtx.fitParent();
+			gtx.save()
+			gtx.scale(1,.5);
+			gtx.translate(0,50);
+			
+			gtx.arc(50,50,50,0,Math.PI*2,true); // Outer circle
+			
+			var r = gtx.createRadialGradient(50,50,0,50,50,50);
+			r.addColorStop(0, 'rgba(255,255,255,0.2)')
+			r.addColorStop(0.6, 'rgba(255,255,255,.1)');
+			r.addColorStop(1, 'rgba(255,255,255,0)');
+			gtx.fillStyle(r);
+			gtx.fill();
+			gtx.restore();
+			// ------ /draw the light ------ //
+		}
 		$(function(){
+			drawLight();
+			$(window).resize(function(){
+				drawLight();
+			});
 			
 			snow.ui.display("dock");
 		});

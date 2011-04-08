@@ -878,9 +878,12 @@ snow.ua = {};
 	 * @param {Object} x
 	 * @returns {Number}
 	 */
-	snow.gtx.prototype.scaleX = function(x){
+	snow.gtx.prototype.scaleX = function(x,dontAddOffset){
 		if (this.scallable){
-			return this._ratio * x + this._xOffset;
+			x *= this._ratio;
+			if (!dontAddOffset) {
+				x += this._xOffset;
+			}
 		}
 		return x;
 	}
@@ -892,9 +895,12 @@ snow.ua = {};
 	 * @param {Object} x
 	 * @returns {Number}
 	 */	
-	snow.gtx.prototype.scaleY = function(y){
+	snow.gtx.prototype.scaleY = function(y,dontAddOffset){
 		if (this.scallable){
-			return this._ratio * y + this._yOffset;
+			y *= this._ratio;
+			if (!dontAddOffset) {
+				y += this._yOffset;
+			}
 		}
 		return y;
 	}
@@ -1024,6 +1030,15 @@ snow.ua = {};
 		return this;		
 	}
 	
+	snow.gtx.prototype.translate = function(x,y){
+		if (this.scallable){
+			x = this.scaleX(x,true);
+			y = this.scaleY(y,true);
+		}
+		this.context.translate(x,y);
+		return this;	
+
+	}
 	
 
 	
@@ -1104,8 +1119,8 @@ snow.ua = {};
 	
     function setupPrototype(){
         var methods = [ 'beginPath', 'clip', 'closePath', 'drawImage', 'fill',  'fillText', 
-		// these  are managed now 'arc','arcTo', 'lineTo', 'moveTo', 'bezierCurveTo', 'quadraticCurveTo', 'rect',,  'clearRect','fillRect','strokeRect',
-		 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke',  'strokeText', 'transform', 'translate'];
+		// these  are managed now 'arc','arcTo', 'lineTo', 'moveTo', 'bezierCurveTo', 'quadraticCurveTo', 'rect',,  'clearRect','fillRect','strokeRect','translate'
+		 'restore', 'rotate', 'save', 'scale', 'setTransform', 'stroke',  'strokeText', 'transform', ];
         
         var getterMethods = ['createPattern', 'drawFocusRing', 'isPointInPath', 'measureText', // drawFocusRing not currently supported
         // The following might instead be wrapped to be able to chain their child objects
