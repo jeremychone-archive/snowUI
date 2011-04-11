@@ -291,9 +291,16 @@ snow.ui = {};
 		// Call the eventual postDisplay 
 		// (differing for performance)
 		if (component.postDisplay) {
-			setTimeout(function(){
-				component.postDisplay(data,config);
-			}, config.postDisplayDelay);
+			// if the component has a delay >= 0, then, we use a setTimeout
+			if (config.postDisplayDelay >= 0) {
+				setTimeout(function(){
+					component.postDisplay(data, config);
+				}, config.postDisplayDelay);
+			}
+			// otherwise, we call it in sync
+			else{
+				component.postDisplay(data, config);
+			}
 		}
 	}	
 	// ------ /Private Helpers ------ //
