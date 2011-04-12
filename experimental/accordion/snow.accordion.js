@@ -81,15 +81,14 @@
 			//with CSS transition, if transition, then, swap/change only at the end of the event	
 			if (snow.ua.hasTransition()){
 				 
-				console.log("do css transition");
 				var transitionCssBefore = {
 					display: "block",
 					overflow: "hidden"
 				};
 				
 				var transitionCssAfter = {
-					display: null,
-					overflow: null
+					display: "",
+					overflow: ""
 				};
 				
 				//make sure the old panel stay visible during the transition
@@ -150,9 +149,9 @@
 		headersHeight = headersHeight + $(this).outerHeight();
 	});
 
-
+	var $selPanelContent = $selPanel.children(".sAccordion-panel-content:first");
 	//compute the panelContenthHeight.
-	var panelContentH = $sAccordion.innerHeight()  - headersHeight;
+	var panelContentH = $sAccordion.innerHeight()  - headersHeight - ($selPanelContent.outerHeight() - $selPanelContent.height());
 
 	$selPanel.find(".sAccordion-panel-content").css("height",panelContentH + "px"); 
   }

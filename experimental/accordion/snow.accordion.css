@@ -42,8 +42,6 @@
 .sAccordion-panel-header {
     display:block;
     margin: 0;
-    padding:10px;
-    height:20px;
 	cursor: pointer;
 }
 
@@ -56,7 +54,6 @@
 }
 
 .sAccordion-panel.sel .sAccordion-panel-content {
-    height: 300px;
 	overflow: auto;
 	display: block;
 }
