@@ -64,10 +64,6 @@
 				// on drag end, we need to set the final position and remove the transform: translate
 				end: function(event,extra){
 					// unfortunately, on Firefox and Webkit, the $e.position() does not return the same value
-					/*var pos = $e.position();
-					$e.css({top: pos.top, left: pos.left});
-					$e.css("transform","");*/
-					
 					// so, we get the css position from the css property itself (can convert it to number)
 					var originalX = $e.css("left").match(/\d+/) * 1;
 					var originalY = $e.css("top").match(/\d+/) * 1;

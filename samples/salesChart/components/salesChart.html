@@ -1,0 +1,334 @@
+<script type="text/javascript">
+(function(){
+	
+	// Mock data.
+    var data = {
+        yunits: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
+		deals: [
+			{name: "Micro$",
+			 size: 11000,
+			 probability: 80,
+			 date: "Apr 14, 2011"},
+			 
+			 {name: "Snoogle",
+			 size: 23000,
+			 probability: 20,
+			 date: "Apr 15, 2011"},
+			 
+			 {name: "Orange",
+			 size: 10000,
+			 probability: 60,
+			 date: "April 16, 2011"}
+			 
+			 
+		]
+    };
+	
+	function getProbability(top,h){
+			top = top + 50;
+			return Math.round((top - h) * -110 / h); 
+		}
+		
+	// get the css top value for a probability
+	// h: needs to be the height of the grid (to avoid to calculate it on each iteration)
+	function getTopFromProbability(probability,h){
+			return ( ((h *  probability / 110 ) - h) * -1) -50;
+	}
+	
+	snow.ui.registerComponent("salesChart",{
+		parent: "#body"
+	},{
+		build: function(){
+			var $e = $("#tmpl-salesChart").tmpl(data);
+			return $e;		
+		},
+		
+		postDisplay: function(){
+			var $e = this.$element;
+			var c = this;
+			
+			this.$grid = $("#salesChart-grid"); 
+			var $grid = this.$grid;
+			// ------ Resize yax units ------ //
+			/*
+			var $yax = $("#salesChart-yax");
+			var $yunits = $yax.find(".salesChart-yunit");
+			var h = $yax.innerHeight() / ($yunits.length);
+			
+			$yunits.css("height",h + "px");
+			*/
+			// ------ /Resize yax units ------- //
+			
+			
+			
+			
+			var lastDealTouchTime = 0; 
+			var dragThreshold = 10;
+			var dragDealMode = false;
+			var scaleDealMode = false; 
+			function isDragDealMode(extra){
+				if (!dragDealMode && !scaleDealMode){
+					var delta = Math.max(Math.abs(extra.pageX - extra.startPageX),Math.abs(extra.pageY - extra.startPageY));
+					dragDealMode = (dragThreshold < delta); 	
+				}
+				return dragDealMode;
+			}
+			
+			function isScaleDealMode(extra){
+				return scaleDealMode;
+			}
+			
+			// ------ Deal Events ------ //
+			$grid.sDrag(".salesChart-deal",{
+				start: function(){
+					var $deal = $(this);
+					$deal.addClass("sel");
+					
+					// just for optimization
+					c.gridH = $grid.innerHeight();
+					
+					var touchTime = lastDealTouchTime =  new Date().getTime();
+					
+					
+					setTimeout(function(){
+						if (!dragDealMode && touchTime === lastDealTouchTime) {
+							$deal.addClass("scaleMode");
+							scaleDealMode = true;
+						}
+					},500);
+				},
+				
+				drag: function(event,extra){
+					var $deal = $(this);
+					if (isDragDealMode(extra)) {
+						var y = extra.pageY - extra.startPageY;
+						snow.fx.translate({
+							element: $deal,
+							x: extra.pageX - extra.startPageX,
+							y: extra.pageY - extra.startPageY
+						});
+						
+						var $prop = $deal.find(".labels > h5:first");
+						var originalY = $deal.css("top").match(/\d+/) * 1;
+						
+						// on iOS, we put the html element udpate to make the animation smooth
+						if (snow.ua.hasTouch()) {
+							setTimeout(function(){
+								$prop.text(getProbability(y + originalY, c.gridH) + "%");
+							}, 10);
+						}
+						else {
+							$prop.text(getProbability(y + originalY, c.gridH) + "%");
+						}
+					}else if (isScaleDealMode(extra)){
+						var w = $deal.width() + extra.deltaPageX;
+						//var h = $deal.height();
+						$deal.css({
+							width: w,
+							height: w 
+						});
+						$deal.css("-webkit-border-radius",w + "px");
+					}
+				}, 
+				
+				end: function(event,extra){
+					var $deal = $(this);
+					if (isDragDealMode(extra)) {
+						// unfortunately, on Firefox and Webkit, the $e.position() does not return the same value
+						// so, we get the css position from the css property itself (can convert it to number)
+						var originalX = $deal.css("left").match(/\d+/) * 1;
+						var originalY = $deal.css("top").match(/\d+/) * 1;
+						
+						var newPos = {
+							left: (extra.pageX - extra.startPageX) + originalX,
+							top: (extra.pageY - extra.startPageY) + originalY
+						};
+						$deal.css("transform", "");
+						$deal.css(newPos);
+						
+						
+					}
+					
+					//FIXME: hack for now
+					setTimeout(function(){
+						dragDealMode = 0;
+						lastDealTouchTime = 0;
+						scaleDealMode = false;
+						$deal.removeClass("scaleMode");
+						$deal.removeClass("sel");
+					}, 0);					
+				}
+			})
+			// ------ /Deal Events ------ //
+			
+			
+			// ------ Grid Events ------ //
+			$grid.sDrag({
+				drag: function(event,extra){
+					if (!dragDealMode && !scaleDealMode) {
+						translateGrid(extra.pageX - extra.startPageX);
+					}	
+				}, 
+				
+				end: function (event,extra){
+					if (!dragDealMode && !scaleDealMode) {
+						var originalX = -1 * $grid.css("left").match(/\d+/) * 1;
+						translateGrid(extra.pageX - extra.startPageX,true);
+					}				
+				}
+			});
+			
+			// mousewheel
+			$grid.bind("mousewheel",function(event){
+				translateGrid(event.wheelDelta,true); 
+			});
+			
+			function translateGrid(byX,close){
+				var originalX = -1 * $grid.css("left").match(/\d+/) * 1;						
+				//snow.log.info("translateGrid parent width" + $grid.parent().innerWidth())
+				var parentW = $grid.parent().innerWidth();
+				var gridW = $grid.innerWidth();
+				if (!close) {
+					var x = Math.min(0 - originalX, byX);
+					//var x = Math.max(x,)
+					//snow.log.info("translateGrid x+originalX: " + (x + originalX) + " gridW-parentW: " + (gridW-parentW));
+					if ((x + originalX) * -1 > (gridW-parentW)){
+						x = 0;
+					}
+					snow.fx.translate({
+						element: $grid,
+						x: x,
+						y: 0
+					});
+				}
+				else {
+					var left = Math.min(0, originalX + byX);
+					left = Math.max(left,-1 * (gridW-parentW));
+					var newPos = {
+						left: left,
+						top: 0
+					};
+					$grid.css("transform", "");
+					$grid.css(newPos);
+				}
+			}
+			// ------ /Grid Events ------ //
+			
+			this.drawGrid();
+			this.drawDeals();
+			
+		},
+		
+		drawGrid: function(){
+			var gtxGrid = snow.gtx($("#salesChart-canvas"));
+			gtxGrid.fitParent();
+			
+			var i,y, w = gtxGrid.canvas().width, h = gtxGrid.canvas().height; 
+			
+			// draw the x lines
+			var r = h/11;
+			for (i = 0 ; i < 11; i++){
+				y = h - Math.floor(i * r) - .5;
+				gtxGrid.moveTo(0,y).lineTo(w,y).stroke();
+			}
+			
+			// draw the y lines
+			r = w / 16;
+			var x;
+			for (i = 0; i < 16; i++ ){
+				x =  Math.floor(i * r) + .5;
+				gtxGrid.moveTo(x,0).lineTo(x,h).stroke();
+			}
+	
+		},
+		
+		drawDeals: function(){
+			var $grid = $("#salesChart-grid"); 
+			 
+			var $deals = $("#salesChart-deals");
+			
+			$deals.empty();
+			
+			var i, deal, $deal;
+			var y, left = 100, top, h = $grid.innerHeight();
+			
+			var minSize = 10000000 , maxSize = 0 ; 
+			//get the min/max for the bubble size
+			for (i = 0; i < data.deals.length; i++) {
+				deal = data.deals[i];
+				minSize = Math.min(minSize,deal.size);
+				maxSize = Math.max(maxSize,deal.size);
+			}
+			
+			
+			var deltaSize = (maxSize - minSize);
+			var minDim = 100;
+			var maxDim = 400; 
+			for (i = 0; i < data.deals.length; i++){
+				deal = data.deals[i];
+				$deal = $("#tmpl-salesChart-deal").tmpl(deal);
+				
+				$deal.css("left", left + "px");
+				
+				$deal.css("left", left + "px");
+				$deal.css("top", getTopFromProbability(deal.probability,h) + "px");
+				
+				//var dim = ;
+				/*
+				$deal.css({
+					width: dim,
+					height: dim
+				});*/
+				
+				$deals.append($deal);
+				left += 250;
+			}
+			
+		}
+		
+		
+		
+	});	
+})();	
+
+
+</script>
+
+
+<script id="tmpl-salesChart" type="text/html">
+<div id="salesChart">
+	<h1><span>Sales Pipeline: </span> $<span id="salesPipelineTotal">1,222,000</span></h1> 
+	
+	<div id="salesChart-chart">
+		<div id="salesChart-yaxCtn">
+			<div id="salesChart-yax">
+				{{each yunits}}
+				<div class="salesChart-yunit"><label>${this}%</label></div>
+				{{/each}}
+			</div>
+		</div>
+		<div id="salesChart-gridCtn">
+			<div id="salesChart-grid">
+				<div id="salesChart-canvasCtn">
+					<canvas id="salesChart-canvas"></canvas>
+				</div>
+				<div id="salesChart-deals">
+					
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>	
+</script>
+
+<script id="tmpl-salesChart-deal" type="text/html">
+<div class="salesChart-deal">
+	<div class="labels">
+		<h2>${name}</h2>
+		<h3>$${size}</h3>
+		<h4>${date}</h4>
+		<h5>${probability}%</h5>
+	</div>	
+</div>
+</script>

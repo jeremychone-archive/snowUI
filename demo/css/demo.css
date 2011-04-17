@@ -29,3 +29,9 @@ body{
 	color: #999;
 	
 }
+
+#pageContent{
+	position: absolute;
+	top: 0; right: 0; bottom: 50px; left: 0;
+	border: solid 1px blue;
+}

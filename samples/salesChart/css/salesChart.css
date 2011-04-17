@@ -1,0 +1,127 @@
+#salesChart{
+	position: absolute;
+	top: 0;right: 0; bottom: 0; left: 0;
+	background: #fff;
+}	
+
+#salesChart > h1{
+	font-size: 16px;
+	padding: 10px 0;
+	text-align: center;
+	letter-spacing: .1em;
+}
+
+#salesChart-chart{
+	position: absolute;
+	top: 40px; right: 50px; bottom: 50px; left: 50px;
+	border: solid 1px black;
+}
+
+
+#salesChart-yaxCtn{
+	position: absolute;
+	top: 0; bottom: 0; left: 0;
+	width: 100px;
+}
+
+#salesChart-yax{
+	position: absolute;
+	top: 20px; right: 0; bottom: 0px; left: 0;
+}
+
+.salesChart-yunit{
+	position:relative;
+	display: block;
+	height: 8.9%;
+	text-align: right; 
+	vertical-align: text-bottom;
+}
+.salesChart-yunit > label{
+	position: absolute;
+	display: block;
+	text-align: right;
+	bottom: 0; right: 0;
+}
+
+
+#salesChart-gridCtn{
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 100px;
+	overflow: hidden;
+}
+
+#salesChart-grid{
+	position: absolute; 
+	top: 0; bottom: 0; left: 0;
+	width: 3000px;
+	-webkit-transform-style: preserve-3d;
+}
+
+#salesChart-canvasCtn{
+	position: absolute;
+	top: 20px; right: 0; bottom: 20px; left: 0;
+	background: #ddddff;
+}
+
+
+#salesChart-deals{
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+}
+
+/* ------ deal ------ */
+.salesChart-deal{
+	position: absolute;
+	-webkit-border-radius: 100px;
+	border: solid 2px #336699;
+	width: 100px;
+	height: 100px;
+	z-index: 100;
+	background: -webkit-gradient(linear,left top,left bottom,
+									color-stop(0, #6699cc),
+									color-stop(.35, #336699),
+									color-stop(1, #5588bb));
+	-webkit-transform-style: preserve-3d;
+}
+
+.salesChart-deal.sel{
+	-webkit-box-shadow: 3px 3px 4px rgba(50,50,50,.5);
+}
+.salesChart-deal.scaleMode{
+	border: solid 2px red;
+	
+}
+
+.salesChart-deal > span{
+	display: block;
+	
+}
+.salesChart-deal > .labels{
+	display: block;
+	position:absolute;
+	top:50%;margin-top:-2em;line-height:1;
+	width: 100%;
+	cursor: pointer;
+} 
+
+.salesChart-deal > .labels >  h2, .salesChart-deal > .labels > h3, 
+.salesChart-deal > .labels > h4, .salesChart-deal > .labels > h5{
+	text-align: center;
+	margin-bottom: 5px;
+	color: #ddd;
+}
+.salesChart-deal > .labels > h2{
+	font-size: 1.4em;
+}
+.salesChart-deal > .labels > h3{
+	font-size: .8em;
+}
+.salesChart-deal > .labels > h4{
+	font-size: .8em;
+}
+.salesChart-deal > .labels > h5{
+	font-size: .8em;
+	color: #ccc;
+	font-size: .6em;
+}
+/* ------ deal ------ */
