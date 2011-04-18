@@ -174,11 +174,17 @@ snow.ui = {};
 			config = buildConfig(componentDef,config);
 			var component = instantiateComponent(componentDef);	
 			
-			//if the config.unique is set, and there is a component with the same name, abort
-			//TODO: an optimization point would be to add a "sComponentUnique" in the class for data-scomponent that have a confi.unique = true
+			// If the config.unique is set, and there is a component with the same name, we resolve the deferred now
+			// NOTE: the whenBuild and whenPostDisplay won't be resolved again
+			// TODO: an optimization point would be to add a "sComponentUnique" in the class for data-scomponent that have a confi.unique = true
 			//      This way, the query below could be ".sComponentUnique [....]" and should speedup the search significantly on UserAgents that supports the getElementsByClassName
-			if (config.unique && $("[data-scomponent='" + name + "']").length > 0){
-				return null; //
+			if (config.unique){
+				var $component = $("[data-scomponent='" + name + "']");
+				if ($component.length > 0){
+					component = $component.sComponent();
+					processDeferred.resolve(component);
+					return processDeferred;					
+				}
 			}	
 			
 			// ------ build ------ //
