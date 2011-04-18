@@ -27,7 +27,7 @@
 				
 				<h3>Hello World</h3>
 				
-				<button onclick="snow.ui.display('helloWorld',{name:'Mike'})">Display Hello World</button>
+				<button id="helloButton">Display Hello World</button>
 				
 				
 				<div id="HelloWorld-Container" style="margin: 30px;border: solid 1px #dddddd;height: 30px">
@@ -35,6 +35,15 @@
 				</div>
 				
 				
+				
+				<script type="text/javascript">
+				(function(){
+					$("#helloButton").click(function(){
+						snow.ui.display("helloWorld",{name:"Mike"});
+					})
+				})();
+				
+				</script>
 				
 				<!-- Simple HelloWorld Component -->
 				<script type="text/javascript">

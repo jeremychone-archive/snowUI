@@ -68,16 +68,17 @@
 				<script type="text/javascript">
                 $("#promptBut").click(function(){
                     
-					var dialogPromptComponent = snow.ui.display('dialogPrompt', {
+					var dfd = snow.ui.display('dialogPrompt', {
                             title: 'Test Dialog',
                             prompt: 'Are you sure you want to continue?'
                     });
 					
-					dialogPromptComponent.onAnswer(function(result){
-						$("#promptAnswer").text("You answered: " + result);
-					});
-					
-					
+					dfd.done(function(dialog){
+						snow.log.info("dialog done");
+						dialog.onAnswer(function(result){
+							$("#promptAnswer").text("You answered: " + result);
+						});
+					})
 					
                 });		
 				</script>			

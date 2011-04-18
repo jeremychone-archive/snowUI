@@ -14,22 +14,13 @@ snow.ui = {};
 	
 	var _componentDefStore = {};
 	
+	// when loading a component, we put a promise in this map
+	var _deferredByComponentName = {};
+	
 	var _transitions = {};
 	
 	// ------ Public API: Component Management ------ //
 
-	
-	
-	/**
-	 * Return the component definition for a given name. (load it if not found)
-	 * @param {Object} name
-	 */
-	snow.ui.getComponentDef = function(name){
-		//make sure it is loaded
-		loadComponent(name);
-		return _componentDefStore[name];
-	};
-	
 	/**
 	 * MUST be called to register the component
 	 * 
@@ -59,16 +50,22 @@ snow.ui = {};
 		def.componentFactory = componentFactory;
 		def.config = config;
 		_componentDefStore[name] = def;
+		
+		var deferred = _deferredByComponentName[name];
+		if (deferred){
+			deferred.resolve(def);
+			delete _deferredByComponentName[name];
+		}
 	};
 	
 	/**
 	 * This just instantiate a new component for a given name. This is useful for manipulating the component off lifecycle
 	 * for performance. For example, sometime building a component and displaying in the background (with z-index) allow the browser
 	 * to do its caching magic, and can speed up the first appearance of the component when it is due. 
-	 * @param {Object} name
+	 * @param {string} name
 	 */
 	snow.ui.instantiateComponent = function(name){
-		var componentDef = this.getComponentDef(name);
+		var loaderDeferred = loadComponent(name);
 		return instantiateComponent(componentDef);
 	}
 	// ------ /Public API: Component Management ------ //
@@ -93,7 +90,7 @@ snow.ui = {};
 	 * @return {Component} return the component instance.
 	 */
 	snow.ui.display = function(componentName,data,config){
-		return process(snow.ui,componentName,data,config);
+		return process(componentName,data,config);
 	};
 	
 	/**
@@ -102,7 +99,7 @@ snow.ui = {};
 	 * 
 	 */
 	snow.ui.attach = function(componentName,$element,data,config){
-		return process(snow.ui,componentName,data,config,$element);
+		return process(componentName,data,config,$element);
 	}
 	// ------ /Public API: Display Management ------ //
 	
@@ -124,21 +121,10 @@ snow.ui = {};
 		emptyParent: false,
 		postDisplayDelay: 0
 	}
-	
-	// Default componentLoader (will be called if component is not already loaded)
-	snow.ui.componentLoader = function(componentName){
-        var html = $.ajax({
-            url: "components/" + componentName + ".html",
-            async: false
-        }).responseText;
-        
-        $(snow.ui.config.componentsHTMLHolder).append(html);
-        
-	}
 	// ------ /Public Properties: Config ------ //	
 	
 	/**
-	 * Load a component from a name. At this point, we assume the componentLoader will be synchronous.<br />
+	 * Return the promise().<br />
 	 *  
 	 *  <ul>
 	 *    <li>It will load the component only if it not already loaded</li>
@@ -153,64 +139,118 @@ snow.ui = {};
 	 * <br />
 	 * TODO: Needs to make the the component 
 	 * @param {Object} name component name (no space or special character)
-	 * 
+	 * @return The loaderDeferred
 	 */
 	function loadComponent(name){
-		
+		var loaderDeferred = $.Deferred();
         
-        if (!_componentDefStore[name]) {
-            snow.ui.componentLoader(name);
-        }
-        
-        if (!_componentDefStore[name]) {
-            snow.log.error("Fail to load component [" + name + "]");
-        }
+		var componentDef = _componentDefStore[name];
+		if (componentDef){
+			loaderDeferred.resolve(componentDef);
+		}else{
+			
+			_deferredByComponentName[name] = loaderDeferred;
+			$.ajax({
+	            url: "components/" + name + ".html",
+	            async: true
+	        }).complete(function(jqXHR,textStatus){
+				$(snow.ui.config.componentsHTMLHolder).append(jqXHR.responseText);		
+			});
+		}
+		return loaderDeferred.promise();
 	};	
 
 	//if $element exist, then, bypass the build
-	function process(sui,name,data,config,$element){
-		var componentDef = sui.getComponentDef(name);
+	function process(name,data,config,$element){
+		var loaderDeferred = loadComponent(name);
 		
-		config = buildConfig(componentDef,config);
+		var processDeferred = $.Deferred();
+		var buildDeferred = $.Deferred(); 
+		var postDisplayDeferred = $.Deferred();
+		processDeferred.whenBuild   = buildDeferred.promise();
+		processDeferred.whenPostDisplay = postDisplayDeferred.promise();
 		
-		var component = instantiateComponent(componentDef);
-		
-		//if the config.unique is set, and there is a component with the same name, abort
-		//TODO: an optimization point would be to add a "sComponentUnique" in the class for data-scomponent that have a confi.unique = true
-		//      This way, the query below could be ".sComponentUnique [....]" and should speedup the search significantly on UserAgents that supports the getElementsByClassName
-		if (config.unique && $("[data-scomponent='" + name + "']").length > 0){
-			return null;
-		}
-		
-		// if there is no element, we invoke the build
-		if (!$element) {
-			//Ask the component to build the new $element
-			$element = invokeBuild(component, data, config);
-		}
-		
-		//if there is an element, then, manage the rendering logic. 
-		if ($element) {
-			//make sure we get the jQuery object
-			$element = $($element);
+		loaderDeferred.done(function(componentDef){
+			config = buildConfig(componentDef,config);
+			var component = instantiateComponent(componentDef);	
 			
-			bind$element($element, component, data, config);
+			//if the config.unique is set, and there is a component with the same name, abort
+			//TODO: an optimization point would be to add a "sComponentUnique" in the class for data-scomponent that have a confi.unique = true
+			//      This way, the query below could be ".sComponentUnique [....]" and should speedup the search significantly on UserAgents that supports the getElementsByClassName
+			if (config.unique && $("[data-scomponent='" + name + "']").length > 0){
+				return null; //
+			}	
 			
-			//render the element
-			renderComponent(snow.ui, component, data, config);
+			// ------ build ------ //
+			var deferred$element = $.Deferred();
+			// if there is no element, we invoke the build
+			if (!$element) {
+				//Ask the component to build the new $element
+				var buildReturn = invokeBuild(component, data, config);
+				// if it returns a deferred, then, "pipe it"
+				if (buildReturn && $.isFunction(buildReturn.promise)){
+					//FIXME: will need to use the new jQuery 1.6 pipe here (right now, just trigger on done
+					buildReturn.done(function($element){
+						deferred$element.resolve($element);
+					}).fail(function(){
+						deferred$element.reject();
+					});
+				}
+				// otherwise, if the $element is returned , resolve the deferred$element immediately
+				else{
+					if (buildReturn){
+						$element = $(buildReturn);
+					}
+					deferred$element.resolve($element);
+				}
+			}
+			// if the $element is already here, then, it is an attach, so, do a immediate Deffered
+			else{
+				deferred$element.resolve($element);
+			}
+			// ------ /build ------ //
 			
+			// ------ render & resolve ------ //
+			deferred$element.promise().done(function($element){
+				//if there is an element, then, manage the rendering logic. 
+				if ($element) {
+					//make sure we get the jQuery object
+					$element = $($element);
+					
+					bind$element($element, component, data, config);
+					
+					buildDeferred.resolve(component);
+					
+					//render the element
+					//TODO: implement deferred for the render as well. 
+					renderComponent(component, data, config);
+					
+				}else{
+					buildDeferred.resolve(component);
+				} 
+				
+				var invokeDfd = invokePostDisplay(component, data, config);
+				invokeDfd.done(function(){
+					postDisplayDeferred.resolve(component);
+				});
+				
+			});
+			// ------ /render & resolve ------ //
 			
-			
-		} 
+			$.when(processDeferred.whenBuild, processDeferred.whenPostDisplay).done(function(){
+				processDeferred.resolve(component);
+			})
+		});
 		
-		invokePostDisplay(component, data, config);
 		
-		return component;		
+		
+		return processDeferred;
 	}
 
-	function renderComponent (sui,component,data,config){
+	function renderComponent (component,data,config){
 	
 		if (config.transition){
-			var transition = sui.getTransition(config.transition);
+			var transition = snow.ui.getTransition(config.transition);
 			
 			if (transition) {
 				transition(component,data,config);
@@ -288,20 +328,43 @@ snow.ui = {};
 	
 
 	function invokePostDisplay(component,data,config){
+		var invokeDfd = $.Deferred();
+		
+		
 		// Call the eventual postDisplay 
 		// (differing for performance)
 		if (component.postDisplay) {
 			// if the component has a delay >= 0, then, we use a setTimeout
 			if (config.postDisplayDelay >= 0) {
 				setTimeout(function(){
-					component.postDisplay(data, config);
+					var postDisplayDfd = component.postDisplay(data, config);
+					if (postDisplayDfd && $.isFunction(postDisplayDfd)){
+						postDisplayDfd.done(function(){
+							invokeDfd.resolve();
+						});
+					}else{
+						invokeDfd
+					}
 				}, config.postDisplayDelay);
 			}
 			// otherwise, we call it in sync
 			else{
-				component.postDisplay(data, config);
+				var postDisplayDfd = component.postDisplay(data, config);
+				if (postDisplayDfd && $.isFunction(postDisplayDfd)){
+						postDisplayDfd.done(function(){
+							invokeDfd.resolve();
+						});
+				}else{
+					invokeDfd.resolve();
+				}
 			}
 		}
+		// if there is now postDisplay, then, trigger it anyway
+		else{
+			invokeDfd.resolve();
+		}
+		
+		return invokeDfd.promise();
 	}	
 	// ------ /Private Helpers ------ //
 	

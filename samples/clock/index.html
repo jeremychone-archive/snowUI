@@ -27,17 +27,17 @@
 		$(function(){
 			$("#addClock").click(function(){
 				snow.ui.display("clock");
+			});
+			
+			setInterval(function(){
+					
+				var now = new Date();
+				$(".clock").each(function(){
+					var clock = $(this).sComponent();
+					clock.redrawClock(now);
+				});
 				
-				setInterval(function(){
-					
-					var now = new Date();
-					$(".clock").each(function(){
-						var clock = $(this).sComponent();
-						clock.redrawClock(now);
-					});
-					
-				},1000);
-			})
+			},1000);
 			
 			
 		});
