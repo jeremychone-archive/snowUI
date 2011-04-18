@@ -83,9 +83,9 @@
 					
 					// --- Delete User --- //
 					$userList.delegate(".del","click",function(){
-						var user = $(this).sDataObject("user");
-						snow.dm.remove("user",user.id);
-						
+						$(this).sDataObject("user").done(function(user){
+							snow.dm.remove("user",user.id);	
+						});
 					});
 					// --- /Delete User --- //
 					
@@ -105,29 +105,28 @@
 				});
 				
 				function updateUserListDiv(){
-					var user, 
+					snow.dm.find("user").done(function(userList){
+						var user, 
 					    i,
-						userList = snow.dm.find("user"),
 						$userList = $("#userList");
 					
-					//clean the list
-					$userList.empty();
-					
-					for (i = 0; i < userList.length; i++) {
-						user = userList[i];
-						$li = $("<li></li>");
-						$li.attr("data-obj_type", "user");
-						$li.attr("data-obj.id", user.id);
+						//clean the list
+						$userList.empty();
 						
-						//Note: The 'name' and 'city' class are just for css layout
-						//      The 'del' class is use for delegate
-						$li.append("<span class='name'>" + user.name + "</span>" +
-						           "<span class='city'>(" + user.city + ")</span>" + 
-								   "<span class='del'>x</span>" );
-						$userList.append($li);
-					}
-					
-					
+						for (i = 0; i < userList.length; i++) {
+							user = userList[i];
+							$li = $("<li></li>");
+							$li.attr("data-obj_type", "user");
+							$li.attr("data-obj.id", user.id);
+							
+							//Note: The 'name' and 'city' class are just for css layout
+							//      The 'del' class is use for delegate
+							$li.append("<span class='name'>" + user.name + "</span>" +
+							           "<span class='city'>(" + user.city + ")</span>" + 
+									   "<span class='del'>x</span>" );
+							$userList.append($li);
+						}						
+					});
 				}
 				</script>
 				<!--  /Simple User CRUD UI Logic -->

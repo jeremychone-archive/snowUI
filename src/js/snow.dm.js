@@ -1,8 +1,8 @@
 var snow = snow || {};
 
-snow.dm = (function(){
+(function(){
 	
-	function DM(){};
+	snow.dm = {};
 	
 	var daoDic = {};
 	
@@ -14,16 +14,20 @@ snow.dm = (function(){
 	};	
 	
 	//public
-	DM.prototype.registerDao = function(objectType,dao){
+	snow.dm.registerDao = function(objectType,dao){
 		daoDic[objectType] = dao;
 	}; 
 	
 	// Add a change listener function for an objectType
 	// Will Change listener will get called on save and remove
 	// TODO: needs to support "all" (i.e. jsut the listener, which means get triggered on every objectType)
-	DM.prototype.addChangeListener = function(objectType,listener){
-		var listeners = daoChangeEventListeners[objectType] || [];
-		daoChangeEventListeners[objectType] = listeners; //the js way
+	snow.dm.addChangeListener = function(objectType,listener){
+		var listeners = daoChangeEventListeners[objectType];
+		if (!listeners){
+			listeners = [];
+			daoChangeEventListeners[objectType] = listeners;
+		}
+		daoChangeEventListeners[objectType] = listeners; 
 		listeners.push(listener);
 	};
 	
@@ -31,8 +35,9 @@ snow.dm = (function(){
 	/**
 	 * Get the id for a data object. This is usefull for the framework to know how to retrieve an id from an object. 
 	 * @param {Object} data
+	 * @return the id (this is not deferred)
 	 */
-	DM.prototype.getId = function (objectType,data){
+	snow.dm.getId = function (objectType,data){
 		var dao = getDao(objectType);
 		if (dao){
 			return dao.getId(objectType,data);		
@@ -42,16 +47,17 @@ snow.dm = (function(){
 	}; 
 	
 	/**
-	 * Simple getter of a single object by id.
+	 * Return a deferred object that will resolve with the object for a give objectType/ID.
 	 * @param {Object} objectType
 	 * @param {Object} id
+	 * @return 
 	 */
-	DM.prototype.get = function(objectType,id){
-		var dao = getDao(objectType);
+	snow.dm.get = function(objectType,id){
+		var r, dao = getDao(objectType);
 		if (dao){
-			return dao.get(objectType,id);		
+			return wrapWithDeferred(dao.get(objectType,id)).promise();
 		}else{
-			snow.log.error("cannot find the DAO for objectType: " + objectType);
+			snow.log.error("Cannot find the DAO for objectType: " + objectType);
 		}	
 	};	
 	
@@ -65,39 +71,44 @@ snow.dm = (function(){
 	 *           opts.orderBy   {String}
 	 *           opts.orderType {String} "asc" or "desc"
 	 */
-	DM.prototype.find = function(objectType,opts){
+	snow.dm.find = function(objectType,opts){
 		var dao = getDao(objectType);
 		if (dao){
 			//TODO need to support variable params
-			return dao.find(objectType,opts);	
+			return wrapWithDeferred(dao.find(objectType,opts)).promise();	
 		}else{
-			snow.log.error("cannot find the DAO for objectType" + objectType);
+			snow.log.error("Cannot find the DAO for objectType" + objectType);
 		}	
 	};	
 	
-	DM.prototype.save = function(objectType,data){
+	snow.dm.save = function(objectType,data){
 		var dao = getDao(objectType);
 		if (dao && dao.save){
-			var newData = dao.save(objectType,data);
-			//TODO: need add support for the oldData
-			callChangeListeners(objectType,"save",null,newData,data);
-			return newData;
+			var dfd = wrapWithDeferred(dao.save(objectType,data));
+			dfd.done(function(newData){
+				callChangeListeners(objectType,"save",null,newData,data);	
+			});
+			return dfd.promise();
 		}else{
-			snow.log.error("cannot find the DAO or save method for objectType" + objectType);
+			snow.log.error("Cannot find the DAO or save method for objectType" + objectType);
 		}	
 	};
 	
 	
-	DM.prototype.remove = function(objectType,id){
+	snow.dm.remove = function(objectType,id){
 		var dao = getDao(objectType);
 		if (dao){
-			var r = dao.remove(objectType,id);
+			var dfd = wrapWithDeferred(dao.remove(objectType,id));
 			
-			callChangeListeners(objectType,"remove",dao.get(objectType,id),null,null);
+			dfd.done(function(removeObj){
+				snow.dm.get(objectType,id).done(function(removedObject){
+					callChangeListeners(objectType,"remove",removedObject,null,null);	
+				});
+			});
 			
-			return r;
+			return dfd.promise();
 		}else{
-			snow.log.error("cannot find the DAO for objectType" + objectType);
+			snow.log.error("Cannot find the DAO for objectType" + objectType);
 		}	
 	};
 	
@@ -130,7 +141,20 @@ snow.dm = (function(){
 		}
 	};
 	
-	return new DM();
+	/**
+	 * Wrap with a deferred object if the obj is not a deferred itself. 
+	 */
+	function wrapWithDeferred(obj){
+		//if it is a deferred, then, trust it, return it. 
+		if (obj && $.isFunction(obj.promise)){
+			return obj;
+		}else{
+			var dfd = $.Deferred();
+			dfd.resolve(obj);
+			return dfd;
+		}
+	}
+	
 	
 })();
 
@@ -234,7 +258,7 @@ snow.dao = {};
 (function($) {
 
   /**
-   * get the dataObject from an element or its ancestors for a given objectType
+   * get the dataObject deferred from an element or its ancestors for a given objectType
    * @param {prefix} prefix
    */
   $.fn.sDataObject = function(objectType) {
