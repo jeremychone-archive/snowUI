@@ -145,17 +145,28 @@ snow.ui = {};
 		var loaderDeferred = $.Deferred();
         
 		var componentDef = _componentDefStore[name];
+		
+		// if the component already exist, just return it.
 		if (componentDef){
 			loaderDeferred.resolve(componentDef);
-		}else{
-			
-			_deferredByComponentName[name] = loaderDeferred;
-			$.ajax({
-	            url: "components/" + name + ".html",
-	            async: true
-	        }).complete(function(jqXHR,textStatus){
-				$(snow.ui.config.componentsHTMLHolder).append(jqXHR.responseText);		
-			});
+		}
+		// if the component is not loaded, load it
+		else{
+			var currentLoaderDeferred =  _deferredByComponentName[name]; 
+			// if there is already a loading going on, replace the loaderDeferred to be returned by the currentLoaderDeferred
+			if (currentLoaderDeferred) {
+				loaderDeferred = currentLoaderDeferred;
+			}
+			//otherwise, do the loading 
+			else {
+				_deferredByComponentName[name] = loaderDeferred;
+				$.ajax({
+					url: "components/" + name + ".html",
+					async: true
+				}).complete(function(jqXHR, textStatus){
+					$(snow.ui.config.componentsHTMLHolder).append(jqXHR.responseText);
+				});
+			}
 		}
 		return loaderDeferred.promise();
 	};	
