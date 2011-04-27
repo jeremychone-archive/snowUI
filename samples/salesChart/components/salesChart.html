@@ -18,7 +18,20 @@
 			 {name: "Orange",
 			 size: 10000,
 			 probability: 60,
-			 date: "April 16, 2011"}
+			 date: "April 16, 2011"},
+			 
+			 
+			{name: "PespiCo",
+			 size: 20000,
+			 probability: 30,
+			 date: "April 17, 2011"},
+			 
+			{name: "Ford, Inc",
+			 size: 20000,
+			 probability: 30,
+			 date: "April 17, 2011"}
+			 
+			 
 			 
 			 
 		]
@@ -59,13 +72,21 @@
 			*/
 			// ------ /Resize yax units ------- //
 			
-			
-			
+			const MOVE_DEAL = "moveDeal", SCALE_DEAL = "scaleDeal", PAN_TIMELINE = "panTimeline";
+			// dragMode "moveDeal" "scaleDeal" "panTimeline" 
+			var dragMode = null;
 			
 			var lastDealTouchTime = 0; 
 			var dragThreshold = 10;
 			var dragDealMode = false;
 			var scaleDealMode = false; 
+			
+			function passDragThreshold(extra){
+				var delta = Math.max(Math.abs(extra.pageX - extra.startPageX),Math.abs(extra.pageY - extra.startPageY));
+				return (dragThreshold < delta); 
+			}
+			
+			/*
 			function isDragDealMode(extra){
 				if (!dragDealMode && !scaleDealMode){
 					var delta = Math.max(Math.abs(extra.pageX - extra.startPageX),Math.abs(extra.pageY - extra.startPageY));
@@ -77,6 +98,7 @@
 			function isScaleDealMode(extra){
 				return scaleDealMode;
 			}
+			*/
 			
 			// ------ Deal Events ------ //
 			$grid.sDrag(".salesChart-deal",{
@@ -91,16 +113,19 @@
 					
 					
 					setTimeout(function(){
-						if (!dragDealMode && touchTime === lastDealTouchTime) {
+						snow.log.info("dragMode: " + dragMode);
+						if (dragMode === null && touchTime === lastDealTouchTime) {
 							$deal.addClass("scaleMode");
-							scaleDealMode = true;
+							dragMode = SCALE_DEAL;
 						}
 					},500);
 				},
 				
 				drag: function(event,extra){
 					var $deal = $(this);
-					if (isDragDealMode(extra)) {
+					if (passDragThreshold(extra) && (dragMode === null || dragMode === MOVE_DEAL )) {
+						
+						dragMode = MOVE_DEAL;
 						var y = extra.pageY - extra.startPageY;
 						snow.fx.translate({
 							element: $deal,
@@ -120,7 +145,7 @@
 						else {
 							$prop.text(getProbability(y + originalY, c.gridH) + "%");
 						}
-					}else if (isScaleDealMode(extra)){
+					}else if (dragMode === SCALE_DEAL){
 						var w = $deal.width() + extra.deltaPageX;
 						//var h = $deal.height();
 						$deal.css({
@@ -133,7 +158,7 @@
 				
 				end: function(event,extra){
 					var $deal = $(this);
-					if (isDragDealMode(extra)) {
+					if (dragMode === MOVE_DEAL) {
 						// unfortunately, on Firefox and Webkit, the $e.position() does not return the same value
 						// so, we get the css position from the css property itself (can convert it to number)
 						var originalX = $deal.css("left").match(/\d+/) * 1;
@@ -151,9 +176,8 @@
 					
 					//FIXME: hack for now
 					setTimeout(function(){
-						dragDealMode = 0;
+						dragMode = null;
 						lastDealTouchTime = 0;
-						scaleDealMode = false;
 						$deal.removeClass("scaleMode");
 						$deal.removeClass("sel");
 					}, 0);					
@@ -165,13 +189,13 @@
 			// ------ Grid Events ------ //
 			$grid.sDrag({
 				drag: function(event,extra){
-					if (!dragDealMode && !scaleDealMode) {
+					if (dragMode !== MOVE_DEAL && dragMode !== SCALE_DEAL) {
 						translateGrid(extra.pageX - extra.startPageX);
 					}	
 				}, 
 				
 				end: function (event,extra){
-					if (!dragDealMode && !scaleDealMode) {
+					if (dragMode !== MOVE_DEAL && dragMode !== SCALE_DEAL) {
 						var originalX = -1 * $grid.css("left").match(/\d+/) * 1;
 						translateGrid(extra.pageX - extra.startPageX,true);
 					}				

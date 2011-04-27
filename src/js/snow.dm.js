@@ -104,7 +104,7 @@ var snow = snow || {};
 			});
 		}
 		else{
-			callChangeListeners(objectType,"save",result,null,null);	
+			callChangeListeners(objectType,"remove",result,null,null);	
 		}
 		
 	};
@@ -198,7 +198,7 @@ snow.dao = {};
 		this._store = store || [];
 	}
 	// ------ DAO Interface Implementation ------ //
-	SimpleDao.prototype.getId = function(data){
+	SimpleDao.prototype.getId = function(objectType,data){
 		return data.id;
 	}
 	
@@ -243,10 +243,13 @@ snow.dao = {};
 	}
 	
 	SimpleDao.prototype.remove = function(objectType,id){
+		var oldData = this.get(objectType,id);
 		var idx = snow.util.array.getIndex(this._store,"id",id);
 		if (idx > -1) {
 			snow.util.array.remove(this._store, idx);
 		}
+		return oldData;
+		
 	}	
 	// ------ /DAO Interface Implementation ------ //
 	
