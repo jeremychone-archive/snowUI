@@ -19,12 +19,26 @@
 	<body>
 		<div id="body">
 	    </div>
+		<div id="hack" style="color:rgba(0,0,0,0)"></div>
 	</div>
 		
 	
 	
 	<script type="text/javascript">
 		snow.ui.display("salesChart");
+		var $hack; 
+		
+		function flushUI(){
+			$hack.empty().append("flushUI");
+		}
+		
+		$(function(){
+			$hack = $("#hack");	
+			$(document).bind("touchmove",function(e){
+				
+				e.preventDefault();
+			})
+		})
 		
 	</script>
 	

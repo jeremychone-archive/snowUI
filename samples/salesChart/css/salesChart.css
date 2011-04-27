@@ -1,3 +1,14 @@
+#debugMsg{
+	position: absolute;
+	top: 10px; right: 10px; 
+	width: 400px;
+	height: 200px;
+	border: dotted 1px #999;
+	color: #555;
+	overflow: auto;
+	font-size: 80%;
+	background: rgba(255,255,255,.2);
+}
 #salesChart{
 	position: absolute;
 	top: 0;right: 0; bottom: 0; left: 0;

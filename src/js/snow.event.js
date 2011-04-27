@@ -91,15 +91,15 @@
 				(options.start)?$this.bind(SDRAGSTART,options.start):null;
 				(options.drag)?$this.bind(SDRAGDRAG,options.drag):null;
 				(options.end)?$this.bind(SDRAGEND,options.end):null;
-				
+							
                 $this.bind(dragEvents.start, function(e){
-                   handleDragEvent.call(this,e,options);
+                   	handleDragEvent.call(this,e,options);
                 });
             }else{
-				
+
 				(options.start)?$this.delegate(delegate,SDRAGSTART,options.start):null;
 				(options.drag)?$this.delegate(delegate,SDRAGDRAG,options.drag):null;
-				(options.end)?$this.delegate(delegate,SDRAGEND,options.end):null;				
+				(options.end)?$this.delegate(delegate,SDRAGEND,options.end):null;	
 				
 				$this.delegate(delegate,dragEvents.start,function(e){
 					handleDragEvent.call(this,e,options);
@@ -111,7 +111,7 @@
 		// "this" of this function will be the element
         function handleDragEvent(e, options){
 			var $this = $(this);
-            fixTouchEvent(e);
+            
             var $handle = $(this);
             
             var $document = $(document);
@@ -120,25 +120,29 @@
 			var extra = buildExtra(e,$handle,SDRAGSTART);
             $this.trigger(SDRAGSTART,[extra]);
             
+			// since we create "meta events" we consume this one
             e.preventDefault();
-            
+            e.stopPropagation();
+			
             $document.bind(dragEvents.drag + "." + id, function(e){
-                fixTouchEvent(e);
-				
 				extra = buildExtra(e,$handle,SDRAGDRAG);
             	$this.trigger(SDRAGDRAG,[extra]);
 				
+				// since we create "meta events" we consume this one	
                 e.preventDefault();
+				e.stopPropagation();
             });
             
             $document.bind(dragEvents.end + "." + id, function(e){
-                fixTouchEvent(e);
                 var extra = buildExtra(e,$handle,SDRAGEND);
             	$this.trigger(SDRAGEND,[extra]);
 				
                 $(document).unbind(dragEvents.drag + "." + id);
                 $(document).unbind(dragEvents.end + "." + id);
+				
+				// since we create "meta events" we consume this one
                 e.preventDefault();
+				e.stopPropagation();
             });
         }
         
@@ -147,11 +151,17 @@
 	
 	// assumed that the event has been fixed
 	function buildExtra(event,$handle,dragType){
+		fixTouchEvent(event);
 		var extra = {
 			eventSource: event,
 			pageX: event.pageX,
 			pageY: event.pageY			
 		};
+		
+		var oe = event.originalEvent;
+		if (hasTouch){
+			extra.touches = oe.touches;
+		}
 		
 		var currentState = $handle.data("_sDrag_currentState");
 		if (!currentState){
@@ -189,6 +199,7 @@
     function fixTouchEvent(e){
         if (hasTouch) {
             var oe = e.originalEvent;
+			
             if (oe.touches.length > 0) {
                 e.pageX = oe.touches[0].pageX;
                 e.pageY = oe.touches[0].pageY;

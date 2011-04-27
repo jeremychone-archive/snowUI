@@ -1,5 +1,16 @@
 <script type="text/javascript">
+
 (function(){
+	
+	var logCount = 0;
+	
+	snow.log.addPrinter(function(text){
+		var $msg = $("#debugMsg");
+		//setTimeout(function(){
+			$msg.prepend("" + (logCount++) + " " + text + "<br />");	
+		//},0)
+		
+	})
 	
 	// Mock data.
     var data = {
@@ -62,6 +73,10 @@
 			
 			this.$grid = $("#salesChart-grid"); 
 			var $grid = this.$grid;
+			
+			this.drawGrid();
+			this.drawDeals();
+			
 			// ------ Resize yax units ------ //
 			/*
 			var $yax = $("#salesChart-yax");
@@ -76,54 +91,89 @@
 			// dragMode "moveDeal" "scaleDeal" "panTimeline" 
 			var dragMode = null;
 			
+			//{startPageX:num,startPageY:num,lastPageX:num,lastPageY:num,touchIndex:num}
+			var scaleTouch = null;
+			
+			
 			var lastDealTouchTime = 0; 
-			var dragThreshold = 10;
-			var dragDealMode = false;
-			var scaleDealMode = false; 
+			var dragThreshold = 100;
 			
 			function passDragThreshold(extra){
 				var delta = Math.max(Math.abs(extra.pageX - extra.startPageX),Math.abs(extra.pageY - extra.startPageY));
 				return (dragThreshold < delta); 
 			}
 			
-			/*
-			function isDragDealMode(extra){
-				if (!dragDealMode && !scaleDealMode){
-					var delta = Math.max(Math.abs(extra.pageX - extra.startPageX),Math.abs(extra.pageY - extra.startPageY));
-					dragDealMode = (dragThreshold < delta); 	
-				}
-				return dragDealMode;
-			}
-			
-			function isScaleDealMode(extra){
-				return scaleDealMode;
-			}
-			*/
-			
 			// ------ Deal Events ------ //
-			$grid.sDrag(".salesChart-deal",{
-				start: function(){
+			var scaleStartW = null;
+			var scaleStartPos = null;
+			$grid.find(".salesChart-deal").bind("gesturechange",function(event){
+				if (dragMode !== MOVE_DEAL) {
+					dragMode = SCALE_DEAL;
+					
+					var $deal = $(this);
+					
+					if (!scaleStartW) {
+						scaleStartW = $deal.width();
+					}
+					if (!scaleStartPos) {
+						scaleStartPos = $deal.position();
+					}
+					var newW = scaleStartW * event.originalEvent.scale;
+					
+					//var h = $deal.height();
+					$deal.css({
+							width: newW,
+							height: newW
+						});
+						
+					var left = scaleStartPos.left - (newW - scaleStartW) / 2;
+					var top = scaleStartPos.top - (newW - scaleStartW) / 2;
+					$deal.css({
+						top: top,
+						left: left
+					
+					});
+					
+					$deal.css("-webkit-border-radius", newW + "px");
+					flushUI();
+				}
+			});
+			
+			$grid.bind("gestureend",function(event){
+				dragMode = null;
+				scaleStartW = null;
+				scaleStartPos = null;
+			})
+			//
+			// TODO: we need to enable the delegate on this one (problem with the event order)
+			//$grid.sDrag(".salesChart-deal",{
+			$grid.find(".salesChart-deal").sDrag({
+			
+				start: function(event,extra){
 					var $deal = $(this);
 					$deal.addClass("sel");
 					
 					// just for optimization
 					c.gridH = $grid.innerHeight();
 					
-					var touchTime = lastDealTouchTime =  new Date().getTime();
-					
-					
-					setTimeout(function(){
-						snow.log.info("dragMode: " + dragMode);
-						if (dragMode === null && touchTime === lastDealTouchTime) {
-							$deal.addClass("scaleMode");
-							dragMode = SCALE_DEAL;
-						}
-					},500);
 				},
 				
 				drag: function(event,extra){
+
 					var $deal = $(this);
-					if (passDragThreshold(extra) && (dragMode === null || dragMode === MOVE_DEAL )) {
+					
+					
+					// DEBUG MESSAGE
+					/*
+					var msg = "" + dragMode + " touches[0].pageX: " + extra.touches[0].pageX;
+					if (extra.touches.length > 1){
+						msg += " touches[1].pageX: " + extra.touches[1].pageX;
+					}
+					snow.log.info(msg);
+					*/
+					
+					//snow.log.info()
+					if (dragMode === MOVE_DEAL || passDragThreshold(extra) && dragMode === null) {
 						
 						dragMode = MOVE_DEAL;
 						var y = extra.pageY - extra.startPageY;
@@ -145,15 +195,11 @@
 						else {
 							$prop.text(getProbability(y + originalY, c.gridH) + "%");
 						}
-					}else if (dragMode === SCALE_DEAL){
-						var w = $deal.width() + extra.deltaPageX;
-						//var h = $deal.height();
-						$deal.css({
-							width: w,
-							height: w 
-						});
-						$deal.css("-webkit-border-radius",w + "px");
 					}
+					
+				
+					event.stopPropagation();
+					return false;	
 				}, 
 				
 				end: function(event,extra){
@@ -178,6 +224,7 @@
 					setTimeout(function(){
 						dragMode = null;
 						lastDealTouchTime = 0;
+						scaleTouch = null;
 						$deal.removeClass("scaleMode");
 						$deal.removeClass("sel");
 					}, 0);					
@@ -187,8 +234,11 @@
 			
 			
 			// ------ Grid Events ------ //
+			/*
 			$grid.sDrag({
 				drag: function(event,extra){
+					var $target = $(event.target);
+					//snow.log.info("" + dragMode + " grid event drag " + event.type + " : " + $target.attr("id") + "-" + $target.attr("class"));
 					if (dragMode !== MOVE_DEAL && dragMode !== SCALE_DEAL) {
 						translateGrid(extra.pageX - extra.startPageX);
 					}	
@@ -201,6 +251,7 @@
 					}				
 				}
 			});
+			*/
 			
 			// mousewheel
 			$grid.bind("mousewheel",function(event){
@@ -238,8 +289,7 @@
 			}
 			// ------ /Grid Events ------ //
 			
-			this.drawGrid();
-			this.drawDeals();
+			
 			
 		},
 		
@@ -341,6 +391,10 @@
 				</div>
 				
 			</div>
+		</div>
+		
+		<div id="debugMsg">
+			
 		</div>
 	</div>
 </div>	
