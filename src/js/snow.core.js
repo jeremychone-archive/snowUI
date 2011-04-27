@@ -441,11 +441,11 @@ $.fn = $.fn;
 //TODO: needs to support logger printer, formatter, and listener
 (function(){
 	
-	const ERROR = "ERROR", DEBUG="DEBUG";
+	const INFO = "INFO", ERROR = "ERROR", DEBUG="DEBUG";
 	
 	
-	// TODO: needs to add the ability to add loggers
-	var loggers;
+	// TODO: needs to add the ability to add printers
+	var printers = null;
 	
 	/**
 	 * @namespace
@@ -499,14 +499,33 @@ $.fn = $.fn;
 			if (snow.log.config.debugMode){
 				printLog(text,DEBUG);	
 			}
+		},
+		
+		
+		/**
+		 * Add printer (the print function has two argement text and type
+		 */
+		addPrinter: function(printerFunc){
+			printers = printers || [];
+			printers.push(printerFunc);
 		}
+		
 	};
 	
 	function printLog(text,type){
 		//TODO: needs to go through the registered "loggers"
 		 
+		 
 		 if (snow.log.config.consoleLog) {
 		 	printToConsole(text, type);
+		 }
+		 
+		 if (printers){
+		 	var printerFunc, computedType = type || INFO;
+		 	for (var i = 0, l = printers.length; i < l; i++){
+				printerFunc = printers[i];
+				printerFunc(text,computedType);
+			}
 		 }
 	}	
 	
