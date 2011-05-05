@@ -204,8 +204,8 @@ snow.ui = {};
 			if (!$element) {
 				//Ask the component to build the new $element
 				var buildReturn = invokeBuild(component, data, config);
-				// if it returns a deferred, then, "pipe it"
-				if (buildReturn && $.isFunction(buildReturn.promise)){
+				// if it custom Deferred, then, assume it will get resolved with the $element (as by the API contract)
+				if (buildReturn && $.isFunction(buildReturn.promise) && !buildReturn.jquery){
 					//FIXME: will need to use the new jQuery 1.6 pipe here (right now, just trigger on done
 					buildReturn.done(function($element){
 						deferred$element.resolve($element);
