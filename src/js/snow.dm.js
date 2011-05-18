@@ -68,7 +68,7 @@ var snow = snow || {};
 	 * @param {Object} opts (not supported yet)
 	 *           opts.pageIndex {Number} Index of the page, starting at 0.
 	 *           opts.pageSize  {Number} Size of the page
-	 *           opts.like      {Object}
+	 *           opts.match     {Object}
 	 *           opts.orderBy   {String}
 	 *           opts.orderType {String} "asc" or "desc"
 	 */
@@ -215,6 +215,20 @@ snow.dao = {};
 		if (opts){
 			if (opts.orderBy){
 				resultSet = snow.util.array.sortBy(resultSet,opts.orderBy)	
+			}
+			if (opts.match){
+				resultSet = $.map(resultSet,function(val,idx){
+					var pass = true;
+					
+					$.each(opts.match,function(k,v){
+						if(val[k] === v){
+							pass = pass && true;
+						}else{
+							pass = false;
+						}
+					});
+					return (pass)?val:null;
+				});
 			}
 		}
 		return resultSet;
