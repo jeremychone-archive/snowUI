@@ -186,16 +186,20 @@ snow.dao = {};
 
 (function(){
 	/**
-	 * SimpleDao is a Dao for a array based storage. Each data item is stored as an array item, 
+	 * SimpleDao is a Dao for a in memory array based storage. Each data item is stored as an array item, 
 	 * and have a unique .id property (that will be added on save is not present).
 	 * 
 	 * Note that instance of a SimpleDao is only for single object type.
 	 * 
 	 * @param {Array}  store (optional) Array of json object representing each data item
-	 * @param {Object} opts  (optional) Dao options (not supported yet)
 	 */
-	function SimpleDao(store,opts){
+	function SimpleDao(store){
+		this.init(store);
+	}
+	
+	SimpleDao.prototype.init = function(store){
 		this._store = store || [];
+		return this;
 	}
 	// ------ DAO Interface Implementation ------ //
 	SimpleDao.prototype.getId = function(objectType,data){
@@ -269,7 +273,80 @@ snow.dao = {};
 	
 	snow.dao.SimpleDao = SimpleDao;
 })();
-// ------ /Simple DAO ------ //		
+// ------ /Simple DAO ------ //
+
+// ------ Simple Rel DAO ------ //
+(function(){
+	function SimpleRelDao (store,rels){
+		this._super.init(store);
+		this._rels = rels;
+		this._relDic = {};
+		for (var i = 0, l = rels.length; i < l; i++){
+			this._relDic[rels[i]] = rels[i] + "_id";
+		}
+	}
+	snow.util.inherit(SimpleRelDao,snow.dao.SimpleDao);
+	
+	SimpleRelDao.prototype.get = function(objectType,id){
+		var result = this._super.get(objectType,id);
+		return completeData.call(this,result);
+	}
+	
+	SimpleRelDao.prototype.find = function(objectType,opts){
+		var resultSet = this._super.find(objectType,opts);
+		
+		// Now, go through the list, adn load the other object type. 
+		if (this._rels){
+			var dao = this;
+			$.each(resultSet,function(idx,val){
+				completeData.call(dao,val);
+			});
+		}
+		
+		return resultSet;
+		
+	}
+	
+	SimpleRelDao.prototype.save = function(objectType,data){
+		// make sure to remove the direct object reference (we expect the rel_id at this point)
+		// TODO: probably need to extra the id from the object reference in case there is now rel_id
+		if (this._rels) {
+			var tmpPropName;
+			for (var i = 0, l = this._rels.length; i < l; i++){
+				tmpPropName = this._rels[i];
+				if (typeof data[tmpPropName] !== "undefined"){
+					delete data[tmpPropName];
+				}
+			}
+		}
+		
+		var result = this._super.save(objectType,data);
+		return completeData.call(this,result);
+	}	
+	
+	
+	// ------ Private Helpers ------ //
+	// complete the data with the related objects
+	function completeData(val){
+		var rels = this._rels;
+		var rel, propIdName, obj, objId;
+		for (var i = 0; i < rels.length ; i++){
+			rel = rels[i];
+			propIdName = this._relDic[rel];
+			objId = val[propIdName];
+			if (typeof objId !== "undefined") {
+				obj = snow.dm.get(rel, objId);
+				if (typeof obj !== "undefined" && obj != null) {
+					val[rel] = obj;
+				}
+			}
+		}	
+		return val;	
+	}
+	// ------ /Private Helpers ------ //
+	
+	snow.dao.SimpleRelDao = SimpleRelDao;
+})();	
 
 // ------ jQuery DAO Helper ------ //
 (function($) {
