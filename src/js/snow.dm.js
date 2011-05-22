@@ -278,7 +278,7 @@ snow.dao = {};
 // ------ Simple Rel DAO ------ //
 (function(){
 	function SimpleRelDao (store,rels){
-		this._super.init(store);
+		this._super.init.call(this,store);
 		this._rels = rels;
 		this._relDic = {};
 		for (var i = 0, l = rels.length; i < l; i++){
@@ -288,12 +288,12 @@ snow.dao = {};
 	snow.util.inherit(SimpleRelDao,snow.dao.SimpleDao);
 	
 	SimpleRelDao.prototype.get = function(objectType,id){
-		var result = this._super.get(objectType,id);
+		var result = this._super.get.call(this,objectType,id);
 		return completeData.call(this,result);
 	}
 	
 	SimpleRelDao.prototype.find = function(objectType,opts){
-		var resultSet = this._super.find(objectType,opts);
+		var resultSet = this._super.find.call(this,objectType,opts);
 		
 		// Now, go through the list, adn load the other object type. 
 		if (this._rels){
@@ -320,7 +320,7 @@ snow.dao = {};
 			}
 		}
 		
-		var result = this._super.save(objectType,data);
+		var result = this._super.save.call(this,objectType,data);
 		return completeData.call(this,result);
 	}	
 	
