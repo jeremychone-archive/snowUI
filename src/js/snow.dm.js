@@ -62,6 +62,8 @@ var snow = snow || {};
 		return getDao(objectType).get(objectType,id);
 	};	
 	
+	
+	
 	/**
 	 * Return an array of values or a deferred object (depending of DAO impl) for this objectType and options
 	 * @param {Object} objectType
@@ -72,8 +74,8 @@ var snow = snow || {};
 	 *           opts.orderBy   {String}
 	 *           opts.orderType {String} "asc" or "desc"
 	 */
-	snow.dm.find = function(objectType,opts){
-		return getDao(objectType).find(objectType,opts);
+	snow.dm.list = function(objectType,opts){
+		return getDao(objectType).list(objectType,opts);
 	};	
 	
 	snow.dm.save = function(objectType,data){
@@ -211,8 +213,8 @@ snow.dao = {};
 		return this._store[idx];
 	}
 	
-	//for nos, just support opts.orderBy
-	SimpleDao.prototype.find = function(objectType,opts){
+	//for now, just support opts.orderBy
+	SimpleDao.prototype.list = function(objectType,opts){
 		//TODO: probably need to copy the array to avoid giving the original array
 		var resultSet = this._store;
 		
@@ -292,8 +294,8 @@ snow.dao = {};
 		return completeData.call(this,result);
 	}
 	
-	SimpleRelDao.prototype.find = function(objectType,opts){
-		var resultSet = this._super.find.call(this,objectType,opts);
+	SimpleRelDao.prototype.list = function(objectType,opts){
+		var resultSet = this._super.list.call(this,objectType,opts);
 		
 		// Now, go through the list, adn load the other object type. 
 		if (this._rels){

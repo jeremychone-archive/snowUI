@@ -105,7 +105,7 @@
 				});
 				
 				function updateUserListDiv(){
-					snow.ddm.find("user").done(function(userList){
+					snow.ddm.list("user").done(function(userList){
 						var user, 
 					    i,
 						$userList = $("#userList");
@@ -161,7 +161,7 @@
 							//        dm.save(..) will need to be called. 
 							//Note 2: However, we are not doing a deep copy, so, it is not 100% bullet proof, 
 							//        but good enough for this example.
-							find: function(objectType,opts){
+							list: function(objectType,opts){
 								var a = [];
 								for (var i = 0; i < userStore.length; i++){
 									var u = userStore[i];

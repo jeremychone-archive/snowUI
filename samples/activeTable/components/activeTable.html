@@ -83,13 +83,13 @@ snow.ui.registerComponent(
 		// ------ Custom Component's methods ------ //
 		reloadData: function(){
 			this.data = {cols: ["component","html4","html5","jqueryUI","jqueryMobile"],
-					      rows:snow.dm.find("record",{orderBy:"component"})};	
+					      rows:snow.dm.list("record",{orderBy:"component"})};	
 		},
 		
 		showSerializedString: function(){
 			var $ta = this.$element.children("textarea.dataString"); 
 			if ($ta.length > 0){
-				var js = snow.dm.find("record");
+				var js = snow.dm.list("record");
 				var str = JSON.stringify(js,null,2);
 				$ta.val(str);	
 			}
