@@ -125,8 +125,8 @@ var snow = snow || {};
 			return wrapWithDeferred(snow.dm.get(objectType,id));
 		},
 	
-		find: function(objectType,opts){
-			return wrapWithDeferred(snow.dm.find(objectType,opts));
+		list: function(objectType,opts){
+			return wrapWithDeferred(snow.dm.list(objectType,opts));
 		},
 		
 		save: function(objectType,data){
