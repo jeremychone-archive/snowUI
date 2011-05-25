@@ -40,16 +40,15 @@ snow.ui.registerComponent(
 			
 			// adding a new row
 			$e.children(".addRow:first").sTouch(function(){
-				snow.dm.save("record",{});
+				snow.dm.create("record",{});
 				component.refresh();
 				component.showSerializedString();
 			});
 			
 			// delete a row
 			$e.delegate(".del","click",function(){
-				var $record = $(this).closest("[data-obj_type='record']");
-				var id = $record.attr("data-obj.id"); 
-				snow.dm.remove("record", id);
+				var objRef = $(this).sObjRef("record");
+				snow.dm.remove("record", objRef.id);
 				
 				component.refresh();
 				component.showSerializedString();
@@ -58,13 +57,15 @@ snow.ui.registerComponent(
 			// changing a row
 			$e.delegate(".recordprop","blur",function(){
 				var $prop = $(this);
-				var $record = $(this).closest("[data-obj_type='record']");
-				var id = $record.attr("data-obj.id");
+				var objRef = $prop.sObjRef("record");
 				
+				var propName = $prop.attr("itemprop");
+				var newVal = $prop.text();
 				
-				var delta = {id:id};
-				delta[$prop.attr("itemprop")] = $prop.text();
-				snow.dm.save("record",delta);
+				var data = {};
+				data[propName] = newVal;
+				
+				snow.dm.update("record",objRef.id,data);
 				
 				component.showSerializedString();
 			});
@@ -99,7 +100,7 @@ snow.ui.registerComponent(
 		// component's method that build the HTML table from the data stored
 		// in this component
 		build$ActiveTable: function(){
-			var $activeTable = $("#tmpl-activeTable").tmpl(this.data);
+			var $activeTable = $("#tmpl-activeTable").render(this.data);
 			return $activeTable;
 		},
 		
@@ -133,7 +134,7 @@ snow.ui.registerComponent(
 
 
 <script id="tmpl-activeTable-row" type="text/html">
-	<tr class="{{if isLast}}last{{/if}}" data-obj_type="record" data-obj.id="${record.id}">
+	<tr class="{{if isLast}}last{{/if}}" data-obj_type="record" data-obj_id="${record.id}">
 		{{each cols}}
 		<td><div contenteditable="true" class="recordprop" itemprop="${cols[$index]}">${record[cols[$index]]}</div></td>
 		{{/each}}

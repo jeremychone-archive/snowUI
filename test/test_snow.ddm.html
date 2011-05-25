@@ -69,7 +69,7 @@
 				
 				<!-- Simple User CRUD UI Logic -->
 				<script type="text/javascript">
-				
+				snow.log.config.debugMode = true;
 				$(function(){
 					var $userList = $("#userList");
 					
@@ -83,15 +83,19 @@
 					
 					// --- Delete User --- //
 					$userList.delegate(".del","click",function(){
-						$(this).sDataObject("user").done(function(user){
-							snow.ddm.remove("user",user.id);	
-						});
+						// get the user objRef that this html element belong to.
+						var objRef = $(this).sObjRef("user");
+						if (objRef){
+							snow.ddm.remove("user",objRef.id).done(function(){
+								snow.log.info("user remove");
+							});
+						}
 					});
 					// --- /Delete User --- //
 					
 					// --- Create User --- //
 					$("#userCreateBut").click(function(){
-						snow.ddm.save("user",{name: $("#userNameIpt").val(),
+						snow.ddm.create("user",{name: $("#userNameIpt").val(),
 											 city: $("#userCityIpt").val()});
 						
 						//clean the input and focus
@@ -117,7 +121,7 @@
 							user = userList[i];
 							$li = $("<li></li>");
 							$li.attr("data-obj_type", "user");
-							$li.attr("data-obj.id", user.id);
+							$li.attr("data-obj_id", user.id);
 							
 							//Note: The 'name' and 'city' class are just for css layout
 							//      The 'del' class is use for delegate
@@ -132,94 +136,10 @@
 				<!--  /Simple User CRUD UI Logic -->
 				
 				<!-- User Dao -->
-				<script type="text/javascript">			
-					snow.dm.registerDao("user",(function(){
-						// for this example, just an in-memory store
-						var userStore = [{id:"001",name:"Mike",city:"San Francisco"}];
-						
-						var userDao = {
-							
-							//this is just to allow the framework to find the id for a specific data object. 
-							getId: function(objectType,data){
-								return data.id;
-							}, 
-							
-							//simple object getter by id
-							get: function(objectType,id){
-								var user = getUserDataById(id);
-								if (user){
-									//make sure to clone the user object before sending it back to avoid accidental modification
-									//TODO: if user structure is more complex, needs a deep copy.
-									return $.extend({},user);
-								}else{
-									return null;
-								}
-							},
-														
-							//for now, does not support the opts (for filtering, ordering,...)
-							//Note 1: We return a copy of the object to make the store a little bit more secure
-							//        dm.save(..) will need to be called. 
-							//Note 2: However, we are not doing a deep copy, so, it is not 100% bullet proof, 
-							//        but good enough for this example.
-							list: function(objectType,opts){
-								var a = [];
-								for (var i = 0; i < userStore.length; i++){
-									var u = userStore[i];
-									a.push($.extend({},u)); 
-								}
-								return a;
-							},
-							
-
-							
-							save: function(objectType,data){
-								//if it is an update (assume that if there is an id, it exists)
-								if (data.id){
-									var idx = getIndexForUserId(id);
-									//this will support partial update
-									userStore[idx] = $.extend(userStore[idx], data);
-								}
-								//if it is a create
-								else{
-									data.id = snow.util.uuid(17);
-									var user = $.extend({},data);
-									userStore.push(user);		
-								}
-								
-								return userDao.get(objectType,data.id);
-								
-								
-							},
-							
-							remove: function(objectType,id){
-								var idx = getIndexForUserId(id);
-								if (idx != null) {
-									snow.util.array.remove(userStore, idx);
-								}
-							}
-						};
-						
-						function getUserDataById(userId){
-							var idx = getIndexForUserId(userId);
-							if (idx != null){
-								return userStore[i];
-							}else{
-								return null;
-							}
-						}
-						
-						function getIndexForUserId(userId){
-							for (i = 0; i < userStore.length; i++){
-								user = userStore[i];
-								if (user.id == userId){
-									return i;
-								}
-							}
-							return null;
-						}
-						
-						return userDao;
-					})());
+				<script type="text/javascript">		
+					var userStore = [{id:"001",name:"Mike",city:"San Francisco"}];
+					
+					snow.dm.registerDao("user",new snow.dao.SimpleDao(userStore));
 				</script>
 				<!-- /User Dao -->
 				
