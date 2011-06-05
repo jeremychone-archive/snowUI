@@ -194,13 +194,13 @@ snow.event = snow.event || {};
 					// make sure to remove the DOMElement ID
 					$helper.attr("id",null);
 					$helper.css("position","absolute");
-					var elemPos = $elem.position();
+					var elemPos = $elem.offset();
 					$helper.css({
 						top: elemPos.top,
 						left: elemPos.left
 					})
-					//todo need to allow configurable helper parent (right now, it is the $elem parent)
-					$elem.parent().append($helper);					
+					//todo need to allow configurable helper parent (right now, it is the body)
+					$("body").append($helper);					
 				}
 				
 			}
