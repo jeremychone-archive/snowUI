@@ -53,18 +53,26 @@
 			
 		</div>
 		
-		<button id="clearLog">Clear</button>
+		<center><button id="clearLog">Clear</button></center>
 		<div id="eventLog">
 			
 		</div>
-		
+		<div id="uiFlush"></div>
 		<script type="text/javascript">
 			$(function(){
 				var $eventBox = $("#eventBox");
 				var $eventLog = $("#eventLog");
-				
+				var $uiFlush = $("#uiFlush");
+				var uiFlushCount = 0;
+				$("#eventBox").bind("touchmove",function(event){
+					event.preventDefault(); 
+					event.stopPropagation();
+				});
 				$eventBox.bind("mousemove click mousedown touchstart touchend touchmove",function(e){
-					log(e);					
+					log(e);		
+					//$uiFlush.html(uiFlushCount++);
+					//$uiFlush.css("width",uiFlushCount % 200);
+								
 				});
 				
 				$("#clearLog").click(function(){
@@ -78,6 +86,9 @@
 					var logInfo = {type: e.type,
 					               targetId: e.target.id,
 								   text: text};
+					var pagePos = getEventPagePosition(e);
+					
+					var $overElem = $(document.elementFromPoint(pagePos.pageX,pagePos.pageY));
 					
 					if (lastLogInfo && logInfo.type == lastLogInfo.type && logInfo.targetId == lastLogInfo.targetId && logInfo.text == lastLogInfo.text) {
 						var $logInfo = $eventLog.children(".info:first");
@@ -88,6 +99,8 @@
 						}else{
 							$logInfo.children(".count:first").text(" (" +  count + ")" );
 						}
+						
+						$logInfo.children(".pagePos:first").text("" + pagePos.pageX + "," + pagePos.pageY + " " + $overElem.attr("id"));
 					}
 					
 					else {
@@ -104,10 +117,27 @@
 						if (logInfo.text) {
 							h.push("  <span class='info'>" + logInfo.text + "</span>");
 						}
+						
+						h.push("  <span class='pagePos'>" + pagePos.pageX + "," + pagePos.pageY + "</span>");
 						h.push("</div>");
 						$eventLog.prepend(h.join(""));
 					}
 					lastLogInfo = logInfo;
+				}
+				
+				function getEventPagePosition(event){
+					var pageX, pageY;
+					if (event.originalEvent.touches){
+						pageX = event.originalEvent.touches[0].pageX;
+						pageY = event.originalEvent.touches[0].pageY;
+					}else{
+						pageX = event.pageX;
+						pageY = event.pageY;
+					}
+					return {
+						pageX: pageX,
+						pageY: pageY
+					}
 				}
 			});
 		</script>

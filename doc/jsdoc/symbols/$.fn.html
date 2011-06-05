@@ -202,6 +202,14 @@ dl.detailList dd{
 	
 	<li><a href="../symbols/%24.fn.html">$.fn</a></li>
 	
+	<li><a href="../symbols/snow.dao.html">snow.dao</a></li>
+	
+	<li><a href="../symbols/snow.ddm.html">snow.ddm</a></li>
+	
+	<li><a href="../symbols/snow.dm.html">snow.dm</a></li>
+	
+	<li><a href="../symbols/snow.event.html">snow.event</a></li>
+	
 	<li><a href="../symbols/snow.gtx.html">snow.gtx</a></li>
 	
 	<li><a href="../symbols/snow.log.html">snow.log</a></li>
@@ -298,7 +306,16 @@ dl.detailList dd{
 							<td class="nameDescription">
 								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sDrag">sDrag</a></b>(delegate, opts)
 								</div>
-								<div class="description">Drag event for mouse and touch based devices.</div>
+								<div class="description">Drag event for mouse and touch based user agents.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sObjRef">sObjRef</a></b>(objType)
+								</div>
+								<div class="description">Return the objRef {id,type,$element} (or a list of such) of the closest html element matching the objType match the data-obj_type.</div>
 							</td>
 						</tr>
 					
@@ -414,7 +431,13 @@ For example:
 					
 					</div>
 					<div class="description">
-						Drag event for mouse and touch based devices.
+						Drag event for mouse and touch based user agents. 
+
+This fires sdragstart, sdrag, and sdragend events on the dragged element, 
+and sdragenter, sdragleave, sdrop on the "overElement" if the opts.draggable is set to true. If opts.draggable is omitted or false, then
+only the events on the dragged element will be fired. 
+
+See code sample at /test/test_snow.event.02.sDrag.html for more infor
 						
 							<br />
 							<i>Defined in: </i> <a href="../symbols/src/src_js_snow.event.js.html">snow.event.js</a>.
@@ -429,7 +452,7 @@ For example:
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>delegate</b>
+									<span class="light fixedFont">{String}</span> <b>delegate</b>
 									
 								</dt>
 								<dd>(optional) if present, this will do a delegate (not implemented yet)</dd>
@@ -438,71 +461,139 @@ For example:
 									<span class="light fixedFont">{Object}</span> <b>opts</b>
 									
 								</dt>
-								<dd>options and handlers</dd>
+								<dd>[optional] options and handlers</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Function}</span> <b>opts.start=function(event,extra)</b>
+									<span class="light fixedFont">{Boolean}</span> <b>opts.draggable</b>
+									
+								</dt>
+								<dd>[default false] tell if the element is draggable</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String|Function}</span> <b>opts.helper</b>
+									
+								</dt>
+								<dd>[default 'original'] if opts.draggable is true, this will determine the strategy for the drag helper. 
+                              Can be 'clone' 'original' or a function</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>opts.start=function(event,dragExtra)</b>
 									
 								</dt>
 								<dd>[optional] will be called when the drag is initiated</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Function}</span> <b>opts.drag=function(event,extra)</b>
+									<span class="light fixedFont">{Function}</span> <b>opts.drag=function(event,dragExtra)</b>
 									
 								</dt>
 								<dd>[optional] will be called for every drag event (either mousemouve or touchmove)</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Function}</span> <b>opts.end=function(event,extra)</b>
+									<span class="light fixedFont">{Function}</span> <b>opts.end=function(event,dragExtra)</b>
 									
 								</dt>
 								<dd>[optional] called on mouseUp or touch end</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Number}</span> <b>extra.pageX</b>
+									<span class="light fixedFont">{Number}</span> <b>dragExtra.pageX</b>
 									
 								</dt>
 								<dd>the current pageX</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Number}</span> <b>extra.pageY</b>
+									<span class="light fixedFont">{Number}</span> <b>dragExtra.pageY</b>
 									
 								</dt>
 								<dd>the current pageY</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Number}</span> <b>extra.startPageX</b>
+									<span class="light fixedFont">{Number}</span> <b>dragExtra.startPageX</b>
 									
 								</dt>
 								<dd>the pageX from the drag start</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Number}</span> <b>extra.startPageY</b>
+									<span class="light fixedFont">{Number}</span> <b>dragExtra.startPageY</b>
 									
 								</dt>
 								<dd>the pageY from the drag start</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Number}</span> <b>extra.deltaPageX</b>
+									<span class="light fixedFont">{Number}</span> <b>dragExtra.deltaPageX</b>
 									
 								</dt>
 								<dd>the delta between the current pageX and the last one (from the previous drag event)</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Number}</span> <b>extra.deltaPageY</b>
+									<span class="light fixedFont">{Number}</span> <b>dragExtra.deltaPageY</b>
 									
 								</dt>
-								<dd>the delta between the current pageY and the last one (from the previous drag event)
-
-
-TODO: needs to send jQuery event rather than hardcoding calls to events. <br />
-TODO: needs to find a solution for touch vs mouse move box-bounding difference</dd>
+								<dd>the delta between the current pageY and the last one (from the previous drag event)</dd>
+							
+								<dt>
+									<span class="light fixedFont">{DOMElement}</span> <b>dragExtra.overElement</b>
+									
+								</dt>
+								<dd>this is for sdrag and sdragend event, and represent the over element (the drop over element) if the opts.draggable was set to true</dd>
+							
+								<dt>
+									<span class="light fixedFont">{DOMElement}</span> <b>dragExtra.helperElement</b>
+									
+								</dt>
+								<dd>this is the element that is used for the drag effect. Could be the same as the draggable element, or a clone or custom element.</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".sObjRef"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">$.fn.</span><b>sObjRef</b>(objType)
+					
+					</div>
+					<div class="description">
+						Return the objRef {id,type,$element} (or a list of such) of the closest html element matching the objType match the data-obj_type.<br />
+If no objType, then, return the first objRef of the closest html element having a data-obj_type. <br />
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/src_js_snow.dm.js.html">snow.dm.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>objType</b>
+									
+								</dt>
+								<dd>(optional) the object table</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>null if not found, single object with {id,type,$element} if only one jQuery object, a list of such if this jQuery contain multiple elements.</dd>
+							
+							</dl>
 						
 						
 						
@@ -567,7 +658,7 @@ In future iterations, we might want make the "touch" case a little bit more adva
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Apr 07 2011 18:37:59 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Jun 05 2011 12:08:06 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

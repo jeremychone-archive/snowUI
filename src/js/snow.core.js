@@ -804,7 +804,7 @@ snow.ua = {};
 	}
 	
 	/**
-	 * Get the transition prefix for this user agent (e.g., -webkit- or -moz-).
+	 * Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").
 	 * <br /> <br />
 	 * TODO: we might want to have a snow.ua.cssPrefix() since it will be the same prefix for other css properties as well
 	 */

@@ -1,8 +1,14 @@
 var snow = snow || {};
 
+/**
+ * @namespace snow.dm data manager layers to register, access DAOs. 
+ */
+snow.dm = {};
+
+
 (function(){
 
-    snow.dm = {};
+    
     
     var daoDic = {};
     
@@ -21,15 +27,22 @@ var snow = snow || {};
         }
     };
     
-    //public
+    /**
+     * Register a DAO for a given object type.
+     * @param {String} objectType the object type that this dao will represent
+     * @param {DAO Oject} a Dao instance that implement the crud methods: get, find, create, update, remove. 
+     */
     snow.dm.registerDao = function(objectType, dao){
         daoDic[objectType] = dao;
         return this;
     };
     
-    // Add a change listener function for an objectType
-    // Will Change listener will get called on save and remove
-    // TODO: needs to support "all" (i.e. jsut the listener, which means get triggered on every objectType)
+    /**
+     * Add a change listener function for an objectType. <br />
+     * Change listener get triggered on create, update, and remove.
+     * @param {String} objectType
+     * @param {Function} listener  
+     */ 
     snow.dm.addChangeListener = function(objectType, listener){
         var listeners = daoChangeEventListeners[objectType];
         if (!listeners) {
@@ -44,7 +57,7 @@ var snow = snow || {};
     
     // ------- DAO Delegator ------ //
     /**
-     * Return the property ID name
+     * DAO Interface: Return the property ID name
      * @param {string} the objectType
      * @return the id (this is not deferred)
      * @throws error if dao cannot be found
@@ -54,7 +67,7 @@ var snow = snow || {};
     }
     
     /**
-     * Return a value or deferred object (depending of DAO impl) for this objectType and id.
+     * DAO Interface: Return a value or deferred object (depending of DAO impl) for this objectType and id.
      * @param {Object} objectType
      * @param {Object} id
      * @return
@@ -66,7 +79,7 @@ var snow = snow || {};
     
     
     /**
-     * Return an array of values or a deferred object (depending of DAO impl) for this objectType and options
+     * DAO Interface: Return an array of values or a deferred object (depending of DAO impl) for this objectType and options
      * @param {Object} objectType
      * @param {Object} opts (not supported yet)
      *           opts.pageIndex {Number} Index of the page, starting at 0.
@@ -80,13 +93,14 @@ var snow = snow || {};
     };
     
     /**
-     * Create a new instance of the object for a give objectType and data. <br />
+     * DAO Interface: Create a new instance of the object for a give objectType and data. <br />
      *
-     * The DAO must return the
+     * The DAO should return or resolve with the newly created data. 
+     * 
      * @param {Object} objectType
      * @param {Object} data
      */
-    snow.dm.create = snow.dm.create = function(objectType, data){
+    snow.dm.create = function(objectType, data){
         var result = getDao(objectType).create(objectType, data);
         
         // if the result is a deferred object, then, wait until done to callChangeListeners 
@@ -103,6 +117,10 @@ var snow = snow || {};
         
     };
     
+    /**
+     * DAO Interface: update a existing id with a set of property/value data.
+     * 
+     */
     snow.dm.update = function(objectType, id, data){
         var result = getDao(objectType).update(objectType,id, data);
         
@@ -120,7 +138,10 @@ var snow = snow || {};
         
     };
     
-    
+    /**
+     * DAO Interface: remove an entity for a given type and id.
+     * 
+     */
     snow.dm.remove = function(objectType, id){
         var result = getDao(objectType).remove(objectType, id);
         
@@ -139,28 +160,52 @@ var snow = snow || {};
     // ------- /DAO Delegator ------ //
     
     // ------- Deferred DAO Delegator ------ //
+    /**
+     * @namespace snow.ddm wrap the snow.dm to deferred. These is the most flexible
+     * way to access daos, since it will make the UI "asynchronous-proof" which is critical when data is remote.
+     * Also, it allows to start your UI development with the simple in memory DAO (snow.dao.SimpleDao and snow.dao.SimpleRelDao), 
+     * and later to use the real custom DAO that connect to the remote data sources.
+     */
     // Just a wrapper that wrap the snow.dm result in Deferred object if they are not already. 
     snow.ddm = {
+    	/**
+    	 * Return the id property name (this is the only method in snow.ddm that is not deferred)
+    	 */
         getIdName: function(objectType){
             return snow.dm.getIdName(objectType);
         },
         
+        /**
+         * Wrap the snow.dm.get(objectType,id) with a deferred result
+         */
         get: function(objectType, id){
             return wrapWithDeferred(snow.dm.get(objectType, id));
         },
         
+        /**
+         * Wrap the snow.dm.list(objectType,opts) with a deferred result
+         */
         list: function(objectType, opts){
             return wrapWithDeferred(snow.dm.list(objectType, opts));
         },
         
+        /**
+         * Wrap the snow.dm.create(objectType,data) with a deferred result
+         */
         create: function(objectType, data){
             return wrapWithDeferred(snow.dm.create(objectType, data));
         },
         
+        /**
+         * Wrap the snow.dm.update(objectType,id,data) with a deferred result
+         */
         update: function(objectType, id, data){
             return wrapWithDeferred(snow.dm.update(objectType, id, data));
         },
         
+        /**
+         * Wrap the snow.dm.remove(objectType,id) with a deferred result
+         */
         remove: function(objectType, id){
             return wrapWithDeferred(snow.dm.remove(objectType, id));
         }
@@ -212,17 +257,13 @@ var snow = snow || {};
 })();
 
 // ------ Simple DAO ------ //
+/**
+ * @namespace Some default convenient DAOs (for now, only development DAOs)
+ */
 snow.dao = {};
 
 (function(){
-    /**
-     * SimpleDao is a Dao for a in memory array based storage. Each data item is stored as an array item,
-     * and have a unique .id property (that will be added on save is not present).
-     *
-     * Note that instance of a SimpleDao is only for single object type.
-     *
-     * @param {Array}  store (optional) Array of json object representing each data item
-     */
+
     function SimpleDao(store){
         this.init(store);
     }
@@ -324,12 +365,21 @@ snow.dao = {};
     }
     // ------ /DAO Interface Implementation ------ //
     
+    /**
+     * SimpleDao is a Dao for a in memory array based storage. Each data item is stored as an array item,
+     * and have a unique .id property (that will be added on save is not present). <br />
+     *
+	 * This is only for development, as there is not storage behind it.
+     *
+     * @param {Array}  store (optional) Array of json object representing each data item
+     */    
     snow.dao.SimpleDao = SimpleDao;
 })();
 // ------ /Simple DAO ------ //
 
 // ------ Simple Rel DAO ------ //
 (function(){
+	
     function SimpleRelDao(store, rels){
         this._super.init.call(this, store);
         this._rels = rels;
@@ -398,6 +448,13 @@ snow.dao = {};
     }
     // ------ /Private Helpers ------ //
     
+    /**
+     * SimpleRelDao is a Many to Many Dao that will do a best attempt to join the entities it is responsible to join. <br /> 
+     *
+	 * This is only for development, as there is not storage behind it.
+     *
+     * @param {Array}  store (optional) Array of json object representing each data item
+     */       
     snow.dao.SimpleRelDao = SimpleRelDao;
 })();
 

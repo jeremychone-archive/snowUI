@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - snow.ua</title>
+		<title>JsDoc Reference - snow.event</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -233,7 +233,7 @@ dl.detailList dd{
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace snow.ua
+				Namespace snow.event
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -241,19 +241,19 @@ dl.detailList dd{
 				
 				
 			
-				User Agent utilities to know what capabilities the browser support.
+				snow.event convenient touch/mouse event helpers.
 				
 				
 				
 				<span class="definedIn">
-					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.core.js.html">snow.core.js</a>.
+					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.event.js.html">snow.event.js</a>.
 				</span>
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.ua.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.event.">
 				<caption>Namespace Summary</caption>
 				<thead>
 					<tr>
@@ -266,7 +266,7 @@ dl.detailList dd{
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/snow.ua.html#constructor">snow.ua</a></b>
+								<b><a href="../symbols/snow.event.html#constructor">snow.event</a></b>
 							</div>
 							<div class="description"></div>
 						</td>
@@ -282,7 +282,7 @@ dl.detailList dd{
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.ua.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.event.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -295,36 +295,18 @@ dl.detailList dd{
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasEvent">hasEvent</a></b>(eventName)
+								<div class="fixedFont">snow.event.<b><a href="../symbols/snow.event.html#.eventPagePosition">eventPagePosition</a></b>(e)
 								</div>
-								<div class="description">Return true if the eventname is supported by this user agent.</div>
+								<div class="description">Return the event {pageX,pageY} object for a jquery event object (will take the touches[0] if it is a touch event)</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasTouch">hasTouch</a></b>()
+								<div class="fixedFont">snow.event.<b><a href="../symbols/snow.event.html#.fixTouchEvent">fixTouchEvent</a></b>(e)
 								</div>
-								<div class="description">Convenient methods to know if this user agent supports touch events.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasTransition">hasTransition</a></b>()
-								</div>
-								<div class="description">Return true if the user agent supports CSS3 transition.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.transitionPrefix">transitionPrefix</a></b>()
-								</div>
-								<div class="description">Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").</div>
+								<div class="description">if it is a touch device, populate the event.pageX and event.page& from the event.touches[0].pageX/Y</div>
 							</td>
 						</tr>
 					
@@ -345,7 +327,7 @@ dl.detailList dd{
 				</div>
 				
 				<div class="fixedFont">
-						<b>snow.ua</b>
+						<b>snow.event</b>
 				</div>
 				
 				<div class="description">
@@ -376,15 +358,15 @@ dl.detailList dd{
 					Method Detail
 				</div>
 				
-					<a name=".hasEvent"> </a>
+					<a name=".eventPagePosition"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasEvent</b>(eventName)
+					<span class="light">snow.event.</span><b>eventPagePosition</b>(e)
 					
 					</div>
 					<div class="description">
-						Return true if the eventname is supported by this user agent.
+						Return the event {pageX,pageY} object for a jquery event object (will take the touches[0] if it is a touch event)
 						
 						
 					</div>
@@ -396,10 +378,10 @@ dl.detailList dd{
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>eventName</b>
+									<span class="light fixedFont">{jQuery Event}</span> <b>e</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>the jquery event object</dd>
 							
 							</dl>
 						
@@ -412,15 +394,15 @@ dl.detailList dd{
 
 					<hr />
 				
-					<a name=".hasTouch"> </a>
+					<a name=".fixTouchEvent"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasTouch</b>()
+					<span class="light">snow.event.</span><b>fixTouchEvent</b>(e)
 					
 					</div>
 					<div class="description">
-						Convenient methods to know if this user agent supports touch events. It tests "touchstart".
+						if it is a touch device, populate the event.pageX and event.page& from the event.touches[0].pageX/Y
 						
 						
 					</div>
@@ -428,57 +410,16 @@ dl.detailList dd{
 					
 					
 						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".hasTransition"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">snow.ua.</span><b>hasTransition</b>()
-					
-					</div>
-					<div class="description">
-						Return true if the user agent supports CSS3 transition.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".transitionPrefix"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">snow.ua.</span><b>transitionPrefix</b>()
-					
-					</div>
-					<div class="description">
-						Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").
-<br /> <br />
-TODO: we might want to have a snow.ua.cssPrefix() since it will be the same prefix for other css properties as well
-						
-						
-					</div>
-					
-					
-					
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{jQuery Event}</span> <b>e</b>
+									
+								</dt>
+								<dd>the jquery event object</dd>
+							
+							</dl>
 						
 						
 						

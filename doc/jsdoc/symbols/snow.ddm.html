@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - snow.ua</title>
+		<title>JsDoc Reference - snow.ddm</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -233,7 +233,7 @@ dl.detailList dd{
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace snow.ua
+				Namespace snow.ddm
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -241,19 +241,22 @@ dl.detailList dd{
 				
 				
 			
-				User Agent utilities to know what capabilities the browser support.
+				snow.ddm wrap the snow.dm to deferred. These is the most flexible
+way to access daos, since it will make the UI "asynchronous-proof" which is critical when data is remote.
+Also, it allows to start your UI development with the simple in memory DAO (snow.dao.SimpleDao and snow.dao.SimpleRelDao), 
+and later to use the real custom DAO that connect to the remote data sources.
 				
 				
 				
 				<span class="definedIn">
-					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.core.js.html">snow.core.js</a>.
+					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.dm.js.html">snow.dm.js</a>.
 				</span>
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.ua.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.ddm.">
 				<caption>Namespace Summary</caption>
 				<thead>
 					<tr>
@@ -266,7 +269,7 @@ dl.detailList dd{
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/snow.ua.html#constructor">snow.ua</a></b>
+								<b><a href="../symbols/snow.ddm.html#constructor">snow.ddm</a></b>
 							</div>
 							<div class="description"></div>
 						</td>
@@ -282,7 +285,7 @@ dl.detailList dd{
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.ua.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.ddm.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -295,36 +298,54 @@ dl.detailList dd{
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasEvent">hasEvent</a></b>(eventName)
+								<div class="fixedFont">snow.ddm.<b><a href="../symbols/snow.ddm.html#.create">create</a></b>(objectType, data)
 								</div>
-								<div class="description">Return true if the eventname is supported by this user agent.</div>
+								<div class="description">Wrap the snow.dm.create(objectType,data) with a deferred result</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasTouch">hasTouch</a></b>()
+								<div class="fixedFont">snow.ddm.<b><a href="../symbols/snow.ddm.html#.get">get</a></b>(objectType, id)
 								</div>
-								<div class="description">Convenient methods to know if this user agent supports touch events.</div>
+								<div class="description">Wrap the snow.dm.get(objectType,id) with a deferred result</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasTransition">hasTransition</a></b>()
+								<div class="fixedFont">snow.ddm.<b><a href="../symbols/snow.ddm.html#.getIdName">getIdName</a></b>(objectType)
 								</div>
-								<div class="description">Return true if the user agent supports CSS3 transition.</div>
+								<div class="description">Return the id property name (this is the only method in snow.ddm that is not deferred)</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.transitionPrefix">transitionPrefix</a></b>()
+								<div class="fixedFont">snow.ddm.<b><a href="../symbols/snow.ddm.html#.list">list</a></b>(objectType, opts)
 								</div>
-								<div class="description">Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").</div>
+								<div class="description">Wrap the snow.dm.list(objectType,opts) with a deferred result</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">snow.ddm.<b><a href="../symbols/snow.ddm.html#.remove">remove</a></b>(objectType, id)
+								</div>
+								<div class="description">Wrap the snow.dm.remove(objectType,id) with a deferred result</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">snow.ddm.<b><a href="../symbols/snow.ddm.html#.update">update</a></b>(objectType, id, data)
+								</div>
+								<div class="description">Wrap the snow.dm.update(objectType,id,data) with a deferred result</div>
 							</td>
 						</tr>
 					
@@ -345,7 +366,7 @@ dl.detailList dd{
 				</div>
 				
 				<div class="fixedFont">
-						<b>snow.ua</b>
+						<b>snow.ddm</b>
 				</div>
 				
 				<div class="description">
@@ -376,15 +397,15 @@ dl.detailList dd{
 					Method Detail
 				</div>
 				
-					<a name=".hasEvent"> </a>
+					<a name=".create"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasEvent</b>(eventName)
+					<span class="light">snow.ddm.</span><b>create</b>(objectType, data)
 					
 					</div>
 					<div class="description">
-						Return true if the eventname is supported by this user agent.
+						Wrap the snow.dm.create(objectType,data) with a deferred result
 						
 						
 					</div>
@@ -396,7 +417,13 @@ dl.detailList dd{
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>eventName</b>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>data</b>
 									
 								</dt>
 								<dd></dd>
@@ -412,21 +439,38 @@ dl.detailList dd{
 
 					<hr />
 				
-					<a name=".hasTouch"> </a>
+					<a name=".get"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasTouch</b>()
+					<span class="light">snow.ddm.</span><b>get</b>(objectType, id)
 					
 					</div>
 					<div class="description">
-						Convenient methods to know if this user agent supports touch events. It tests "touchstart".
+						Wrap the snow.dm.get(objectType,id) with a deferred result
 						
 						
 					</div>
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -437,21 +481,32 @@ dl.detailList dd{
 
 					<hr />
 				
-					<a name=".hasTransition"> </a>
+					<a name=".getIdName"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasTransition</b>()
+					<span class="light">snow.ddm.</span><b>getIdName</b>(objectType)
 					
 					</div>
 					<div class="description">
-						Return true if the user agent supports CSS3 transition.
+						Return the id property name (this is the only method in snow.ddm that is not deferred)
 						
 						
 					</div>
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -462,23 +517,128 @@ dl.detailList dd{
 
 					<hr />
 				
-					<a name=".transitionPrefix"> </a>
+					<a name=".list"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>transitionPrefix</b>()
+					<span class="light">snow.ddm.</span><b>list</b>(objectType, opts)
 					
 					</div>
 					<div class="description">
-						Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").
-<br /> <br />
-TODO: we might want to have a snow.ua.cssPrefix() since it will be the same prefix for other css properties as well
+						Wrap the snow.dm.list(objectType,opts) with a deferred result
 						
 						
 					</div>
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>opts</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".remove"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">snow.ddm.</span><b>remove</b>(objectType, id)
+					
+					</div>
+					<div class="description">
+						Wrap the snow.dm.remove(objectType,id) with a deferred result
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".update"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">snow.ddm.</span><b>update</b>(objectType, id, data)
+					
+					</div>
+					<div class="description">
+						Wrap the snow.dm.update(objectType,id,data) with a deferred result
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>data</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						

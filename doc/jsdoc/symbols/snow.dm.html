@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - snow.log</title>
+		<title>JsDoc Reference - snow.dm</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -233,7 +233,7 @@ dl.detailList dd{
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace snow.log
+				Namespace snow.dm
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -241,19 +241,19 @@ dl.detailList dd{
 				
 				
 			
-				Convenient
+				snow.dm data manager layers to register, access DAOs.
 				
 				
 				
 				<span class="definedIn">
-					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.core.js.html">snow.core.js</a>.
+					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.dm.js.html">snow.dm.js</a>.
 				</span>
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.log.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.dm.">
 				<caption>Namespace Summary</caption>
 				<thead>
 					<tr>
@@ -266,7 +266,7 @@ dl.detailList dd{
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/snow.log.html#constructor">snow.log</a></b>
+								<b><a href="../symbols/snow.dm.html#constructor">snow.dm</a></b>
 							</div>
 							<div class="description"></div>
 						</td>
@@ -277,17 +277,12 @@ dl.detailList dd{
 
 <!-- ============================== properties summary ===================== -->
 			
-				
-				
-				
-				
-			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.log.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.dm.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -300,36 +295,72 @@ dl.detailList dd{
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.log.<b><a href="../symbols/snow.log.html#.addPrinter">addPrinter</a></b>(printerFunc)
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.addChangeListener">addChangeListener</a></b>(objectType, listener)
 								</div>
-								<div class="description">Add printer (the print function has two argement text and type</div>
+								<div class="description">Add a change listener function for an objectType.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.log.<b><a href="../symbols/snow.log.html#.debug">debug</a></b>(text)
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.create">create</a></b>(objectType, data)
 								</div>
-								<div class="description">Log the debug message.</div>
+								<div class="description">DAO Interface: Create a new instance of the object for a give objectType and data.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.log.<b><a href="../symbols/snow.log.html#.error">error</a></b>(text)
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.get">get</a></b>(objectType, id)
 								</div>
-								<div class="description"></div>
+								<div class="description">DAO Interface: Return a value or deferred object (depending of DAO impl) for this objectType and id.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.log.<b><a href="../symbols/snow.log.html#.info">info</a></b>(text)
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.getIdName">getIdName</a></b>(the)
 								</div>
-								<div class="description">Log info.</div>
+								<div class="description">DAO Interface: Return the property ID name</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.list">list</a></b>(objectType, opts)
+								</div>
+								<div class="description">DAO Interface: Return an array of values or a deferred object (depending of DAO impl) for this objectType and options</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.registerDao">registerDao</a></b>(objectType, a)
+								</div>
+								<div class="description">Register a DAO for a given object type.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.remove">remove</a></b>(objectType, id)
+								</div>
+								<div class="description">DAO Interface: remove an entity for a given type and id.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.update">update</a></b>(objectType, id, data)
+								</div>
+								<div class="description">DAO Interface: update a existing id with a set of property/value data.</div>
 							</td>
 						</tr>
 					
@@ -350,7 +381,7 @@ dl.detailList dd{
 				</div>
 				
 				<div class="fixedFont">
-						<b>snow.log</b>
+						<b>snow.dm</b>
 				</div>
 				
 				<div class="description">
@@ -381,15 +412,16 @@ dl.detailList dd{
 					Method Detail
 				</div>
 				
-					<a name=".addPrinter"> </a>
+					<a name=".addChangeListener"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.log.</span><b>addPrinter</b>(printerFunc)
+					<span class="light">snow.dm.</span><b>addChangeListener</b>(objectType, listener)
 					
 					</div>
 					<div class="description">
-						Add printer (the print function has two argement text and type
+						Add a change listener function for an objectType. <br />
+Change listener get triggered on create, update, and remove.
 						
 						
 					</div>
@@ -401,7 +433,13 @@ dl.detailList dd{
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>printerFunc</b>
+									<span class="light fixedFont">{String}</span> <b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>listener</b>
 									
 								</dt>
 								<dd></dd>
@@ -417,18 +455,17 @@ dl.detailList dd{
 
 					<hr />
 				
-					<a name=".debug"> </a>
+					<a name=".create"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.log.</span><b>debug</b>(text)
+					<span class="light">snow.dm.</span><b>create</b>(objectType, data)
 					
 					</div>
 					<div class="description">
-						Log the debug message. By default the snow.log.config.debugMode=false (so, it needs to be set to "true").
-<br />
-<br />
-See <a href="../symbols/snow.log.config.html">snow.log.config</a>
+						DAO Interface: Create a new instance of the object for a give objectType and data. <br />
+
+The DAO should return or resolve with the newly created data.
 						
 						
 					</div>
@@ -440,7 +477,13 @@ See <a href="../symbols/snow.log.config.html">snow.log.config</a>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>text</b>
+									<span class="light fixedFont">{Object}</span> <b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>data</b>
 									
 								</dt>
 								<dd></dd>
@@ -456,15 +499,15 @@ See <a href="../symbols/snow.log.config.html">snow.log.config</a>
 
 					<hr />
 				
-					<a name=".error"> </a>
+					<a name=".get"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.log.</span><b>error</b>(text)
+					<span class="light">snow.dm.</span><b>get</b>(objectType, id)
 					
 					</div>
 					<div class="description">
-						
+						DAO Interface: Return a value or deferred object (depending of DAO impl) for this objectType and id.
 						
 						
 					</div>
@@ -476,7 +519,204 @@ See <a href="../symbols/snow.log.config.html">snow.log.config</a>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>text</b>
+									<span class="light fixedFont">{Object}</span> <b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>id</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".getIdName"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">snow.dm.</span><b>getIdName</b>(the)
+					
+					</div>
+					<div class="description">
+						DAO Interface: Return the property ID name
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>the</b>
+									
+								</dt>
+								<dd>objectType</dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									 <b></b>
+								</dt>
+								<dd>error if dao cannot be found</dd>
+							
+							</dl>
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>the id (this is not deferred)</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".list"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">snow.dm.</span><b>list</b>(objectType, opts)
+					
+					</div>
+					<div class="description">
+						DAO Interface: Return an array of values or a deferred object (depending of DAO impl) for this objectType and options
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>opts</b>
+									
+								</dt>
+								<dd>(not supported yet)
+          opts.pageIndex {Number} Index of the page, starting at 0.
+          opts.pageSize  {Number} Size of the page
+          opts.match     {Object}
+          opts.orderBy   {String}
+          opts.orderType {String} "asc" or "desc"</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".registerDao"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">snow.dm.</span><b>registerDao</b>(objectType, a)
+					
+					</div>
+					<div class="description">
+						Register a DAO for a given object type.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>objectType</b>
+									
+								</dt>
+								<dd>the object type that this dao will represent</dd>
+							
+								<dt>
+									<span class="light fixedFont">{DAO Oject}</span> <b>a</b>
+									
+								</dt>
+								<dd>Dao instance that implement the crud methods: get, find, create, update, remove.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".remove"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">snow.dm.</span><b>remove</b>(objectType, id)
+					
+					</div>
+					<div class="description">
+						DAO Interface: remove an entity for a given type and id.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>id</b>
 									
 								</dt>
 								<dd></dd>
@@ -492,15 +732,15 @@ See <a href="../symbols/snow.log.config.html">snow.log.config</a>
 
 					<hr />
 				
-					<a name=".info"> </a>
+					<a name=".update"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.log.</span><b>info</b>(text)
+					<span class="light">snow.dm.</span><b>update</b>(objectType, id, data)
 					
 					</div>
 					<div class="description">
-						Log info.
+						DAO Interface: update a existing id with a set of property/value data.
 						
 						
 					</div>
@@ -512,7 +752,19 @@ See <a href="../symbols/snow.log.config.html">snow.log.config</a>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>text</b>
+									<b>objectType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>data</b>
 									
 								</dt>
 								<dd></dd>

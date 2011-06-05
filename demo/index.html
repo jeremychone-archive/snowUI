@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="css/demo.css" />
 		<link rel="stylesheet" href="css/dock.css" />
 		<link rel="stylesheet" href="css/window.css" />
-		<link rel="stylesheet" href="css/salesChart.css" />
+	
 		
         <title>snowUI Demo</title>
 		<script type="text/javascript" src="../js-dependencies/jquery.min.js"></script>
@@ -17,9 +17,15 @@
 		<script type="text/javascript" src="../src/js/snow.core.js"></script>
 		<script type="text/javascript" src="../src/js/snow.event.js"></script>
 		<script type="text/javascript" src="../src/js/snow.fx.js"></script>
+		
+		<script type="text/javascript">
+		$(document).bind("touchmove",function(event){
+			event.preventDefault();
+		});
+		</script>
 	</head>
 	<body>
-		<div id="page">
+	<div id="page">
 			<div id="pageLight">
 				<canvas id="pageLight-canvas"></canvas>
 			</div>
@@ -28,7 +34,6 @@
 			
 			</div>
 	    </div>
-	</div>
 		
 	
 	

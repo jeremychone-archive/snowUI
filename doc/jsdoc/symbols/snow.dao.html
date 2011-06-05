@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - snow.ua</title>
+		<title>JsDoc Reference - snow.dao</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -233,7 +233,7 @@ dl.detailList dd{
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace snow.ua
+				Namespace snow.dao
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -241,19 +241,19 @@ dl.detailList dd{
 				
 				
 			
-				User Agent utilities to know what capabilities the browser support.
+				Some default convenient DAOs (for now, only development DAOs)
 				
 				
 				
 				<span class="definedIn">
-					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.core.js.html">snow.core.js</a>.
+					<i>Defined in: </i> <a href="../symbols/src/src_js_snow.dm.js.html">snow.dm.js</a>.
 				</span>
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.ua.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class snow.dao.">
 				<caption>Namespace Summary</caption>
 				<thead>
 					<tr>
@@ -266,7 +266,7 @@ dl.detailList dd{
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/snow.ua.html#constructor">snow.ua</a></b>
+								<b><a href="../symbols/snow.dao.html#constructor">snow.dao</a></b>
 							</div>
 							<div class="description"></div>
 						</td>
@@ -277,17 +277,14 @@ dl.detailList dd{
 
 <!-- ============================== properties summary ===================== -->
 			
-
-<!-- ============================== methods summary ======================== -->
-			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class snow.ua.">
-					<caption>Method Summary</caption>
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class snow.dao.">
+					<caption>Field Summary</caption>
 					<thead>
 						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -295,36 +292,20 @@ dl.detailList dd{
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasEvent">hasEvent</a></b>(eventName)
+								<div class="fixedFont">
+								snow.dao.<b><a href="../symbols/snow.dao.html#.SimpleDao">SimpleDao</a></b>
 								</div>
-								<div class="description">Return true if the eventname is supported by this user agent.</div>
+								<div class="description">SimpleDao is a Dao for a in memory array based storage.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasTouch">hasTouch</a></b>()
+								<div class="fixedFont">
+								snow.dao.<b><a href="../symbols/snow.dao.html#.SimpleRelDao">SimpleRelDao</a></b>
 								</div>
-								<div class="description">Convenient methods to know if this user agent supports touch events.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.hasTransition">hasTransition</a></b>()
-								</div>
-								<div class="description">Return true if the user agent supports CSS3 transition.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">snow.ua.<b><a href="../symbols/snow.ua.html#.transitionPrefix">transitionPrefix</a></b>()
-								</div>
-								<div class="description">Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").</div>
+								<div class="description">SimpleRelDao is a Many to Many Dao that will do a best attempt to join the entities it is responsible to join.</div>
 							</td>
 						</tr>
 					
@@ -333,6 +314,9 @@ dl.detailList dd{
 				
 				
 				
+			
+
+<!-- ============================== methods summary ======================== -->
 			
 <!-- ============================== events summary ======================== -->
 			
@@ -345,7 +329,7 @@ dl.detailList dd{
 				</div>
 				
 				<div class="fixedFont">
-						<b>snow.ua</b>
+						<b>snow.dao</b>
 				</div>
 				
 				<div class="description">
@@ -369,42 +353,28 @@ dl.detailList dd{
 
 <!-- ============================== field details ========================== -->		
 			
-
-<!-- ============================== method details ========================= -->		
-			
 				<div class="sectionTitle">
-					Method Detail
+					Field Detail
 				</div>
 				
-					<a name=".hasEvent"> </a>
+					<a name=".SimpleDao"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasEvent</b>(eventName)
+					<span class="light">snow.dao.</span><b>SimpleDao</b>
 					
 					</div>
 					<div class="description">
-						Return true if the eventname is supported by this user agent.
+						SimpleDao is a Dao for a in memory array based storage. Each data item is stored as an array item,
+and have a unique .id property (that will be added on save is not present). <br />
+
+This is only for development, as there is not storage behind it.
 						
 						
 					</div>
 					
 					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Object}</span> <b>eventName</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
+
 						
 						
 						
@@ -412,76 +382,23 @@ dl.detailList dd{
 
 					<hr />
 				
-					<a name=".hasTouch"> </a>
+					<a name=".SimpleRelDao"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.ua.</span><b>hasTouch</b>()
+					<span class="light">snow.dao.</span><b>SimpleRelDao</b>
 					
 					</div>
 					<div class="description">
-						Convenient methods to know if this user agent supports touch events. It tests "touchstart".
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
+						SimpleRelDao is a Many to Many Dao that will do a best attempt to join the entities it is responsible to join. <br /> 
 
-					<hr />
-				
-					<a name=".hasTransition"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">snow.ua.</span><b>hasTransition</b>()
-					
-					</div>
-					<div class="description">
-						Return true if the user agent supports CSS3 transition.
+This is only for development, as there is not storage behind it.
 						
 						
 					</div>
 					
 					
-					
-						
-						
-						
-						
-						
-						
-						
 
-					<hr />
-				
-					<a name=".transitionPrefix"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">snow.ua.</span><b>transitionPrefix</b>()
-					
-					</div>
-					<div class="description">
-						Get the transition prefix for this user agent (for example "-webkit-" or "-moz-").
-<br /> <br />
-TODO: we might want to have a snow.ua.cssPrefix() since it will be the same prefix for other css properties as well
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
 						
 						
 						
@@ -489,6 +406,9 @@ TODO: we might want to have a snow.ua.cssPrefix() since it will be the same pref
 
 					
 				
+			
+
+<!-- ============================== method details ========================= -->		
 			
 			
 <!-- ============================== event details ========================= -->		
