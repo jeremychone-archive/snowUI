@@ -81,6 +81,60 @@ snow.event = snow.event || {};
     
 })(jQuery);
 
+
+// sClick NOT IMPLEMENTED YET!!!!
+(function($){
+
+    /**
+     * This event is a cross touch/mouse click event, that get triggers only if the distance threshold between the down and up. <br />
+     * On touch devices this will also be considered a fast click as it does not bind to the regular touch click event, but to touchstart and touchend 
+     * In future iterations, we might want make the "touch" case a little bit more advanced (checking touchstart/touchend are from the same element and no drag was initiated)
+     * @param {String} delegate can be the function or a "delegate" selector string if we want this event to be delegated
+     * @param {Function or Object} options if function, then, it will be the "callback", but can be an options object
+     */
+    $.fn.sClick = function(delegate, opts){
+    	var options = opts || delegate;
+        var delegate = (opts) ? delegate : null;
+        
+        // if the opts is a function, then, assume it is the click function
+        if ($.isFunction(options)){
+        	options = {
+        		click : options
+        	}
+        };
+        
+        var hasTouch = snow.ua.hasTouch();
+        
+		
+        return this.each(function(){
+            var $this = $(this);
+            
+            //TODO
+            /*
+            if (delegate) {
+                $this.delegate(delegate, eventName, callback);
+            }
+            else {
+                $this.bind(eventName, callback);
+            }
+            */
+            
+            
+        });
+        
+    };
+    
+    
+    
+    // samplePlugin default options
+    $.fn.sClick.defaults = {
+    	threshold: 5
+    };
+    
+})(jQuery);
+
+
+
 // sDrag & sDrop
 (function($){
 	const SDRAGSTART="sdragstart",SDRAGDRAG="sdrag",SDRAGEND="sdragend";
@@ -106,7 +160,7 @@ snow.event = snow.event || {};
         end: "touchend"
     }
     
-    var hasTouch = snow.ua.hasTouch();
+    
     
     
     
@@ -119,14 +173,14 @@ snow.event = snow.event || {};
      * 
      * See code sample at /test/test_snow.event.02.sDrag.html for more infor 
      *
-     * @param {String} delegate (optional) if present, this will do a delegate (not implemented yet)
+     * @param {String} delegate [optional] if present, this will do a delegate (not implemented yet)
      * @param {Object}   opts [optional] options and handlers
      * @param {Boolean}  opts.draggable [default false] tell if the element is draggable
      * @param {String|Function}   opts.helper [default 'original'] if opts.draggable is true, this will determine the strategy for the drag helper. 
      *                               Can be 'clone' 'original' or a function
-     * @param {Function} opts.start=function(event,dragExtra) [optional] will be called when the drag is initiated
-     * @param {Function} opts.drag=function(event,dragExtra) [optional] will be called for every drag event (either mousemouve or touchmove)
-     * @param {Function} opts.end=function(event,dragExtra) [optional] called on mouseUp or touch end
+     * @param {Function} opts.start=function(event,dragExtra) [optional] will be called when the drag is initiated (map to the 'sdragstart' event)
+     * @param {Function} opts.drag=function(event,dragExtra) [optional] will be called for every drag event (map to the 'sdrag' event)
+     * @param {Function} opts.end=function(event,dragExtra) [optional] called on mouseUp or touch end (map to the 'sdragend' event)
      * @param {Number} dragExtra.pageX the current pageX 
      * @param {Number} dragExtra.pageY the current pageY 
      * @param {Number} dragExtra.startPageX the pageX from the drag start
@@ -139,6 +193,7 @@ snow.event = snow.event || {};
     $.fn.sDrag = function(delegate, opts){
         var options = opts || delegate;
         var delegate = (opts) ? delegate : null;
+        var hasTouch = snow.ua.hasTouch();
         
         options = $.extend({},$.fn.sDrag.defaults,options);
         
@@ -178,98 +233,116 @@ snow.event = snow.event || {};
             var $document = $(document);
             var id = "_" + snow.util.uuid(7);
             
+            var dragStarted = false;
+            var startEvent = e;
+            var startPagePos = snow.event.eventPagePosition(startEvent);
             
-            //create the sDragCtx
-            $elem.data("sDragCtx",{});
+            
+            
             
             // create the $helper if it is a draggable event.
             var $helper; 
-			if (options.draggable === true){
-				if ($.isFunction(options.helper)){
-					$helper = $(options.helper.call($elem.get(0)));
-				}else if (options.helper === "original"){
-					$helper = $elem;
-				}else if (options.helper === "clone"){
-					$helper = $elem.clone();
-					// make sure to remove the DOMElement ID
-					$helper.attr("id",null);
-					$helper.css("position","absolute");
-					var elemPos = $elem.offset();
-					$helper.css({
-						top: elemPos.top,
-						left: elemPos.left
-					})
-					//todo need to allow configurable helper parent (right now, it is the body)
-					$("body").append($helper);					
-				}
-				
-			}
 			
-			var extra = buildDragExtra(e,$elem,$helper,SDRAGSTART);
-            $elem.trigger(SDRAGSTART,[extra]);
-            
-			
-			// since we create "meta events" we consume this one
-            e.preventDefault();
-            e.stopPropagation();
 			
 			// drag
             $document.bind(dragEvents.drag + "." + id, function(e){
-				extra = buildDragExtra(e,$elem,$helper,SDRAGDRAG);
-				
-                var overElem;
-                if (options.draggable === true){
-                  overElem = findOverElement($helper,extra);
-                  extra.overElement = overElem;
-                }				
-				
-            	$elem.trigger(SDRAGDRAG,[extra]);
             	
-            	if (options.draggable === true){
-            		moveElement($helper,extra);
-            		dropExtra = buildDropExtra($elem,$helper);
-					triggerDropEventOnOverElement(SDRAGOVER,e,$elem,overElem,dropExtra);
+            	// if the drag has not started, check if we need to start it
+            	if (!dragStarted){
+            		var currentPagePos = snow.event.eventPagePosition(e);
+            		
+            		// if the diff > threshold, then, we start the drag
+            		if (Math.abs(startPagePos.pageX - currentPagePos.pageY) > options.threshold){
+            			dragStarted = true;
+            			//create the sDragCtx
+            			$elem.data("sDragCtx",{});
+            			
+            			
+						if (options.draggable === true){
+							if ($.isFunction(options.helper)){
+								$helper = $(options.helper.call($elem.get(0)));
+							}else if (options.helper === "original"){
+								
+								$helper = $elem;
+							}else if (options.helper === "clone"){
+								$helper = $elem.clone();
+								// make sure to remove the DOMElement ID
+								$helper.attr("id",null);
+								$helper.css("position","absolute");
+								var elemPos = $elem.offset();
+								$helper.css({
+									top: elemPos.top,
+									left: elemPos.left
+								})
+								//todo need to allow configurable helper parent (right now, it is the body)
+								$("body").append($helper);					
+							}
+						}   
+						var dragStartExtra = buildDragExtra(startEvent,$elem,$helper,SDRAGSTART);
+            			$elem.trigger(SDRAGSTART,[dragStartExtra]);
+            		}
+            	}
+            	
+            	if (dragStarted){
+					var dragExtra = buildDragExtra(e,$elem,$helper,SDRAGDRAG);
+					
+	                var overElem;
+	                if (options.draggable === true){
+	                  overElem = findOverElement($helper,dragExtra);
+	                  dragExtra.overElement = overElem;
+	                }				
+					
+	            	$elem.trigger(SDRAGDRAG,[dragExtra]);
+	            	
+	            	if (options.draggable === true){
+	            		moveElement($helper,dragExtra);
+	            		var dropExtra = buildDropExtra($elem,$helper);
+						triggerDropEventOnOverElement(SDRAGOVER,e,$elem,overElem,dropExtra);
+					}
+					
+					// since we create "meta events" we consume this one	
+	                e.preventDefault();
+					e.stopPropagation();
 				}
-				
-				// since we create "meta events" we consume this one	
-                e.preventDefault();
-				e.stopPropagation();
             });
             
             // drag end
             $document.bind(dragEvents.end + "." + id, function(e){
-                var extra = buildDragExtra(e,$elem,$helper,SDRAGEND);
-                var dropExtra; 
-                
-                var overElem;
-                if (options.draggable === true){
-                  overElem = findOverElement($helper,extra);
-                  extra.overElement = overElem;
-                }
-                 
-            	$elem.trigger(SDRAGEND,[extra]);
-				
-				// get the $overElem
-				if (options.draggable === true){
-					moveElement($helper,extra);
-					dropExtra = buildDropExtra($elem,$helper);
-					triggerDropEventOnOverElement(SDROP,e,$elem,overElem,dropExtra);
+            	if (dragStarted){
+	                var extra = buildDragExtra(e,$elem,$helper,SDRAGEND);
+	                var dropExtra; 
+	                
+	                var overElem;
+	                if (options.draggable === true){
+	                  overElem = findOverElement($helper,extra);
+	                  extra.overElement = overElem;
+	                }
+	                 
+	            	$elem.trigger(SDRAGEND,[extra]);
 					
-					if (!$helper.is($elem)){
-						$helper.remove();
-					}
-				}				
-				
-				// delete the dragContext
-				$elem.data("sDragCtx",null);
+					// get the $overElem
+					if (options.draggable === true){
+						moveElement($helper,extra);
+						dropExtra = buildDropExtra($elem,$helper);
+						triggerDropEventOnOverElement(SDROP,e,$elem,overElem,dropExtra);
+						
+						if (!$helper.is($elem)){
+							$helper.remove();
+						}
+					}				
+					
+					// delete the dragContext
+					$elem.data("sDragCtx",null);
+					
+					// since we create "meta events" we consume this one
+	                e.preventDefault();
+					e.stopPropagation();
+				}
 				
 				// unbind the document event
-                $(document).unbind(dragEvents.drag + "." + id);
-                $(document).unbind(dragEvents.end + "." + id);
-				
-				// since we create "meta events" we consume this one
-                e.preventDefault();
-				e.stopPropagation();
+	            $(document).unbind(dragEvents.drag + "." + id);
+	            $(document).unbind(dragEvents.end + "." + id);
+					
             });
         }
         
@@ -338,6 +411,7 @@ snow.event = snow.event || {};
 	 */
 	function buildDragExtra(event,$elem,$helper,dragType){
 		snow.event.fixTouchEvent(event);
+		var hasTouch = snow.ua.hasTouch();
 		var extra = {
 			eventSource: event,
 			pageX: event.pageX,
@@ -389,7 +463,9 @@ snow.event = snow.event || {};
     
     $.fn.sDrag.defaults = {
     	draggable: false,
-    	clone: 'original'
+    	helper: 'original',
+    	threshold: 5
+    	
     }
 })(jQuery);
 

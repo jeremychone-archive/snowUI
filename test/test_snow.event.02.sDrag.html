@@ -129,7 +129,9 @@
 					var $container = $("#container");
 					var $box1 = $("#box1");
 					
-					
+					$(".box.dragme").click(function(){
+						snow.log.info("click")
+					})
 					var $messageBox = $("#messageBox");
 					
 					snow.log.addPrinter(function(text){
@@ -138,7 +140,7 @@
 					
 					var dragPageX,dragPageY;
 					// can do direct
-					//$box1.sDrag({
+					//$(".box.dragme").sDrag({
 					// or by usering the delegate
 					$container.sDrag(".box.dragme",{
 						draggable: true,
