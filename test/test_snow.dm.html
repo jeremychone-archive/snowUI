@@ -55,8 +55,8 @@
     </head>
     <body>
     	<div class="sTestSection">
-	        <h2>Simple User Dao CRUD </h2>
-			<p>In this </p>
+	        <h2>Simple User Dao CRUD using the snow Deferred Data Manager (snow.dm)</h2>
+
 			<div class="sTestSrc sTestShowSrc">
 				
 				<h3>Create new User</h3>
@@ -69,7 +69,7 @@
 				
 				<!-- Simple User CRUD UI Logic -->
 				<script type="text/javascript">
-				
+				snow.log.config.debugMode = true;
 				$(function(){
 					var $userList = $("#userList");
 					
@@ -86,7 +86,9 @@
 						// get the user objRef that this html element belong to.
 						var objRef = $(this).sObjRef("user");
 						if (objRef){
-							snow.dm.remove("user",objRef.id);
+							snow.dm.remove("user",objRef.id).done(function(){
+								snow.log.info("user remove");
+							});
 						}
 					});
 					// --- /Delete User --- //
@@ -107,37 +109,37 @@
 				});
 				
 				function updateUserListDiv(){
-					var userList = snow.dm.list("user"); 
-					var user, 
-				    i,
-					$userList = $("#userList");
-				
-					//clean the list
-					$userList.empty();
+					snow.dm.list("user").done(function(userList){
+						var user, 
+					    i,
+						$userList = $("#userList");
 					
-					for (i = 0; i < userList.length; i++) {
-						user = userList[i];
-						$li = $("<li></li>");
-						$li.attr("data-obj_type", "user");
-						$li.attr("data-obj_id", user.id);
+						//clean the list
+						$userList.empty();
 						
-						//Note: The 'name' and 'city' class are just for css layout
-						//      The 'del' class is use for delegate
-						$li.append("<span class='name'>" + user.name + "</span>" +
-						           "<span class='city'>(" + user.city + ")</span>" + 
-								   "<span class='del'>x</span>" );
-						$userList.append($li);
-					}						
+						for (i = 0; i < userList.length; i++) {
+							user = userList[i];
+							$li = $("<li></li>");
+							$li.attr("data-obj_type", "user");
+							$li.attr("data-obj_id", user.id);
+							
+							//Note: The 'name' and 'city' class are just for css layout
+							//      The 'del' class is use for delegate
+							$li.append("<span class='name'>" + user.name + "</span>" +
+							           "<span class='city'>(" + user.city + ")</span>" + 
+									   "<span class='del'>x</span>" );
+							$userList.append($li);
+						}						
+					});
 				}
 				</script>
 				<!--  /Simple User CRUD UI Logic -->
 				
 				<!-- User Dao -->
-				<script type="text/javascript">			
-				(function(){
-					var mockUserStore = [{id:"01",name:"Mike",city:"San Francisco"}];
-					snow.dm.registerDao("user",new snow.dao.SimpleDao(mockUserStore));
-				})();
+				<script type="text/javascript">		
+					var userStore = [{id:"001",name:"Mike",city:"San Francisco"}];
+					
+					snow.dm.registerDao("user",new snow.dao.SimpleDao(userStore));
 				</script>
 				<!-- /User Dao -->
 				
