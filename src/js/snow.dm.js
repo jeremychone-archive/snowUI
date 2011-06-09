@@ -2,6 +2,16 @@ var snow = snow || {};
 
 /**
  * @namespace snow.dm data manager layers to register, access DAOs.
+ * DAOs are javascript objects that must implement the following CRUD methods get, list, create, update, remove, and the getIdName method.<br /> 
+ * Signatures of these methods should match the corresponding snow.dm.** methods.<br />
+ * <br />
+ * Note that DAO CRUD methods can return directly the result or a deferred object. Also, it is important to note that snow.dm.*** CRUD access methods
+ * will always return deferred object (either the DAO return deferred, or a wrapped deferred if the DAO method did not return a deferred)<br />
+ * <br />
+ * The deferred pattern for daos allows the application to be agnostic about the call mode, synchronous or asynchronous (e.g. Ajax, Workers, and other callback based called), 
+ * and consequently offer the maximum flexibility during development and production. It also enforce a good practice on how to build the UI components.<br />
+ * <br />
+ * If there is a need to access the daos result directly, the snow.sdm ("straight dm") can be used.  
  */
 snow.dm = {};
 

@@ -204,8 +204,6 @@ dl.detailList dd{
 	
 	<li><a href="../symbols/snow.dao.html">snow.dao</a></li>
 	
-	<li><a href="../symbols/snow.ddm.html">snow.ddm</a></li>
-	
 	<li><a href="../symbols/snow.dm.html">snow.dm</a></li>
 	
 	<li><a href="../symbols/snow.event.html">snow.event</a></li>
@@ -215,6 +213,8 @@ dl.detailList dd{
 	<li><a href="../symbols/snow.log.html">snow.log</a></li>
 	
 	<li><a href="../symbols/snow.log.config.html">snow.log.config</a></li>
+	
+	<li><a href="../symbols/snow.sdm.html">snow.sdm</a></li>
 	
 	<li><a href="../symbols/snow.ua.html">snow.ua</a></li>
 	
@@ -242,6 +242,16 @@ dl.detailList dd{
 				
 			
 				snow.dm data manager layers to register, access DAOs.
+DAOs are javascript objects that must implement the following CRUD methods get, list, create, update, remove, and the getIdName method.<br /> 
+Signatures of these methods should match the corresponding snow.dm.** methods.<br />
+<br />
+Note that DAO CRUD methods can return directly the result or a deferred object. Also, it is important to note that snow.dm.*** CRUD access methods
+will always return deferred object (either the DAO return deferred, or a wrapped deferred if the DAO method did not return a deferred)<br />
+<br />
+The deferred pattern for daos allows the application to be agnostic about the call mode, synchronous or asynchronous (e.g. Ajax, Workers, and other callback based called), 
+and consequently offer the maximum flexibility during development and production. It also enforce a good practice on how to build the UI components.<br />
+<br />
+If there is a need to access the daos result directly, the snow.sdm ("straight dm") can be used.
 				
 				
 				
@@ -306,7 +316,7 @@ dl.detailList dd{
 							<td class="nameDescription">
 								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.create">create</a></b>(objectType, data)
 								</div>
-								<div class="description">DAO Interface: Create a new instance of the object for a give objectType and data.</div>
+								<div class="description">Wrap the snow.dm.create(objectType,data) with a deferred result</div>
 							</td>
 						</tr>
 					
@@ -315,16 +325,16 @@ dl.detailList dd{
 							<td class="nameDescription">
 								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.get">get</a></b>(objectType, id)
 								</div>
-								<div class="description">DAO Interface: Return a value or deferred object (depending of DAO impl) for this objectType and id.</div>
+								<div class="description">Wrap the snow.dm.get(objectType,id) with a deferred result</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.getIdName">getIdName</a></b>(the)
+								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.getIdName">getIdName</a></b>(objectType)
 								</div>
-								<div class="description">DAO Interface: Return the property ID name</div>
+								<div class="description">Return the id property name (this is the only method in snow.ddm that is not deferred)</div>
 							</td>
 						</tr>
 					
@@ -333,7 +343,7 @@ dl.detailList dd{
 							<td class="nameDescription">
 								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.list">list</a></b>(objectType, opts)
 								</div>
-								<div class="description">DAO Interface: Return an array of values or a deferred object (depending of DAO impl) for this objectType and options</div>
+								<div class="description">Wrap the snow.dm.list(objectType,opts) with a deferred result</div>
 							</td>
 						</tr>
 					
@@ -351,7 +361,7 @@ dl.detailList dd{
 							<td class="nameDescription">
 								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.remove">remove</a></b>(objectType, id)
 								</div>
-								<div class="description">DAO Interface: remove an entity for a given type and id.</div>
+								<div class="description">Wrap the snow.dm.remove(objectType,id) with a deferred result</div>
 							</td>
 						</tr>
 					
@@ -360,7 +370,7 @@ dl.detailList dd{
 							<td class="nameDescription">
 								<div class="fixedFont">snow.dm.<b><a href="../symbols/snow.dm.html#.update">update</a></b>(objectType, id, data)
 								</div>
-								<div class="description">DAO Interface: update a existing id with a set of property/value data.</div>
+								<div class="description">Wrap the snow.dm.update(objectType,id,data) with a deferred result</div>
 							</td>
 						</tr>
 					
@@ -463,9 +473,7 @@ Change listener get triggered on create, update, and remove.
 					
 					</div>
 					<div class="description">
-						DAO Interface: Create a new instance of the object for a give objectType and data. <br />
-
-The DAO should return or resolve with the newly created data.
+						Wrap the snow.dm.create(objectType,data) with a deferred result
 						
 						
 					</div>
@@ -477,13 +485,13 @@ The DAO should return or resolve with the newly created data.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>objectType</b>
+									<b>objectType</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>data</b>
+									<b>data</b>
 									
 								</dt>
 								<dd></dd>
@@ -507,7 +515,7 @@ The DAO should return or resolve with the newly created data.
 					
 					</div>
 					<div class="description">
-						DAO Interface: Return a value or deferred object (depending of DAO impl) for this objectType and id.
+						Wrap the snow.dm.get(objectType,id) with a deferred result
 						
 						
 					</div>
@@ -519,13 +527,13 @@ The DAO should return or resolve with the newly created data.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>objectType</b>
+									<b>objectType</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>id</b>
+									<b>id</b>
 									
 								</dt>
 								<dd></dd>
@@ -535,13 +543,6 @@ The DAO should return or resolve with the newly created data.
 						
 						
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -552,11 +553,11 @@ The DAO should return or resolve with the newly created data.
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">snow.dm.</span><b>getIdName</b>(the)
+					<span class="light">snow.dm.</span><b>getIdName</b>(objectType)
 					
 					</div>
 					<div class="description">
-						DAO Interface: Return the property ID name
+						Return the id property name (this is the only method in snow.ddm that is not deferred)
 						
 						
 					</div>
@@ -568,33 +569,16 @@ The DAO should return or resolve with the newly created data.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>the</b>
+									<b>objectType</b>
 									
 								</dt>
-								<dd>objectType</dd>
+								<dd></dd>
 							
 							</dl>
 						
 						
 						
 						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
-							
-								<dt>
-									 <b></b>
-								</dt>
-								<dd>error if dao cannot be found</dd>
-							
-							</dl>
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>the id (this is not deferred)</dd>
-							
-							</dl>
 						
 						
 						
@@ -609,7 +593,7 @@ The DAO should return or resolve with the newly created data.
 					
 					</div>
 					<div class="description">
-						DAO Interface: Return an array of values or a deferred object (depending of DAO impl) for this objectType and options
+						Wrap the snow.dm.list(objectType,opts) with a deferred result
 						
 						
 					</div>
@@ -621,21 +605,16 @@ The DAO should return or resolve with the newly created data.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>objectType</b>
+									<b>objectType</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>opts</b>
+									<b>opts</b>
 									
 								</dt>
-								<dd>(not supported yet)
-          opts.pageIndex {Number} Index of the page, starting at 0.
-          opts.pageSize  {Number} Size of the page
-          opts.match     {Object}
-          opts.orderBy   {String}
-          opts.orderType {String} "asc" or "desc"</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -698,7 +677,7 @@ The DAO should return or resolve with the newly created data.
 					
 					</div>
 					<div class="description">
-						DAO Interface: remove an entity for a given type and id.
+						Wrap the snow.dm.remove(objectType,id) with a deferred result
 						
 						
 					</div>
@@ -740,7 +719,7 @@ The DAO should return or resolve with the newly created data.
 					
 					</div>
 					<div class="description">
-						DAO Interface: update a existing id with a set of property/value data.
+						Wrap the snow.dm.update(objectType,id,data) with a deferred result
 						
 						
 					</div>
@@ -792,7 +771,7 @@ The DAO should return or resolve with the newly created data.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Jun 05 2011 12:08:06 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Jun 08 2011 17:19:08 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>
