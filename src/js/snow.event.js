@@ -243,6 +243,8 @@ snow.event = snow.event || {};
             // create the $helper if it is a draggable event.
             var $helper; 
 			
+			// so far, we prevent the default, otherwise, we see some text select which can be of a distracting
+			e.preventDefault();
 			
 			// drag
             $document.bind(dragEvents.drag + "." + id, function(e){
