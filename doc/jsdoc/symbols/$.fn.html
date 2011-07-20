@@ -313,6 +313,15 @@ dl.detailList dd{
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sComponentChildren">sComponentChildren</a></b>(componentName)
+								</div>
+								<div class="description">Get the list of components that this htmlElement contains.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sDrag">sDrag</a></b>(delegate, opts)
 								</div>
 								<div class="description">Drag event for mouse and touch based user agents.</div>
@@ -322,9 +331,28 @@ dl.detailList dd{
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sEmpty">sEmpty</a></b>()
+								</div>
+								<div class="description">Safely empty a HTMLElement of its children HTMLElement and sComponent by calling the preRemove and postRemove on every child components.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sObjRef">sObjRef</a></b>(objType)
 								</div>
 								<div class="description">Return the objRef {id,type,$element} (or a list of such) of the closest html element matching the objType match the data-obj_type.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">$.fn.<b><a href="../symbols/%24.fn.html#.sRemove">sRemove</a></b>()
+								</div>
+								<div class="description">Safely remove a HTMLElement and the related sComponent by calling the preRemote and postRemove on every child components as
+well as this component.</div>
 							</td>
 						</tr>
 					
@@ -479,6 +507,49 @@ For example:
 
 					<hr />
 				
+					<a name=".sComponentChildren"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">$.fn.</span><b>sComponentChildren</b>(componentName)
+					
+					</div>
+					<div class="description">
+						Get the list of components that this htmlElement contains.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>componentName</b>
+									
+								</dt>
+								<dd>(optional) if present, will filter only the component with this matching name</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>a javascript array of all the match component</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name=".sDrag"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -609,6 +680,38 @@ See code sample at /test/test_snow.event.02.sDrag.html for more infor
 
 					<hr />
 				
+					<a name=".sEmpty"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">$.fn.</span><b>sEmpty</b>()
+					
+					</div>
+					<div class="description">
+						Safely empty a HTMLElement of its children HTMLElement and sComponent by calling the preRemove and postRemove on every child components.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>the jQuery object</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name=".sObjRef"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -648,6 +751,39 @@ If no objType, then, return the first objRef of the closest html element having 
 							<dt class="heading">Returns:</dt>
 							
 								<dd>null if not found, single object with {id,type,$element} if only one jQuery object, a list of such if this jQuery contain multiple elements.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".sRemove"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">$.fn.</span><b>sRemove</b>()
+					
+					</div>
+					<div class="description">
+						Safely remove a HTMLElement and the related sComponent by calling the preRemote and postRemove on every child components as
+well as this component.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>what a jquery.remove would return</dd>
 							
 							</dl>
 						
@@ -714,7 +850,7 @@ In future iterations, we might want make the "touch" case a little bit more adva
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Jun 08 2011 17:19:08 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Jul 19 2011 21:04:44 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

@@ -60,10 +60,10 @@
 						
 						{// Build the component $element
 							build: function(data){
-								var $e = $("<strong>Hello " + data.name + "</strong>");
+								var $e = $("<div><strong>Hello " + data.name + "</strong></div>");
 								
 								// just to keep track of the number of display
-								$e.append(" " + ++helloWorlCount);
+								$e.find("strong").append(" " + ++helloWorlCount);
 								
 								//return the element to have snow.ui managing the rendering logic
 								return $e;
@@ -78,6 +78,14 @@
 								this.$element.click(function(){
 									alert("You clicked on " + $(this).html());
 								});
+							},
+							
+							preRemove: function(){
+								console.log("preRemove " + this.$element.text());
+							}, 
+							
+							postRemove: function(){
+								console.log("postRemove "  + this.$element.text());
 							}
 						}
 					);

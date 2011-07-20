@@ -43,6 +43,9 @@ snow.ui = {};
 	 *                                 component.build(data,config):       (required) function that will be called with (data,config) to build the component.$element.<br />
 	 *                                 component.postDisplay(data,config): (optional) This method will get called with (data,config) after the build method (postDisplay is deferred for performance optimization) 
 	 *                                                                                       Since this call will be deferred, it is a good place to do non-visible logic, such as event bindings.<br />
+	 * 								   component.preRemove()               (optional) This will get called when $.sRemove or $.sEmpty is called on a parent (or on the element for $.sRemove). It will get called before this component htmlElement will get removed.
+	 * 								   component.preRemove()               (optional) This will get called when $.sRemove or $.sEmpty is called on a parent (or on the element for $.sRemove). It will get called after this component htmlElement will get removed
+	 * 								
 	 */
 	snow.ui.registerComponent = function(name,config,componentFactory){
 		var def = {};
@@ -278,13 +281,13 @@ snow.ui = {};
 		//if no transition remove/show
 		else{
 			if (config.replace){
-				$(config.replace).remove();
+				$(config.replace).sRemove();
 			}
 			
 			//note: if there is no parent, then, the sUI.diplay caller is reponsible to add it
 			if (config.parent) {
 				if (config.emptyParent){
-					$(config.parent).empty();
+					$(config.parent).sEmpty();
 				}
 				$(config.parent).append(component.$element);
 			}
@@ -430,7 +433,100 @@ $.fn = $.fn;
 		
 		return $componentElement.data("component");
  
-   }; 
+   };
+   
+   /**
+    * Get the list of components that this htmlElement contains.
+    * 
+    * @param {string} componentName (optional) if present, will filter only the component with this matching name
+    * @return a javascript array of all the match component
+    */
+   $.fn.sComponentChildren = function(componentName){
+   	   var childrenComponents = [];
+   	   
+   	   this.each(function(){
+   	   	  var $this = $(this);
+   	   	  
+   	   	  var $componentElements;
+   	   	  
+		  if (componentName) {
+			$componentElements = $(this).find("[data-scomponent='" + componentName + "']");
+		  }else{
+			$componentElements = $(this).find("[data-scomponent]");
+		  }
+		  
+		  $componentElements.each(function(){
+		  	var $component = $(this);
+		  	childrenComponents.push($component.data("component"));	
+		  });
+   	   });
+   	   
+   	   return childrenComponents;	
+   }
+   
+   /**
+    * Safely empty a HTMLElement of its children HTMLElement and sComponent by calling the preRemove and postRemove on every child components.
+    * 
+    * @return the jQuery object
+    */
+   $.fn.sEmpty = function(){
+   	   return this.each(function(){
+   	   	  var $this = $(this);
+   	   	  
+   	   	  var componentChildren = $this.sComponentChildren();
+   	   	  
+   	   	  // call the preRemoves 
+   	   	  $.each(componentChildren,function(idx,childComponent){
+   	   	  	if ($.isFunction(childComponent.preRemove)){
+   	   	  		childComponent.preRemove();
+   	   	  	}
+   	   	  });
+   	   	  
+   	   	  // do the empty
+   	   	  $this.empty();
+   	   	  
+   	   	  // call the postRemoves
+   	   	  $.each(componentChildren,function(idx,childComponent){
+   	   	  	if ($.isFunction(childComponent.postRemove)){
+   	   	  		childComponent.postRemove();
+   	   	  	}
+   	   	  });   	   	  
+   	   });
+   }
+   
+   /**
+    * Safely remove a HTMLElement and the related sComponent by calling the preRemote and postRemove on every child components as
+    * well as this component.
+    * 
+    * @return what a jquery.remove would return
+    */
+   $.fn.sRemove = function(){
+   	
+   	  return this.each(function(){
+   	  	var $this = $(this);
+   	  	$this.sEmpty();
+   	  	
+   	  	if ($this.is("[data-scomponent]")){
+   	  		var component = $this.data("component");
+   	  		if ($.isFunction(component.preRemove)){
+   	   	  		component.preRemove();
+   	   	  	}
+   	   	  	
+   	   	  	$this.remove();
+   	   	  	
+   	   	  	if ($.isFunction(component.postRemove)){
+   	   	  		component.postRemove();
+   	   	  	}
+   	  	}else{
+   	  		$this.remove();
+   	  	}
+   	  });
+   	  
+   }
+   
+   
+   
+    
 
 })(jQuery);
 
