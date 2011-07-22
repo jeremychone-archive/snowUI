@@ -1,7 +1,7 @@
 var snow = snow || {};
 
 
-(function(){
+(function($){
 
 	// ------ snow.fx public API ------ //
 	/**
@@ -51,4 +51,4 @@ var snow = snow || {};
 	}
 	// ------ /snow.fx public API ------ //	
 	
-})();
+})(jQuery);

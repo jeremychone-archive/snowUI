@@ -15,7 +15,7 @@ var snow = snow || {};
  */
 snow.dm = {};
 
-(function() {
+(function($) {
 
 	var daoDic = {};
 
@@ -252,7 +252,7 @@ snow.dm = {};
 		}
 	}
 
-})();
+})(jQuery);
 
 // ------ Simple DAO ------ //
 /**
@@ -260,7 +260,7 @@ snow.dm = {};
  */
 snow.dao = {};
 
-(function() {
+(function($) {
 
 	function SimpleDao(store) {
 		this.init(store);
@@ -375,12 +375,12 @@ snow.dao = {};
 	 * @param {Array}  store (optional) Array of json object representing each data item
 	 */
 	snow.dao.SimpleDao = SimpleDao;
-})();
+})(jQuery);
 
 // ------ /Simple DAO ------ //
 
 // ------ Simple Rel DAO ------ //
-(function() {
+(function($) {
 
 	function SimpleRelDao(store, rels) {
 		this._super.init.call(this, store);
@@ -460,7 +460,8 @@ snow.dao = {};
 	 * @param {Array}  store (optional) Array of json object representing each data item
 	 */
 	snow.dao.SimpleRelDao = SimpleRelDao;
-})();
+	
+})(jQuery);
 
 // ------ jQuery DAO Helper ------ //
 (function($) {

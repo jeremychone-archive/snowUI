@@ -10,7 +10,7 @@ var snow = snow || {};
  * 
  */
 snow.ui = {};
-(function(){
+(function($){
 	
 	var _componentDefStore = {};
 	
@@ -391,7 +391,7 @@ snow.ui = {};
 
 	
 	
-})();
+})(jQuery);
 
 // ------ snow.ui  ------ //
 // ---------------------- //
@@ -535,7 +535,7 @@ $.fn = $.fn;
 // ------ snow.log  ------ //
 //for now, just support console.log
 //TODO: needs to support logger printer, formatter, and listener
-(function(){
+(function($){
 	
 	const INFO = "INFO", ERROR = "ERROR", DEBUG="DEBUG";
 	
@@ -633,7 +633,7 @@ $.fn = $.fn;
 			console.log(text);
 		}
 	};
-})();
+})(jQuery);
 
 
 // ------ snow.log  ------ //
@@ -650,7 +650,7 @@ $.fn = $.fn;
 snow.util = {};
 
 
-(function() {
+(function($) {
   // Private array of chars to use
   var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''); 
 
@@ -695,8 +695,7 @@ snow.util = {};
 
     return uuid.join('');
   };
-})();
-
+	
 
 /**
  * @namespace
@@ -802,6 +801,7 @@ snow.util.inherit = function (C,P){
 	C.prototype.constructor = C;
 };
 
+})(jQuery);
 // ------ /snow.util  ------ //
 // ------------------------ //
 
@@ -816,7 +816,7 @@ snow.util.inherit = function (C,P){
  */
 snow.ua = {};
 
-(function(){
+(function($){
 	const WEBKIT_PREFIX = "-webkit-",
 	      MOZ_PREFIX = "-moz-";
 	
@@ -953,7 +953,7 @@ snow.ua = {};
 	})()	
 	// ------ /Privates ------ //
 	
-})();
+})(jQuery);
 
 // ------ /snow.ua (User Agent) ------ //
 // ----------------------------------- //
@@ -963,7 +963,7 @@ snow.ua = {};
 
 
 //from: https://developer.mozilla.org/en/Code_snippets/Canvas
-(function(){
+(function($){
 	
 	/**
 	 * @constructor 
@@ -1369,7 +1369,7 @@ snow.ua = {};
     };
 	
 	
-})();
+})(jQuery);
 
 // ------ /snow.gtx ------- //
 // ----------------------- //
