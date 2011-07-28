@@ -117,7 +117,8 @@ snow.ui = {};
 	 */
 	snow.ui.config = {
 		
-		componentsHTMLHolder: "body"
+		componentsHTMLHolder: "body",
+		componentsPath: "components/"
 	}
 	
 	snow.ui.defaultComponentConfig = {
@@ -164,7 +165,7 @@ snow.ui = {};
 			else {
 				_deferredByComponentName[name] = loaderDeferred;
 				$.ajax({
-					url: "components/" + name + ".html",
+					url: snow.ui.config.componentsPath + name + ".html",
 					async: true
 				}).complete(function(jqXHR, textStatus){
 					$(snow.ui.config.componentsHTMLHolder).append(jqXHR.responseText);
