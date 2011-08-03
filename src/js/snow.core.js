@@ -397,14 +397,14 @@ snow.ui = {};
 // ------ snow.ui  ------ //
 // ---------------------- //
 
-/**
- * @namespace
- * 
- * snowUI jQuery extensions.
- */
-$.fn = $.fn;
 
 (function($) {
+	/**
+	 * @namespace
+	 * 
+	 * snowUI jQuery extensions.
+	 */
+	$.fn = $.fn;
 
   /**
    *
