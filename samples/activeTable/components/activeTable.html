@@ -15,19 +15,25 @@ snow.ui.registerComponent(
 		// The build(data,config) is called by snowUI to build the HTML elements for this component instance.
 	    // Here we are using jquery-tpml. The only requirement is to return a HTML or jQuery element
 	    build: function(data,config){
+			var thisC = this;
 			
-			
-			// we store the parent and data for the refresh
-			this.parent = config.parent;
 			var $e = $("<div class='activeTableCtn'></div>");
 			
-			this.reloadData();
-			$e.append(this.build$ActiveTable());
+			// we do a pipe here to resolve with the $e of this component so that Snow can add it.
+			return this.reloadData().done(function(recordData){
+				$e.append(thisC.build$ActiveTable());	
+			}).pipe(function(){
+				
+				// addthing the button 
+				$e.append('<div class="addRow but">Add Row</div>');
+				$e.append('<div class="serialize but">Serialize</div>');
+				
+	        	// Return the new HTML to let snowUI manage its life cycle. 
+				return $e;
+			});
 			
-			$e.append('<div class="addRow but">Add Row</div>');
-			$e.append('<div class="serialize but">Serialize</div>');
-	        // Return the new HTML to let snow manage its life cycle. 
-	        return $e;
+			
+			
 	    },	    
 		
 		// The postDisplay(data,config) is called by snowUI after the element
@@ -35,23 +41,28 @@ snow.ui.registerComponent(
 		// behavior logics (not related to UI)
 	    postDisplay: function(){
 			var $e = this.$element;
-			var component = this;
+			var thisC = this;
 				
 			
 			// adding a new row
 			$e.children(".addRow:first").sTouch(function(){
-				snow.dm.create("record",{});
-				component.refresh();
-				component.showSerializedString();
+				snow.dm.create("record",{}).done(function(){
+					thisC.refresh().done(function(){
+						thisC.showSerializedString();	
+					});
+					
+				});
 			});
 			
 			// delete a row
 			$e.delegate(".del","click",function(){
 				var objRef = $(this).sObjRef("record");
-				snow.dm.remove("record", objRef.id);
+				snow.dm.remove("record", objRef.id).done(function(){
+					thisC.refresh();
+					thisC.showSerializedString();
+				});
 				
-				component.refresh();
-				component.showSerializedString();
+				
 			});
 			
 			// changing a row
@@ -65,9 +76,11 @@ snow.ui.registerComponent(
 				var data = {};
 				data[propName] = newVal;
 				
-				snow.dm.update("record",objRef.id,data);
+				snow.dm.update("record",objRef.id,data).done(function(){
+					thisC.showSerializedString();
+				});
 				
-				component.showSerializedString();
+				
 			});
 			
 			// serialize
@@ -75,24 +88,36 @@ snow.ui.registerComponent(
 				if ($e.children("textarea.dataString").length == 0) {
 					$e.append("<textarea class='dataString'></textarea>");
 				}
-				component.showSerializedString();
+				thisC.showSerializedString();
 			});
 						
 	    },
 		// ------ /snowUI component interface ------ //
 		
 		// ------ Custom Component's methods ------ //
+		
+		// this will reload the data and put it in this.data
+		// Note: this will return the deferred so that the caller knows when it is done
 		reloadData: function(){
-			this.data = {cols: ["component","html4","html5","jqueryUI","jqueryMobile"],
-					      rows:snow.dm.list("record",{orderBy:"component"})};	
+			var thisC = this;
+			
+			return snow.dm.list("record",{orderBy:"component"}).done(function(rows){
+				thisC.data = {cols: ["component","html4","html5","jqueryUI","jqueryMobile"],
+					      rows:rows};	
+			});
+			
 		},
 		
 		showSerializedString: function(){
 			var $ta = this.$element.children("textarea.dataString"); 
 			if ($ta.length > 0){
-				var js = snow.dm.list("record");
-				var str = JSON.stringify(js,null,2);
-				$ta.val(str);	
+				return snow.dm.list("record").done(function(data){
+					var str = JSON.stringify(data,null,2);
+					$ta.val(str);	
+				});
+			}else{
+				// if not data to show, return a autoresolve deferred
+				return $.Deferred().resolve();
 			}
 			
 		},
@@ -105,10 +130,13 @@ snow.ui.registerComponent(
 		},
 		
 		refresh: function(){
-			this.reloadData();	
-			var $newActiveTable = this.build$ActiveTable();
-			this.$element.find(".activeTable").remove();
-			this.$element.prepend($newActiveTable);
+			var thisC = this;
+			
+			return this.reloadData().done(function(){
+				var $newActiveTable = thisC.build$ActiveTable();
+				thisC.$element.find(".activeTable").remove();
+				thisC.$element.prepend($newActiveTable);
+			});	
 		}
 		// ------ /Custom Component's methods ------ //
 		
@@ -123,10 +151,11 @@ snow.ui.registerComponent(
 	{{/each}}
 	<th class="del last"></th>
 	</tr>	
-  	
+  	<tbody>
 	{{each rows}}
 		{{tmpl({record:this,cols:$data.cols,isLast:$index == rows.length -1}) "#tmpl-activeTable-row"}}
-	{{/each}}			
+	{{/each}}
+	</tbody>			
 	
   </table>
 		  
