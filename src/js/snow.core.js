@@ -370,6 +370,7 @@ snow.ui = {};
 			}
 			// otherwise, we call it in sync
 			else{
+				
 				var postDisplayDfd = component.postDisplay(data, config);
 				if (postDisplayDfd && $.isFunction(postDisplayDfd)){
 						postDisplayDfd.done(function(){
@@ -538,7 +539,7 @@ snow.ui = {};
 //TODO: needs to support logger printer, formatter, and listener
 (function($){
 	
-	const INFO = "INFO", ERROR = "ERROR", DEBUG="DEBUG";
+	var INFO = "INFO", ERROR = "ERROR", DEBUG="DEBUG";
 	
 	
 	// TODO: needs to add the ability to add printers
@@ -818,10 +819,10 @@ snow.util.inherit = function (C,P){
 snow.ua = {};
 
 (function($){
-	const WEBKIT_PREFIX = "-webkit-",
+	var WEBKIT_PREFIX = "-webkit-",
 	      MOZ_PREFIX = "-moz-";
 	
-	const WEBKIT_VAR_PREFIX = "Webkit",
+	var WEBKIT_VAR_PREFIX = "Webkit",
 	      MOZ_VAR_PREFIX = "Moz";
 	
 		

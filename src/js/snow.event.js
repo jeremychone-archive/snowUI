@@ -137,9 +137,9 @@ snow.event = snow.event || {};
 
 // sDrag & sDrop
 (function($){
-	const SDRAGSTART="sdragstart",SDRAGDRAG="sdrag",SDRAGEND="sdragend";
+	var SDRAGSTART="sdragstart",SDRAGDRAG="sdrag",SDRAGEND="sdragend";
 	
-	const SDRAGENTER="sdragenter",SDRAGOVER="sdragover",SDRAGLEAVE="sdragleave",SDROP="sdrop";
+	var SDRAGENTER="sdragenter",SDRAGOVER="sdragover",SDRAGLEAVE="sdragleave",SDROP="sdrop";
 	
 	
     /**
