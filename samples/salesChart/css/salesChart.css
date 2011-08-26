@@ -59,19 +59,20 @@
 	position: absolute;
 	top: 0; right: 0; bottom: 0; left: 100px;
 	overflow: hidden;
+	
 }
 
 #salesChart-grid{
 	position: absolute; 
 	top: 0; bottom: 0; left: 0;
 	width: 3000px;
-	-webkit-transform-style: preserve-3d;
 }
 
 #salesChart-canvasCtn{
 	position: absolute;
 	top: 20px; right: 0; bottom: 20px; left: 0;
-	background: #ddddff;
+	background: red;
+	
 }
 
 
@@ -87,12 +88,12 @@
 	border: solid 2px #336699;
 	width: 100px;
 	height: 100px;
-	z-index: 100;
 	background: -webkit-gradient(linear,left top,left bottom,
 									color-stop(0, #6699cc),
 									color-stop(.35, #336699),
 									color-stop(1, #5588bb));
 	-webkit-transform-style: preserve-3d;
+	z-index: 102;
 }
 
 .salesChart-deal.sel{

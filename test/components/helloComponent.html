@@ -14,7 +14,7 @@
 		{
 			build: function(data){
 				helloWorlCount++;
-				var $e = $("#tmplHelloContent").tmpl({name:"John",count:helloWorlCount});
+				var $e = $($("#tmplHelloContent").render({name:"John",count:helloWorlCount}));
 				return $e;
 			},
 			// The postDisplay will be called after the display
