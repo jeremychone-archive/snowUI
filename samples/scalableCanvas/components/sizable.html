@@ -11,9 +11,9 @@ snow.ui.registerComponent(
 	 // Component factory (must implement build(data,config) and can implement postDisplay(data,config).
 	 // This JS object will be cloned for each instanced
 	 {
-	    // The build(data,config) is called by snowUI to build the HTML elements for this component instance.
+	    // The create(data,config) is called by snowUI to build the HTML elements for this component instance.
 	    // Here we are using jquery-tpml. The only requirement is to return a HTML or jQuery element
-	    build: function(data){
+	    create: function(data){
 			this.drawFunction = data;
 	        var $e = $("#tmpl-sizable").tmpl();
 	        // Return the new HTML to let snow manage its life cycle. 

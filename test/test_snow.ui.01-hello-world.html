@@ -59,11 +59,13 @@
 						 },
 						
 						{// Build the component $element
-							build: function(data){
+							create: function(data){
+								this.hellowWorldCount = ++helloWorlCount;
+								console.log("helloWorld#" + this.hellowWorldCount + " create");
 								var $e = $("<div><strong>Hello " + data.name + "</strong></div>");
 								
 								// just to keep track of the number of display
-								$e.find("strong").append(" " + ++helloWorlCount);
+								$e.find("strong").append(" " + this.hellowWorldCount );
 								
 								//return the element to have snow.ui managing the rendering logic
 								return $e;
@@ -73,19 +75,24 @@
 								// 
 							},
 							
+							init: function(data){
+								console.log("helloWorld#" + this.hellowWorldCount + " init");
+							},
+							
 							// The postDisplay will be called after the display
 							postDisplay: function(){
+								console.log("helloWorld#" + this.hellowWorldCount + " postDisplay");
 								this.$element.click(function(){
 									alert("You clicked on " + $(this).html());
 								});
 							},
 							
-							preRemove: function(){
-								console.log("preRemove " + this.$element.text());
+							destroy: function(){
+								console.log("helloWorld#" + this.hellowWorldCount + " destroy");
 							}, 
 							
-							postRemove: function(){
-								console.log("postRemove "  + this.$element.text());
+							postDestroy: function(){
+								console.log("helloWorld#" + this.hellowWorldCount + " postDestroy");
 							}
 						}
 					);

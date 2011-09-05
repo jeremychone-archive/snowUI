@@ -12,7 +12,7 @@
 		},
 		 //Component factory build the component $element
 		{
-			build: function(data){
+			create: function(data){
 				helloWorlCount++;
 				var $e = $($("#tmplHelloContent").render({name:"John",count:helloWorlCount}));
 				return $e;

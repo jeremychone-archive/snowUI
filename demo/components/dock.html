@@ -13,7 +13,7 @@
 	snow.ui.registerComponent("dock",{
 		parent: "#page",
 	},{
-		build: function(){
+		create: function(){
 			var $e = $("#tmpl-dock").tmpl({items:dockItems});
 			return $e;
 		}, 

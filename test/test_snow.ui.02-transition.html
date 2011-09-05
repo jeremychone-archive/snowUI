@@ -48,7 +48,8 @@
 								left: "300px",
 								opacity: "0"
 							}, 500, function(){
-								$old.remove();
+								// make sure to call sRemove so that the component lifecyle get removed
+								$old.sRemove();
 							});
 						}
 						
@@ -83,7 +84,7 @@
 						},
 						// Build the component $element
 						{
-							build: function(data){
+							create: function(data){
 								var $e = $("<div style='position:absolute'>Hello " + data.name + "</div>");
 								
 								// just to keep track of the number of display
@@ -101,6 +102,11 @@
 								this.$element.click(function(){
 									alert("You clicked on " + $(this).html());
 								});
+							},
+							
+							destroy: function(){
+								console.log("Component instance is getting destroyed");
+								
 							}
 						}
 					);

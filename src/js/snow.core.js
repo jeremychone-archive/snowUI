@@ -6,7 +6,7 @@ var snow = snow || {};
 // ------ snow.ui  ------ //
 
 /**
- * @namespace snow.ui is used to managed the lifescycle of UI components (build, display, and transition)
+ * @namespace snow.ui is used to managed the lifescycle of UI components (create, display, and destroy)
  * 
  */
 snow.ui = {};
@@ -30,7 +30,7 @@ snow.ui = {};
 	 * 
 	 * @param {String|jQuery} config.parent jquery selector, html element, jquery object (if not set, the the element will not be added in the rendering logic). <br />
 	 *                              Note 1) If ctx.parent is absent from the component definition and from this method call, the snow.ui will not append the returned element to the DOM.
-	 *                                      So, if ctx.parent is null, then the build() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
+	 *                                      So, if ctx.parent is null, then the create() must take care of adding the elements to the DOM. However, the postDisplay will still be called.
 	 * @param {String}        config.animation (experimental) the animation ("fromLeft" , "fromRight", or null) (default undefined)
 	 * @param {String|jQuery} config.replace jquery selector string, html element, or jquery object (default undefined) of the element to be replaced
 	 * @param {Boolean}       config.emptyParent if set/true will call empty() on the parent before adding the new element (default false). Valid only if no transition and build return an element
@@ -40,11 +40,12 @@ snow.ui = {};
 	 *                                                      the "object template" will be cloned to create the component instance. If it is a function, it will be called and a component instance object will be exptected as return value.<br />  <br />
 	 *                                                       
 	 * 							   A "Component" object can have the following methods  <br /> <br />
-	 *                                 component.build(data,config):       (required) function that will be called with (data,config) to build the component.$element.<br />
-	 *                                 component.postDisplay(data,config): (optional) This method will get called with (data,config) after the build method (postDisplay is deferred for performance optimization) 
+	 *                                 component.create(data,config):       (required) function that will be called with (data,config) to build the component.$element.<br />
+	 * 								   component.init(data,config):         (optional) Will be called just after the create and the component instance has been initialized. <br /> 
+	 *                                 component.postDisplay(data,config):  (optional) This method will get called with (data,config) after the component has been created and initialized (postDisplay is deferred for performance optimization) <br />
 	 *                                                                                       Since this call will be deferred, it is a good place to do non-visible logic, such as event bindings.<br />
-	 * 								   component.preRemove()               (optional) This will get called when $.sRemove or $.sEmpty is called on a parent (or on the element for $.sRemove). It will get called before this component htmlElement will get removed.
-	 * 								   component.preRemove()               (optional) This will get called when $.sRemove or $.sEmpty is called on a parent (or on the element for $.sRemove). It will get called after this component htmlElement will get removed
+	 * 								   component.destroy()                  (optional) This will get called when $.sRemove or $.sEmpty is called on a parent (or on the element for $.sRemove). It will get called before this component htmlElement will get removed<br />
+	 * 								   component.postDestroy()              (optional) This will get called when $.sRemove or $.sEmpty is called on a parent (or on the element for $.sRemove). It will get called after this component htmlElement will get removed<br />
 	 * 								
 	 */
 	snow.ui.registerComponent = function(name,config,componentFactory){
@@ -86,7 +87,7 @@ snow.ui = {};
 	// ------ Public API: Display Management ------ //
 
 	/**
-	 * This will create, build, and display a new component. It will load the component on demand if needed.
+	 * This will create, init, and display a new component. It will load the component on demand if needed.
 	 * @param {String} name (required) the component name
 	 * @param {Object} data (optional, required if config) the data to be passed to the build and postDisplay.
 	 * @param {Object} config (optional) config override the component's config (see {@link snow.ui.registerComponent} config params for description)
@@ -175,22 +176,27 @@ snow.ui = {};
 		return loaderDeferred.promise();
 	};	
 
-	//if $element exist, then, bypass the build
+	//if $element exist, then, bypass the create
 	function process(name,data,config,$element){
 		var loaderDeferred = loadComponent(name);
 		
 		var processDeferred = $.Deferred();
-		var buildDeferred = $.Deferred(); 
+		
+		var createDeferred = $.Deferred(); 
+		var initDeferred = $.Deferred();
 		var postDisplayDeferred = $.Deferred();
-		processDeferred.whenBuild   = buildDeferred.promise();
-		processDeferred.whenPostDisplay = postDisplayDeferred.promise();
+		
+		var processPromise = processDeferred.promise();
+		processPromise.whenCreate   = createDeferred.promise();
+		processPromise.whenInit = initDeferred.promise();
+		processPromise.whenPostDisplay = postDisplayDeferred.promise();
 		
 		loaderDeferred.done(function(componentDef){
 			config = buildConfig(componentDef,config);
 			var component = instantiateComponent(componentDef);	
 			
 			// If the config.unique is set, and there is a component with the same name, we resolve the deferred now
-			// NOTE: the whenBuild and whenPostDisplay won't be resolved again
+			// NOTE: the whenCreate and whenPostDisplay won't be resolved again
 			// TODO: an optimization point would be to add a "sComponentUnique" in the class for data-scomponent that have a confi.unique = true
 			//      This way, the query below could be ".sComponentUnique [....]" and should speedup the search significantly on UserAgents that supports the getElementsByClassName
 			if (config.unique){
@@ -202,16 +208,16 @@ snow.ui = {};
 				}
 			}	
 			
-			// ------ build ------ //
+			// ------ create ------ //
 			var deferred$element = $.Deferred();
 			// if there is no element, we invoke the build
 			if (!$element) {
-				//Ask the component to build the new $element
-				var buildReturn = invokeBuild(component, data, config);
+				//Ask the component to create the new $element
+				var createReturn = invokeCreate(component, data, config);
 				// if it custom Deferred, then, assume it will get resolved with the $element (as by the API contract)
-				if (buildReturn && $.isFunction(buildReturn.promise) && !buildReturn.jquery){
+				if (createReturn && $.isFunction(createReturn.promise) && !createReturn.jquery){
 					//FIXME: will need to use the new jQuery 1.6 pipe here (right now, just trigger on done
-					buildReturn.done(function($element){
+					createReturn.done(function($element){
 						deferred$element.resolve($element);
 					}).fail(function(){
 						deferred$element.reject();
@@ -219,8 +225,8 @@ snow.ui = {};
 				}
 				// otherwise, if the $element is returned , resolve the deferred$element immediately
 				else{
-					if (buildReturn){
-						$element = $(buildReturn);
+					if (createReturn){
+						$element = $(createReturn);
 					}
 					deferred$element.resolve($element);
 				}
@@ -229,7 +235,7 @@ snow.ui = {};
 			else{
 				deferred$element.resolve($element);
 			}
-			// ------ /build ------ //
+			// ------ /create ------ //
 			
 			// ------ render & resolve ------ //
 			deferred$element.promise().done(function($element){
@@ -240,32 +246,44 @@ snow.ui = {};
 					
 					bind$element($element, component, data, config);
 					
-					buildDeferred.resolve(component);
+					createDeferred.resolve(component);
 					
 					//render the element
 					//TODO: implement deferred for the render as well. 
 					renderComponent(component, data, config);
 					
+					$.when(invokeInit(component,data,config)).done(function(){
+						initDeferred.resolve(component); 
+					});
+					
 				}else{
-					buildDeferred.resolve(component);
+					//TODO: need to look if we need this. Basically, that allow to have create methods that do/return nothing but still instantiate the component
+					createDeferred.resolve(component);
+					
+					//TODO: probably need to invokeInit in thi scase as well. For now, just resolve the initDeferred
+					initDeferred.resolve(component); 
+					
 				} 
 				
-				var invokeDfd = invokePostDisplay(component, data, config);
-				invokeDfd.done(function(){
-					postDisplayDeferred.resolve(component);
+				processPromise.whenInit.done(function(){
+					var invokeDfd = invokePostDisplay(component, data, config);
+					invokeDfd.done(function(){
+						postDisplayDeferred.resolve(component);
+					});
 				});
+				
 				
 			});
 			// ------ /render & resolve ------ //
 			
-			$.when(processDeferred.whenBuild, processDeferred.whenPostDisplay).done(function(){
+			processPromise.whenPostDisplay.done(function(){
 				processDeferred.resolve(component);
-			})
+			});
 		});
 		
 		
 		
-		return processDeferred;
+		return processPromise;
 	}
 
 	function renderComponent (component,data,config){
@@ -329,15 +347,23 @@ snow.ui = {};
 		return component;		
 	}
 	
-	function invokeBuild(component, data, config){
+	function invokeCreate(component, data, config){
+		// backward compatibility
+		var createFunc = component.create || component.build;
 		//assert that we have a build method
-		if (!component.build || !$.isFunction(component.build)){
-			snow.log.error("Invalid 'build' function for component [" + component.name + "].");
+		if (!createFunc || !$.isFunction(createFunc)){
+			snow.log.error("Invalid 'create' function for component [" + component.name + "].");
 			return;
 		}
-		return component.build(data,config);
+		return createFunc.call(component,data,config);
 	}
 	
+	function invokeInit(component,data,config){
+		var initFunc = component.init;
+		if ($.isFunction(initFunc)){
+			return initFunc.call(component,data,config);
+		}
+	}
 	// 
 	function bind$element($element,component,data,config){
 		component.$element = $element;
@@ -479,9 +505,7 @@ snow.ui = {};
    	   	  
    	   	  // call the preRemoves 
    	   	  $.each(componentChildren,function(idx,childComponent){
-   	   	  	if ($.isFunction(childComponent.preRemove)){
-   	   	  		childComponent.preRemove();
-   	   	  	}
+   	   	  	processDestroy(childComponent);
    	   	  });
    	   	  
    	   	  // do the empty
@@ -489,9 +513,7 @@ snow.ui = {};
    	   	  
    	   	  // call the postRemoves
    	   	  $.each(componentChildren,function(idx,childComponent){
-   	   	  	if ($.isFunction(childComponent.postRemove)){
-   	   	  		childComponent.postRemove();
-   	   	  	}
+   	   	  	processPostDestroy(childComponent);
    	   	  });   	   	  
    	   });
    }
@@ -510,15 +532,11 @@ snow.ui = {};
    	  	
    	  	if ($this.is("[data-scomponent]")){
    	  		var component = $this.data("component");
-   	  		if ($.isFunction(component.preRemove)){
-   	   	  		component.preRemove();
-   	   	  	}
+   	  		processDestroy(component);
    	   	  	
    	   	  	$this.remove();
-   	   	  	
-   	   	  	if ($.isFunction(component.postRemove)){
-   	   	  		component.postRemove();
-   	   	  	}
+			
+			processPostDestroy(component);   	   	  	
    	  	}else{
    	  		$this.remove();
    	  	}
@@ -527,7 +545,29 @@ snow.ui = {};
    }
    
    
+   function processDestroy(component){
+   	// The if(component) is a safeguard in case destroy gets call twice (issue when clicking fast on test_snow.ui-02-transition....)
+   	if (component){
+		//TODO: Need to remove the "preRemove" We should support only destroy
+		var destroyFunc = component.destroy || component.preRemove;
+		
+		if ($.isFunction(destroyFunc)){
+			destroyFunc.call(component);
+		}   	
+	}
+   }
    
+   function processPostDestroy(component){
+   	// The if(component) is a safeguard in case destroy gets call twice (issue when clicking fast on test_snow.ui-02-transition....)
+   	if (component){
+		//TODO: Need to remove the "preRemove" We should support only postDestroy
+		var postDestoryFunc = component.postDestroy || component.postRemove;
+		
+		if ($.isFunction(postDestoryFunc)){
+			postDestoryFunc.call(component);
+		}     	
+	}
+   }
     
 
 })(jQuery);

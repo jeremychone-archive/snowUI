@@ -6,7 +6,7 @@
     
         // ------ Snow Component Interface ------ //
         // Build the component $element
-        build: function(data, config){
+        create: function(data, config){
             var $e = $("#tmplDialogPrompt").tmpl(data);
             return $e;
         },
@@ -42,7 +42,7 @@
         
         // this will be call by this component when the user close the dialog by answering or pressing esc
         close: function(){
-            this.$element.remove();
+            this.$element.sRemove();
         }
         // ------ /Custom dialogPrompt Public Methods ------ //		
     });

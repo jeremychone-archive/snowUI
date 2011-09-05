@@ -1,5 +1,6 @@
 var snow = snow || {};
 
+// ------ EXPERIMENTAL. snow.fx is not for production use ------ //
 
 (function($){
 
