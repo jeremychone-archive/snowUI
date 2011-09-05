@@ -246,14 +246,21 @@ snow.ui = {};
 					
 					bind$element($element, component, data, config);
 					
+					// attached the componentPromise to this $element, this way, during rendering sub component can sync with it.
+					$element.data("componentProcessPromise",processPromise);
+					
 					createDeferred.resolve(component);
 					
-					//render the element
-					//TODO: implement deferred for the render as well. 
-					renderComponent(component, data, config);
+									
 					
 					$.when(invokeInit(component,data,config)).done(function(){
+						//render the element
+						//TODO: implement deferred for the render as well. 
+						renderComponent(component, data, config);	
+												
 						initDeferred.resolve(component); 
+						
+
 					});
 					
 				}else{
@@ -266,16 +273,37 @@ snow.ui = {};
 				} 
 				
 				processPromise.whenInit.done(function(){
-					var invokeDfd = invokePostDisplay(component, data, config);
-					invokeDfd.done(function(){
-						postDisplayDeferred.resolve(component);
-					});
+					var parentComponentProcessPromise, invokePostDisplayDfd;
+					
+					// if there is a parent component, then need to wait until it display to display this one.
+					if ($element && $element.parent()){
+						var parentComponent$Element = $element.parent().closest("[data-scomponent]");
+						
+						if (parentComponent$Element.length > 0){
+							parentComponentProcessPromise = parentComponent$Element.data("componentProcessPromise");
+							parentComponentProcessPromise.whenPostDisplay.done(function(){
+								invokePostDisplayDfd = invokePostDisplay(component, data, config);
+								invokePostDisplayDfd.done(function(){
+									postDisplayDeferred.resolve(component);
+								});
+							});
+						}
+					}
+					
+					// if we did not have any parentComponentProcessPromise, then, just invoke
+					if (!parentComponentProcessPromise){
+						invokePostDisplayDfd = invokePostDisplay(component, data, config);
+						invokePostDisplayDfd.done(function(){
+							postDisplayDeferred.resolve(component);
+						});
+					}
+					
 				});
 				
 				
 			});
 			// ------ /render & resolve ------ //
-			
+			//console.log
 			processPromise.whenPostDisplay.done(function(){
 				processDeferred.resolve(component);
 			});
